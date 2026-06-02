@@ -1,0 +1,167 @@
+
+% LTeX: enabled=false
+% !TeX encoding=utf8
+% !TeX program = pdflatex
+%% This is the main excute file (smaple)
+%
+%%-----------------------------------------
+%% Document Class
+%%-----------------------------------------
+\documentclass[%
+	% draft, % draft mode (no images, layout errors shown). Commented to switch to final mode
+	12pt, % font size
+	leqno, % put eq num to the left
+]{scrbook} % Classes: scrartcl, scrreprt, scrbook
+%
+%%-----------------------------------------
+%% Preambles
+%%-----------------------------------------
+\input{preambles/basic} % must be loaded first
+\input{preambles/font} % font setting
+\input{preambles/layout} % layout setting
+\input{preambles/section} % section setting
+\input{preambles/math} % math setting
+\input{preambles/index} % index packages
+\input{preambles/refs} % hyperref, careful about its loading
+\input{preambles/bib} % bib packages
+\input{preambles/lmacros} % lower macros
+\input{preambles/bugfix} % bugfix
+
+\usepackage{subfig}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{xcolor, colortbl}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{amsmath}
+\usepackage{epigraph}
+\usepackage{listings}
+\usepackage{pifont}
+\usepackage{xspace}
+
+\newcommand*\circledBlack[1]{\tikz[baseline=-0.3em]{
+            \node[shape=circle,draw,inner sep=2pt, scale=0.6, fill=black, text=white, font=\normalsize, font=\bfseries] (char) {#1};}}
+
+\newcommand*\circledWhite[1]{\tikz[baseline=-0.3em]{
+            \node[shape=circle,draw,inner sep=2pt, scale=0.6, fill=white, text=black, font=\normalsize, font=\bfseries] (char) {#1};}}
+
+\newcommand*\circledGrey[1]{\tikz[baseline=-0.3em]{
+            \node[shape=circle,draw,inner sep=2pt, scale=0.6, fill=lightgray, text=black, font=\normalsize, font=\bfseries] (char) {#1};}}
+
+\definecolor{Gray}{gray}{0.9}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\raggedcenter\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{Z}{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}X}
+\newcolumntype{Y}{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}X}
+
+\renewcommand\tabularxcolumn[1]{m{#1}}
+
+\newcommand{\mytab}{Tab.\@~}
+\newcommand{\mysec}{Sec.\@~}
+\newcommand{\myfig}{Fig.\@~}
+\newcommand{\myfiglong}{Figure~}
+\newcommand{\mytablong}{Table~}
+\newcommand{\myseclong}{Section~}
+\newcommand{\mylisting}{Listing~}
+\newcommand{\mylistinglong}{Listing~}
+
+\newcommand{\myalg}{Alg.\@~}
+
+\newcommand{\gpuharbor}{GPUHarbor\xspace}
+\newcommand{\totalDevices}{106\xspace}
+\newcommand{\uniqueDevices}{58\xspace}
+\newcommand{\webGPUDevices}{98\xspace}
+
+\newcolumntype{Y}{>{\raggedleft\arraybackslash}X}
+\newcolumntype{Z}{>{\raggedright\arraybackslash}X}
+
+\newcommand{\grumbler}[3]{\noindent{\color{#1}{\bf \fbox{#2}} {\it #3}}}
+\newcommand{\arq}[1]{\grumbler{red}{AQ}{#1}}
+
+\newcommand{\wgslmemsmith}{\textsc{WGSLMemSmith}\xspace}
+\newcommand{\saferace}{\textsc{SafeRace}\xspace}
+\newcommand{\smsg}{SMSG\xspace}
+\newcommand{\drsv}{DRSV\xspace}
+% Define colors for code highlighting
+
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{myblue}{rgb}{0.2,0.2,0.7}
+\definecolor{mygreen}{rgb}{0.1,0.5,0.1}
+
+\newcommand{\cmark}{\ding{51}} % Checkmark for memory safety maintained
+\newcommand{\uninit}{\ding{55}} % Cross symbol for uninitialized data
+\newcommand{\oob}{\ding{67}} % out-of-bounds reads
+\newcommand{\NA}{---}
+\providecommand{\Description}[2][]{}
+
+%
+%%-----------------------------------------
+%% User-defined preambles
+%%-----------------------------------------
+\input{user/notations} % notations
+\input{user/additions} % additions
+\input{user/enviroments} % enviroments
+%
+%%-----------------------------------------
+%% Pre-contents
+%%-----------------------------------------
+\input{precontents/titlepage} % Title page + copyright
+\input{precontents/front} % abstract + dedication + acknowledgements
+%
+%%-----------------------------------------
+%% Document start
+%%-----------------------------------------
+\begin{document}
+%% Front
+\frontmatter
+\input{metadata} % Metadata of the thesis
+\maketitle
+\begin{singlespace}
+	\tableofcontents
+\addchap{Figures and Tables}
+	\listoffigures
+	\listoftables
+\end{singlespace}
+\begin{abstract}
+	\input{contents/0.1.abstract}
+\end{abstract}
+\begin{dedication}
+	\input{contents/0.2.dedication}
+\end{dedication}
+\begin{acknowledgement}
+	\input{contents/0.3.acknowledgements}
+\end{acknowledgement}
+\addtocontents{toc}{\protect\vspace{15pt}}%
+%% Mainmatter
+\mainmatter
+
+\thispagestyle{empty}
+\begin{center}
+	\includegraphics[width=\textwidth]{images/intro/sea_hath_its_pearls.jpg}
+
+	\vspace{1em}
+	{William Henry Margetson, \textit{The Sea Hath its Pearls} (1897).}
+\end{center}
+\setcounter{page}{0}
+\input{contents/1.introduction}
+\input{contents/2.background}
+\input{contents/3.mc_mutants}
+\input{contents/4.gpuharbor}
+\input{contents/5.saferace}
+\input{contents/6.conclusion}
+\clearpage
+\appendix
+\part*{Appendix}
+\addparttocentry{}{Appendix}
+	\input{contents/appendix}
+\addtocontents{toc}{\protect\vspace{10pt}}%
+\backmatter
+	\begin{singlespace}
+		\input{contents/index}
+		\input{contents/bib}
+	\end{singlespace}
+\end{document}

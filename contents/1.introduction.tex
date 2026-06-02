@@ -1,0 +1,110 @@
+% !TeX root = ../main.tex
+\chapter[Introduction]{Introduction}
+\label{chapter:introduction}
+
+\epigraph{\textit{I felt the weight of unmapped worlds, unborn language.}}{--- William Finnegan \\\footnotesize\textit{Barbarian Days: A Surfing Life}}
+
+
+\section{The GPU hath its weak behaviors. \label{sec:intro-motivation}}
+
+From UC Santa Cruz's Engineering 2 Building, where much of the work in this thesis had its genesis, it is a one mile walk through a shaded redwood forest to East Field, where the trees give way to a large sloping meadow looking out over Santa Cruz and the entire Monterey Bay. It is here that the author of this thesis often went to think through a hard problem, or just to get away from the computer screen and let the mind settle. And while this thesis is focused on validating the correctness and security of concurrent shared-memory behavior on GPUs, it seems apt to use UC Santa Cruz's proximity to a place as impressive as the Monterey Bay to create a metaphor between it and the research presented here.
+
+Viewed from the vantage point of East Field, 600 feet up, the Pacific Ocean often looks calm and empty, with only the afternoon whitecaps hinting that its peaceful veneer is nothing more than a facade. Because in fact, the Monterey Bay teeming with life; it is one of the most biodiverse environments on Earth, and its opaque surface hides from view the deepest submarine canyon on the North American coast, with walls plunging over a mile down into the depths.
+
+A trip to the tidepools at Natural Bridges State Beach or a whale watching boat tour are great ways to sample the Monterey Bay and leave one awe-inspired, but these experiences only give a glimpse into the complex and ever-changing environment that lies below. For it is the submarine canyon itself that is responsible for the Monterey Bay's incredible biodiversity, as ocean currents interact with the canyon's geography to bring cold, nutrient-rich water closer to the surface. From the hermit crab scuttling across the rocky reefs, to the sea otters wrapped securely in the kelp forests just offshore, to the orca pods patrolling the edges of the submarine canyon, all of the visible wonders ultimately depend on the upwellings from the hidden submarine canyon.
+
+Similarly, this thesis is an exploration into the depths of GPU programming models, investigating the relatively little-understood concurrent shared memory behaviors of modern GPU hardware and their software stacks. Just as the Monterey Bay submarine canyon is responsible for upholding its entire ecosystem, correct specifications and implementations of concurrent memory provide the backbone that modern GPU applications are built on.
+
+%In the rest of this section, the work in this thesis is motivated, continuing the metaphor between GPU programming models and the biodiversity of the Monterey Bay. Next, in \mysec\ref{sec:intro-contrib}, the ideas behind the three core thesis contributions which make up the following chapters are directly presented, and \mysec\ref{sec:intro-pub} lists the papers and venues where this research has been published. Finally, \mysec\ref{sec:intro-ack} acknowledges the contributions of all others who contributed to the work presented in this thesis.
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=.7\textwidth]{images/intro/sea_devil.jpg}
+    \caption{The sea hath its devils. MBARI, 2014.}
+\end{figure*}
+
+\newcommand{\mprlxintrolitmustest}{
+    \begin{tabular}{l l}
+    \midrule
+    \underline{thread 0} & \underline{thread 1} \\
+        \circledBlack{\vphantom{A}a}\hspace{.1cm} \texttt{store(data, 1)} &  \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{let r0 = load(data)}  \\
+%        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{fence(release)} &  \circledWhite{\vphantom{A}e}\hspace{.1cm} \texttt{fence(acquire)}  \\
+        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{store(flag, 1)} &
+        \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{let r1 = load(flag)}  \\
+        \midrule
+        \multicolumn{2}{c}{Condition: \texttt{r0 == 1 \&\& r1 == 0}}
+    \end{tabular} \hspace{1cm}
+}
+
+\newcommand{\mprelacqintrolitmustest}{
+    \begin{tabular}{l l}
+    \midrule
+    \underline{thread 0} & \underline{thread 1} \\
+        \circledBlack{\vphantom{A}a}\hspace{.1cm} \texttt{store(data, 1)} &  \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{let r0 = load(data)}  \\
+        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{fence(release)} &  \circledWhite{\vphantom{A}e}\hspace{.1cm} \texttt{fence(acquire)}  \\
+        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{store(flag, 1)} &
+        \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{let r1 = load(flag)}  \\
+        \midrule
+        \multicolumn{2}{c}{Condition: \texttt{r0 == 1 \&\& r1 == 0}}
+    \end{tabular} \hspace{1cm}
+}
+
+
+\begin{figure}
+\centering
+\small
+\captionsetup[subfigure]{width=.7\columnwidth}
+\subfloat[Message Passing Program]{\mprlxintrolitmustest \label{fig:intro-mprlx}} \\
+\subfloat[Message Passing rel/acq (MP-relacq) litmus test]{\mprelacqintrolitmustest \label{fig:intro-mprelacq}}
+\caption{Two litmus tests that illustrate bugs in WebGPU found by our work.  We observed executions that resulted in the condition being true, even though it is disallowed by the MCS. All memory is initialized to 0.}
+\label{fig:intro-mp}
+\end{figure}
+
+
+\subsection{Memory Consistency}
+
+what is memory consistency? rocket science of CS, describe the message passing program, motivate GPUs? need to decide in which order to motivate GPUs and memory consistency, or together somehow?
+
+
+
+
+
+, an area which has been called the rocket science of computer science~\cite{torvalds2021rs}.
+
+\begin{itemize}
+    \item you can go down to the beach in santa cruz, and you can look out over the ocean, but you can't see the sea floor. you can see the waves, but you can't see the bottom. it's a bit like that with GPUs. there are a lot of vendors, a lot of different possible behaviors, we don't know what exactly can happen all the time.
+    \item For example, Monterey Bay Submarine canyon has 1-mile deep walls, largest underwater canyon in north america. black seadevil anglerflish, only filmed twice alive, filmed in 2014 in the monterey bay submarine canyon. what behaviors are we not seeing from GPUs? What bugs are we missing?
+    \item subsection, introduce message passing (relaxed + strengthened figures), talk about how we can know whether there's a bug in the implementation of memory consistency
+    \item subsection, talk about diversity of GPU vendors and implementations, how do we test them all and find bugs, and what can their behaviors tell us
+    \item subsection what else is down in the depths of GPU programming models? memory safety x data races. how do we know whether there are memory safety bugs in GPU programming frameworks, and how do we fix them?
+\end{itemize}
+
+\section{Contributions.}
+\label{sec:intro-contrib}
+
+\begin{itemize}
+\item this thesis addresses above issues through three main contributions
+\item mc mutants (chapter 3), summarize it
+\item gpuharbor (chapter 4), summarize it
+\item saferace (chapter 5), summarize it
+\end{itemize}
+
+\section{Publications}
+\label{sec:intro-pub}
+
+\begin{itemize}
+  \item mc mutants at asplos 2023
+  \item gpuharbor at issta 2023
+  \item saferace at oopsla 2025
+  \item other works have been shaped by the ideas and techniques in this thesis, including
+  \item memory disorder, arxiv 2026
+  \item behind bars, usenix security 2026
+  \item grace hopper memory consistency testing, ismm 2026
+  \item work on building an efficient GPU LLM inference framework for the browser, arxiv 2026
+  \item work under submission on performance portability in webgpu
+  \item work under review tackling heterogeneous gpu memory consistency
+\end{itemize}
+
+
+\section{Formal Acknowledgements}
+\label{sec:intro-ack}
