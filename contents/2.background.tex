@@ -1,3 +1,292 @@
 % !TeX root = ../main.tex
 \chapter[Background]{Background}
-\label{chapter:background}
+\label{chap:background}
+
+% MC Mutants Background:
+
+We now provide background on memory consistency specifications (\mysec\ref{sec:mcs}) and litmus tests (\mysec\ref{sec:litmus-tests}).
+%We use now standard relational logic notation from prior works~\cite{batty_c11, alglave-cats-2014}.
+We constrain the formalism to our case study specification, WebGPU (\mysec\ref{sec:webgpu}). As WebGPU is still a working draft, it does not yet have a formal MCS, though it is expected to be based on the Vulkan memory model~\cite{vulkan-mem-model}.
+%
+Because of this, the MCS for WebGPU described here is not official. Instead, it should be viewed as a non-controversial foundation on which to explore new testing techniques.
+%Specification choices are inspired by the the Vulkan memory model~\cite{vulkan-mem-model}, which the WebGPU shading language MCS is documented to have been based on.
+
+\subsection{Memory Consistency Specification (MCS) \label{sec:mcs}}
+The MCS defines two properties for shared memory concurrent programs: (1)~the definition of a data-race, i.e.\ unsynchronized concurrent memory accesses that results in undefined behavior, and (2)~for well-defined programs, the values that memory loads may observe.
+
+\paragraph{Data Races} An MCS defines two types of memory locations, atomic and non-atomic. Atomic locations can be operated on by atomic operations, e.g.\ atomic load, atomic store, atomic read-modify-write (RMW). A data-race occurs when two threads access the same memory location without sufficient synchronization.
+The exact rules defining the required synchronization can be complex and have been studied extensively~\cite{batty_c11};
+however, if all memory accesses occur on atomic memory, and use atomic operations, then the program is \textit{trivially data-race free} (what we call TDRF). By their nature, data races invalidate a program and allow for undefined behavior. Therefore, we consider only the portion of the MCS that pertains to TDRF programs by focusing on programs that use atomic operations.
+ %\oldtext{We are interested in testing the behavior of atomic operations in the absence of data races, so we only consider the portion of the MCS that pertains to TDRF programs.}
+%While using only TDRF programs is an unrealistic constraint for many real-world applications, we believe it is reasonable in the testing domain, and this simplified model is sufficient to lead to real-world impact (see~\mysec\ref{sec:impact}).
+
+\paragraph{Sets and Relations for MCSs} Executions can be formally reasoned about under an MCS, e.g.\ to determine if an execution is allowed or not. Following work in~\cite{alglave-cats-2014,batty_c11}, an execution is viewed as a set of events and relations, summarized in \mytab\ref{tab:mm-relations}. In our presentation, we do not consider non-atomic memory accesses or fences other than release/acquire fences. Additionally, atomic memory operations are not parameterized over a memory order (e.g.\ \`a la C++). This simplified model is sufficient for our WebGPU case-study. %(see~\mysec\ref{sec:webgpu}).
+
+An execution consists of events $E$, which can be reads ($R$), writes ($W$), read-modify-writes ($RMW$) or fences ($F$). The $R$, $W$, and $RMW$ events contain memory locations, and the $W$ and $RMW$ events contain a value to store.
+
+All reads (or RMWs) are related to one write (or RMW) through the reads-from ($rf$) relation. Events from the same thread are related through program-order ($po$) if they are sequenced in the program source (e.g.\ using \textit{;}). The $\textit{po-loc}$ relation is $po$, but only relates events that target the same memory location. All writes and RMWs to the same location are ordered through coherence ($co$), a superset of $\textit{po-loc}$, which intuitively represents the order in which writes reach global visibility. The from-reads ($fr$) relation is derived from $co$ and $rf$; it relates a read or RMW $r$ to a write or RMW $w$ if $r$ reads-from a $w'$ that is earlier in $co$ than $w$. The communication ($com$) relation is simply the union of $rf$, $co$, and $fr$.
+
+One fence ($f_r$) synchronizes-with ($sw$) another fence ($f_a$) if: (1)~$f_r$ and $f_a$ are in different threads and (2)~there is a write or RMW $w$ in $po$ after $f_r$, and there is a read or RMW $r$ before $f_a$, and $r$ reads from $w$.
+
+\begin{table}
+   \footnotesize
+    \centering
+       \caption{Relations and sets used in MCS}
+   \label{tab:mm-relations}
+   \begin{tabularx}{\columnwidth}{L{2.7cm} Y }
+   \toprule
+   \textbf{Sets} & \textbf{Description} \\
+   \midrule
+   Reads ($R$) & An atomic operation that reads from an atomic memory location\\
+   \rowcolor{Gray} Writes ($W$) & An atomic operation that writes to an atomic memory location\\
+   Read-modify-writes ($RMW$) & An atomic operation that both reads from and writes to an atomic memory location in one indivisible action \\
+  \rowcolor{Gray} Fences ($F$)  & An operation that performs a release/acquire fence  \\
+
+   \toprule
+    \textbf{Relations} & \textbf{Description} \\
+    \midrule
+     program-order ($po$) & events from the same thread in instruction order\\
+    \rowcolor{Gray} $\textit{po-loc}$ & $po$ restricted to events that target the same memory location \\
+    reads-from ($rf$) & relates a $W$ or $RMW$ $a$ to an $R$ or $RMW$ $b$, if $b$ reads the value that $a$ wrote\\
+    \rowcolor{Gray} coherence ($co$) & a total order over writes or read-modify-writes to the same location\\
+   from-read ($fr$) & relates an $R$ or $RMW$ $a$ to a $W$ or $RMW$ $b$ if $a$ obtained its value from a different $W$ or $RMW$ $b'$ that comes before $b$ in $co$ \\
+   \rowcolor{Gray} synchronizes-with ($sw$) & relates a release/acquire fence $f_a$, to another $f_r$ if they are ordered through $po$, $rf$ and $po$\\
+   communication ($com$) & The union of $rf$, $co$ and $fr$ \\
+         \bottomrule
+ \end{tabularx}
+
+
+
+\end{table}
+
+\paragraph{Formal Definitions of MCSs}
+An MCS defines the happens-before ($hb$) relation across events in candidate executions. Once specified, executions can be determined if they are legal or not, given the following properties of $hb$: (1)~A  read must return the latest value from a  write in $hb$ order and (2)~the $hb$ order must be acyclic.
+
+The strongest MCS is sequential consistency (or SC)~\cite{Lamport79}, which states that $hb$ must be a total order across all memory accesses and it must respect per-thread program order ($po$). In many CPU-centric programming languages (e.g. C++ and Java), SC is the default behavior for race-free programs. It can be defined by instantiating $hb$ to be equal to $po \cup com$.
+
+However, the SC MCS disallows many compiler and architecture optimizations. As a result, enforcing the SC MCS on a modern system requires using expensive fence instructions, either by the compiler or programmer.
+%GPU platforms provide relaxed memory models, where executions may not correspond to an interleaving of events that respect $po$. This is also known as sequential consistency, or SC~\cite{Lamport79}.
+Most GPU languages are not SC by default, and many (including SPIR-V~\cite{spir-v} and Metal~\cite{metal-sl}) do not provide the means for a programmer to achieve SC behavior, even if using fence instructions.
+
+%(including SPIR-V~\cite[\S 2.18]{spir-v} and Metal~\cite[\S 6.15]{metal-sl})
+
+Despite this, there exists a baseline common to all languages we are aware of: SC-per-location~\cite{alglave-cats-2014}, sometimes called coherence~\cite{batty_c11}. This specification states that for every atomic memory location $a$, there is an $hb$ ordering across all memory accesses to $a$ such that $hb$ respects $\textit{po-loc}$, i.e.\ program order per location. This MCS can be defined by setting $hb$ to be $\textit{po-loc} \cup com$.
+%This MCS corresponds to a TDRF C++ program where atomic operations exclusively use the memory order relaxed annotation and can be defined by setting $hb$ to be $\textit{po-loc} \cup com$.
+
+%SC-per-location can be augmented with different synchronization constructs.
+We consider one more addition to $hb$ related to our target platform of WebGPU: the release/acquire fence; and we will refer to this model as the rel-acq-SC-per-location MCS. To add this synchronization construct, the following relation is added to $hb$: $po;sw;po$ where the $;$ operator is sequenced-with. Intuitively, this states that if two fences $f_r$ and $f_a$ have synchronized, i.e.\ they are part of $sw$, then any event $e$ such that $e\xrightarrow{po}f_r$ happens before any other event $e'$ if $f_a\xrightarrow{po}e'$. This is follows the same definition as the $sw$ relation in the C++ memory model~\cite{batty_c11}.
+
+\subsection{Litmus Tests \label{sec:litmus-tests}}
+
+A litmus test is a small concurrent program which tests if a platform implementation conforms to an MCS. Not only are they used in testing~\cite{alglave-cats-2014}, but also as examples in MCS documentation~\cite{batty_c11}, and can even be used to derive an MCS~\cite{memsynth}.
+%
+%Prior work has explored their ability to distinguish memory models~\cite{HAM11} and has used the formal MCS relational definitions to synthesize sets of litmus tests~\cite{WBSC17}.
+%
+A litmus test has many candidate executions, given as a set of events and relations. Each time the test is run, one of the candidate executions occurs, which may or may not be valid under a given MCS. %Given an MCS $M$, a litmus test that checks for conformance to $M$ will have a disallowed candidate execution containing a cycle in the $hb$ relation defined by $M$.
+
+\myfiglong\ref{fig:litmus:CoRR} shows a candidate execution of the CoRR litmus test, which is shown as an executable program in \myfig\ref{fig:CoRR-executable}.
+This execution is disallowed by the SC-per-location memory model, as it contains the following cycle in $hb$: $b \xrightarrow{fr} c \xrightarrow{rf} a \xrightarrow{po-loc} b$.
+
+\myfiglong\ref{fig:litmus:MP-relacq} shows a candidate execution of the message-passing litmus test from \myfig\ref{fig:MP-executable}, in which release/acquire fences are used to synchronize. Thread 1 reads a stale value ($0$) from the initial state, even if the threads have synchronized through the $x$ memory location (using $rf$ and a fence). This execution is disallowed by the rel-acq-SC-per-location MCS as follows: $a\xrightarrow{hb}f$ from the release/acquire $hb$ rule because
+$a\xrightarrow{po}b\xrightarrow{sw}e\xrightarrow{po}f$ is part of $po;sw;po$. Because the SC-per-location constraints also include $com$ in $hb$ (and $fr$ is part of $com$), we also get $f\xrightarrow{hb}a$. Thus, this execution creates a cycle in $hb$.
+
+After executing a litmus test, it can be determined which candidate execution occurred by capturing each load value, e.g., to a unique variable, and examining the final state of memory. In some cases, it may be required to add an additional observer thread if the execution contains several steps of $co$, as the order that the observer thread sees updates can be used to infer the $co$ order.
+
+
+
+\subsection{WebGPU \label{sec:webgpu}}
+
+We apply MCS testing to WebGPU~\cite{webgpu}, a new, web-based, cross-platform GPU programming framework. Like most GPU frameworks, a WebGPU application consists of two parts: the host, which runs on the CPU; and the device, which runs on the GPU. The host is written in JavaScript and orchestrates the device computation through the WebGPU API~\cite{webgpu}. The device program (called a \textit{shader}) is written in the WebGPU Shading Language (or WGSL)~\cite{webgpu-sl}. WebGPU compiles to platform specific shading languages and runs on their respective platforms: Metal~\cite{metal}, SPIR-V~\cite{vulkan}, and HLSL~\cite{directx} for Apple, Vulkan and DirectX (Microsoft) systems, respectively. As mentioned in \mysec\ref{sec:our-approach}, the diversity of backends makes WebGPU is a compelling platform to innovate MCS testing methodologies such as \sys.
+
+%We only apply \sys to test features of the WebGPU MCS.  Since WebGPU is designed to run across many devices, its features differ from the MCSs provided by individual architectures. For example, Nvidia's Volta architecture includes \textit{independent thread scheduling}~\cite{volta}, which allows finer grain synchronization between threads, but is not included in the WebGPU MCS and is thus not evaluated by \sys.  If such features become more popular, evaluating such inter-workgroup synchronization will be more important; we believe that \sys provides a solid foundation upon which to base such potential future efforts.
+
+
+%\Additionally, since \sys operates on WebGPU, it evaluates MCS testing of deployed full-stack platforms (i.e., compilers, runtimes, drivers, and hardware implementations) rather than MCS testing of individual hardware architectures.  This motivates a black-box approach, in which the testing interface is defined in terms of inputs/outputs rather than in terms of the internal logic of any one component.
+
+\begin{figure}
+\centering
+    \subfloat[Disallowed execution of the CoRR litmus test]{{\includegraphics[width=0.99\columnwidth]{images/CORR.pdf} \label{fig:litmus:CoRR}}} \\
+    \subfloat[Disallowed execution of the MP-relacq litmus test]{{\includegraphics[width=0.99\columnwidth]{images/mp-relacq.pdf} \label{fig:litmus:MP-relacq}}}
+    \caption{Candidate executions for the litmus tests shown in \myfig\ref{fig:litmus-executables} illustrating behaviors disallowed by the WebGPU MCS.}
+    \label{fig:litmus-examples}
+\end{figure}
+
+\paragraph{WGSL Execution Model}
+The execution model of WGSL is hierarchical; the base unit of execution is a \textit{thread},\footnote{In WGSL, this is called an \textit{invocation}, but we use ``thread'' in this document as our ideas extend to more general concurrent programming} which is a single stream of computation. Threads are partitioned into equally sized \textit{workgroups}, which has a queryable size defined on a per-device basis, specified by the host at runtime. Finally, the host specifies the number of workgroups to run the shader with, modeled as a 3-dimensional grid with a queryable size.
+%In our work, we fix two dimensions of the grid to 1, which still provides us the ability to launch more than enough workgroups to run our tests effectively.
+%
+Threads at different levels of the hierarchy have different abilities to interact. Threads in the same workgroup can synchronize using a \textit{control barrier} (analogous to the CUDA \texttt{\_\_syncthreads()} construct).
+
+\paragraph{WGSL MCS} Using synchronization on GPUs is a complex topic due to the hierarchical programming model. Threads at different levels of the hierarchy use different mechanisms to communicate, and composing these layers requires careful formal analysis, which can often be the subject of entire papers~\cite{ptx-memory-model}. Our goal in this paper is not to offer a complete formalization of the WGSL MCS; instead, we consider a non-controversial, yet pragmatic, subset of the model and focus on how to effectively test it.
+
+As mentioned in \mysec\ref{sec:our-approach}, our efforts are restricted to inter-workgroup interactions. Unless explicitly mentioned, we will assume that all threads are in different workgroups. %We are most interested in testing the MCS at this level because there is no other way for inter-workgroup threads to communicate without launching a new shader from the host.
+%Additionally, important applications, such as k-means clustering~\cite{dont-forget-about-sync} and  prefix scan~\cite{Merrill2016SinglepassPP}, can be accelerated through kernels that rely on fine-grained communication at the inter-workgroup level.
+%
+WGSL supports atomic operations on atomic memory locations. The atomic operation can be a load, store, or RMWs (e.g.\ compare-and-swap). WGSL must accommodate the weakest MCS of its targets; in this case, that happens to be Apple's Metal shading language~\cite{metal-sl}. Its MCS is based on C++, with the restriction that the default, and only, supported memory order is \textit{relaxed}. Given this, WGSL inherits this syntax and the corresponding orderings properties. This specification corresponds to the SC-per-location MCS discussed in \mysec\ref{sec:mcs}.
+
+Additionally, previous versions of the WGSL specification defined control barriers to provide release/acquire fence semantics across workgroups. Thus, by using these barriers as fences, this version of the WGSL MCS corresponds to the release-acquire-SC-per-location MCS discussed in \mysec\ref{sec:mcs}. As we describe in \mysec\ref{sec:corr-analysis}, our work helped discover that this specification was too strong, and later versions of the WGSL specification weakened its MCS to simply SC-per-location on inter-workgroup memory.
+
+% GPUHarbor background:
+
+\newcommand{\mplitmustest}{
+    \begin{tabular}{l l}
+    \multicolumn{2}{c}{Initialize: \texttt{x = 0; y = 0;}} \\
+    \midrule
+    \underline{thread 0} & \underline{thread 1} \\
+        \circledBlack{\vphantom{A}a}\hspace{.1cm} \texttt{S(x, 1);} &  \circledWhite{\vphantom{A}c}\hspace{.1cm} \texttt{r0 = L(y);}  \\
+        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{S(y, 1);} &
+        \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{r1 = L(x);}  \\
+        \midrule
+        \multicolumn{2}{c}{Weak Behavior: \texttt{r0 == 1 \&\& r1 == 0}}
+    \end{tabular} \hspace{.2cm}
+}
+
+\newcommand{\mpcolitmustest}{
+    \begin{tabular}{l l}
+    \multicolumn{2}{c}{Initialize: \texttt{x = 0;}} \\
+    \midrule
+    \underline{thread 0} & \underline{thread 1} \\
+        \circledBlack{\vphantom{A}a}\hspace{.1cm} \texttt{S(x, 1);} &  \circledWhite{\vphantom{A}c}\hspace{.1cm} \texttt{r0 = L(x);}  \\
+        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{S(x, 2);} &
+        \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{r1 = L(x);}  \\
+        \midrule
+        \multicolumn{2}{c}{Weak Behavior: \texttt{r0 > r1}}
+
+    \end{tabular}
+}
+
+In this section we provide an overview of memory consistency specifications (\mysec\ref{sec:background-mcs}), define the litmus tests we run and how they allow reasoning about relaxed memory models (\mysec\ref{sec:background-litmus}), and introduce GPU programming concepts from the WebGPU and Vulkan GPU frameworks, including descriptions of their MCSs (\mysec\ref{sec:background-gpu}).
+
+\subsection{Memory Consistency Specifications \label{sec:background-mcs}}
+
+Today, the memory consistency specifications for architectures, e.g., x86~\cite{x86-semantics}, and languages, e.g., C++~\cite{c11}, are formalized using mathematical logic. This formalism represents shared memory program executions as a set of memory operations, e.g., reads, writes, and read-modify-writes, and relations between these events, e.g., happens-before (\textit{hb}). Allowed executions constrain define constraints on some of these relations, e.g., \textit{hb} is required to be acyclic.
+The strongest MCS is sequential consistency (SC)~\cite{lamport-sc}, which states that concurrent program executions must correspond to a total \textit{hb} order such that the order respects the per-thread program order, allowing events from multiple threads to be interleaved. In relaxed MCSs, the \textit{hb} relation is a partial order, allowing various weak behaviors (i.e. executions that are \textit{not} SC) if shared memory operations on multiple threads are not synchronized.
+
+There is a large body of work focused on formalizing MCSs, including a model for Vulkan's~\cite{vulkan-mem-model}. WebGPU generally follows the Vulkan MCS, with prior work~\cite{mc-mutants} formalizing portions of its MCS necessary for reasoning about simple litmus tests.
+%in ~\myfig\ref{fig:mcs-litmustests}.
+However, for this work it is not necessary to understand the full formalization of the WebGPU and Vulkan MCSs, so we describe the necessary subset of the specification briefly and informally. In addition, we follow prior work on MCS testing~\cite{gpu-foundations, mc-mutants} and consider only \textit{trivially data-race-free} programs where all operations are atomic, as our intention is not to test the behavior of programs with undefined semantics (caused by data races).
+
+\paragraph{Our Target MCS}
+
+Because Vulkan is one of several backends to WebGPU, the MCS for WebGPU is a subset of the MCS for Vulkan. In order to provide a unified study across both frameworks, we target only the WebGPU MCS, which we then map to its Vulkan counterpart. The WebGPU MCS provides very little inter-workgroup synchronization due to the diversity of backends it targets, with the weakest backend being Apple's Metal~\cite{metal}, which provides only \texttt{relaxed} atomic operations. These operations, which come from the C++ memory model~\cite{c11}, compile to plain loads/stores at the architectural level, but at the language level provide few synchronization guarantees between threads.
+
+The one inter-workgroup MCS property provided by WebGPU atomics is \textit{coherence}, which states that memory accesses to a single location must respect sequential consistency; sometimes called SC-per-loc~\cite{herding-cats}. However, memory accesses to disjoint addresses are allowed to be reordered. Mapping these WebGPU atomics to Vulkan is straightforward; all WebGPU atomic accesses are simply mapped to SPIR-V atomic accesses with a \texttt{relaxed} memory order. While our testing campaign considers only \texttt{relaxed} memory accesses, Vulkan allows additional memory orders; specifically, \texttt{acquire} and \texttt{release}. While the precise semantics of these memory orders is complex, especially when combined with other \texttt{relaxed} atomics, we note that they are required to implement the required synchronization in many common concurrency constructs, such as a mutex. \footnote{WebGPU does not provide inter-workgroup \texttt{acquire} and \texttt{release} memory orders, so it is not currently possible to implement a well-specified mutex in WebGPU.} The \texttt{lock()} method needs to execute an \texttt{acquire} atomic operation when the mutex is obtained and the \texttt{unlock()} method requires executing a \texttt{release} atomic operation. If a mutex is implemented without these memory orders, it is possible to violate mutual exclusion, as we show in \mysec\ref{sec:vulkan-locks}.
+
+%However, our work is extensible (described in \mysec\ref{sec:sys-overview}) and can be straightforwardly adapted to new synchronization constructs, either to specialize our tests to frameworks that provide more synchronization constructs (e.g., Vulkan), or to adapt as languages evolve to include more synchronization, (e.g., if WebGPU includes richer atomic operations in future versions).
+
+\subsection{Litmus Tests \label{sec:background-litmus}}
+
+\begin{figure}
+\footnotesize
+\captionsetup[subfigure]{width=.49\columnwidth}
+\subfloat[MP Litmus Test]{\mplitmustest \label{fig:mp-litmustest}}
+\subfloat[MP-CO Litmus Test]{\mpcolitmustest \label{fig:mp-co-litmustest}} \\
+\caption{The weak behavior in the MP litmus test is allowed by many relaxed MCSs. On the other hand, the weak behavior in the closely-related MP-CO litmus test violates coherency and is disallowed by every major MCS that we know of. Prior work~\cite{mc-mutants} has shown that tuning system stress for the allowed MP test can be used to design effective tests for finding bugs related to the MP-CO test.}
+%One of our contributions is to scale the approach of previous work~\cite{mc-mutants}, collecting data on the rate of MP weak behaviors and using the results to find violations of MP-CO on GPUs from two vendors.}
+\label{fig:intro-examples}
+\end{figure}
+
+
+
+Litmus tests are small concurrent programs that illustrate~\cite{shasha-snir}, compare~\cite{memalloy, litmus-contrasting}, and empirically test~\cite{litmus, gpu-concurrency, gpu-foundations} MCSs. These tests contain a condition on the final state of local variables and memory values that checks for weak behaviors. For example, the program in \myfig\ref{fig:mp-litmustest} is known as the message passing (\textbf{MP}) litmus test, in which one thread writes to a memory location \texttt{x} (\circledBlack{a}) followed by a write to \texttt{y} (\circledBlack{b}), while a second thread reads from \texttt{y} (\circledWhite{c}) and then \texttt{x} (\circledWhite{d}).
+
+\begin{figure*}
+\hfill
+\includegraphics[width=.97\textwidth]{images/system_overview.pdf}
+\caption{An overview of the tooling flow for \gpuharbor, with WebGPU and Vulkan MCS targets.}
+\label{fig:sys-overview}
+\end{figure*}
+
+As mentioned earlier, in this work, we assume that all of the memory operations in a litmus test are \textit{atomic}, which in languages that follow the C11 style MCS~\cite{c11} ensures that the semantics of shared memory operations are well-defined. Additionally, unless explicitly noted otherwise, we consider these atomic operations to have a \texttt{relaxed} memory order, which allows compilers and hardware to aggressively optimize their execution.%, possibly allowing relaxed executions.
+
+The condition underneath the test shows an outcome that only occurs in relaxed executions. In this case, the behavior corresponds to an execution where the read of \texttt{y} returns 1 but the read of \texttt{x} returns 0. While some relaxed MCSs do not allow this behavior, e.g., the x86 MCS~\cite{x86-semantics}, many other relaxed MCSs, especially ones for languages like C++~\cite{c11}, do allow the behavior. As mentioned earlier, our target WebGPU MCS does not provide any guarantees outside of coherence, and thus the two memory accesses per thread (which target disjoint addresses) are allowed to be reordered. In cases where the weak behavior is allowed (both by the MCS and the implementation), the rate at which this behavior is observed on real systems is highly dependent on \textit{system stress}. Early GPU application development work did not observe any weak behaviors, despite specifications allowing them~\cite{gpu-sync}. However, later work added specialized system stress around the test execution and revealed many cases of surprising weak behaviors~\cite{gpu-concurrency, gpu-exposing}.
+
+Executing litmus tests on deployed systems can be used for two purposes, which we will illustrate using a litmus test $L$ that can exhibit a weak behavior execution $e$, and an MCS $S$.
+\begin{enumerate}
+    \item \textbf{Conformance testing}: if $e$ is \textit{disallowed} in $S$ then we can check implementations of $S$. That is, if a platform $p$ claims to implement $S$, then we can execute $L$ many times on $p$, checking for $e$. The observation of $e$ would indicate a bug.
+    \item \textbf{Profiling weak behaviors}: if $e$ is \textit{allowed} on $S$, and a platform $p$ claims to implement $S$, then we can execute $L$ many times on $p$ to understand the extent to which that platform allows $e$. In some cases, $p$ might not show $e$ empirically, or maybe $e$ appears more frequently under a certain configuration of system stress. A collection of this type of data creates a weak memory profile for $p$.
+\end{enumerate}
+
+Prior work~\cite{mc-mutants} has utilized weak memory profiles in highly tuned conformance testing. In that work, it was shown that allowed \textbf{MP} executions could be used to tune system stress for disallowed behaviors in associated conformance tests. For example, the \textbf{MP-CO} litmus test, shown in \myfig\ref{fig:mp-co-litmustest}, is similar to \textbf{MP}, except that every memory access targets the same memory address and different values are stored (required to identify a weak behavior). Given that there is only one address used in \textbf{MP-CO}, the weak behavior in this test is disallowed under coherence, and thus in the WebGPU MCS. If certain system stress reveals weak behaviors in the allowed \textbf{MP} litmus test, then, in the case where a platform contains a bug, it is likely to reveal the buggy behavior in the \textbf{MP-CO} conformance test. In \mysec\ref{sec:litmus-selection} we show the litmus tests used in our experimental campaign, and in \mysec\ref{sec:vulkan-bugs} we illustrate the effectiveness of the approach of prior work~\cite{mc-mutants} by describing two new bugs.
+
+%\paragraph{Data Races.} In many languages there exists a notion of atomic and non-atomic memory operations. So far, we have only considered the possible weak behaviors when all memory accesses are atomic, since if two concurrent (e.g. not ordered by the \textit{hb} relation) non-atomic operations access the same memory location, with at least one being a write, the accesses are considered to be \textit{racing} and the entire program is given undefined semantics. Previous work has explored the complexities of guaranteeing non-atomic accesses are properly synchronized~\cite{c11}. In this work, we are only concerned with revealing weak behaviors and finding bugs in programs with defined semantics; therefore, our tests contain only atomic operations and can be considered \textit{trivially data-race-free}.
+
+
+
+\subsection{GPU Programming \label{sec:background-gpu}}
+
+This study targets two cross-platform GPU frameworks, Vulkan and WebGPU. Vulkan is a modern graphics and compute API that can be run on many Linux, Android, and Windows devices, and can target Apple devices through the MoltenVK~\cite{moltenvk} portability layer. WebGPU is designed to run in browser environments and is compiled to different backends depending on the operating system of the device (Direct3D~\cite{direct3d} on Windows, Vulkan on Linux/Android, and Metal~\cite{metal} on Apple devices).
+
+Both Vulkan and WebGPU define their own programming languages, called SPIR-V and WGSL respectively. Programs written in these languages are called \textit{shaders} and run on the GPU, while the APIs used to allocate memory on the GPU and dispatch shaders are written in the language of the host device, commonly C++ for Vulkan and JavaScript for WebGPU. In this work, we discuss the complexities of writing tools that must be implemented in different languages and how future development (\mysec\ref{sec:fut-work}) could ease the difficulty of cross-platform GPU MCS testing.
+
+\paragraph{GPU Execution Model} GPUs run thousands of concurrent threads (\textit{invocations} in Vulkan and WebGPU) organized hierarchically and executed in a single-instruction, multiple-thread (SIMT) format. To support this execution model, in WGSL and SPIR-V threads are partitioned into discrete \textit{workgroups}, with built-in identifiers used to query a thread's workgroup id. Workgroups are limited in size (e.g. 1024 in CUDA, with limits varying depending on the device in  WGSL/SPIR-V) and have access to an efficient shared memory region. A group of threads organized into workgroups and running on the device is called a \textit{grid}, with the number of threads per workgroup and the number of workgroups specified at dispatch time. All threads in the same dispatch have access to a global memory region.
+
+%Atomic memory operations on GPUs have a \textit{memory order} specifying the operation's ordering and/or synchronization properties. WebGPU and Vulkan both implement a C++ style MCS which defines the following memory orders:
+%\begin{enumerate}
+%    \item \textbf{relaxed}: This is the weakest memory order, and allows all of the weak behaviors in \myfig\ref{fig:mcs-litmustests}. Specifically, no happens-before relation is introduced when a relaxed load reads from a relaxed store, so compilers and hardware are free to re-order other loads and stores surrounding relaxed atomics.
+%    \item \textbf{release/acquire}: A release memory order only affect writes (or read-modify-writes), while an acquire memory order only affects loads and RMWs. If a load-acquire reads from a store-release, then the two memory operations are considered synchronized, meaning that loads and stores preceding the store-release happen-before loads and stores that follow the read-acquire. For example, if event \circledBlack{b} in the \textbf{MP} litmus test in \myfig\ref{fig:mp-litmustest} is a store-release and \circledWhite{c} is a load-acquire, and \circledWhite{c} loads the value 1, then the weak behavior is disallowed.
+%    \item \textbf{seq\_cst}: If all memory operations have this order, then programs are constrained to only sequentially consistent executions, disallowing all of the weak behaviors in \myfig\ref{fig:mcs-litmustests}. While Vulkan does define this memory order, implementations do not have to honor it, and WebGPU does not define it at all. This means that in both Vulkan and WebGPU, the behavior of the \textbf{SB} litmus test in \myfig\ref{fig:sb-litmustest} is always allowed, since event \circledBlack{b} cannot synchronize with \circledWhite{c} in a way that disallows \circledWhite{d} reading the value 0.
+%\end{enumerate}
+
+%Despite the lack of sequentially consistent memory orders in Vulkan and WebGPU, there is a way to disallow the \textbf{SB} weak behavior using a slightly modified test. Consider a version of \textbf{SB} where both \circledBlack{b} and \circledWhite{c} are changed to an RMW operation with acquire/release semantics. In this case, the ``write'' half of the RMW on \circledBlack{b} and the ``read'' half of the RMW on \circledWhite{c} \textit{can} synchronize. We make use of this observation to run conformance tests like the modified \textbf{SB} litmus test in WebGPU and Vulkan.
+
+While our target MCS was discussed in the previous section, we note that GPU atomic operations can be annotated with a \textit{memory scope}. Two common scopes in Vulkan and WebGPU are \textit{workgroup}, which specifies that synchronization occurs only between threads in the same workgroup, and \textit{device}, which specifies that synchronization occurs across all threads executing on the device.
+%Operations with a workgroup scope can only synchronize with operations from threads in the same workgroup, while operations with a device scope can be used for inter-workgroup synchronization.
+
+Threads within workgroups generally have access to efficient primitive barrier operations, e.g., \texttt{workgroupBarrier} in WebGPU. However, highly optimized implementations of important parallel routines (e.g. inter-workgroup prefix scans~\cite{decoupled-lookback}) rely on fine-grained inter-workgroup communication. Thus, like prior work~\cite{gpu-foundations, mc-mutants}, we see a more imminent need for testing MCS properties at the inter-workgroup level; which we keep as our sole scope for this work. Similarly, GPU programs have several different memory types, e.g. whether it is shared-workgroup memory or device-wide memory. Given that we consider only inter-workgroup interactions, we only consider device-wide memory.
+
+%GPU programs have several different memory types, e.g. whether it is shared-workgroup memory or device-wide memory. These memory types are specified when the memory is allocated in the host-side of the program. Atomic memory operations can additionally be parameterized by both a memory order and scope for fine grained control over shared memory semantics. SPIR-V also supports separate memory fence instructions, which may strengthen the memory order of surrounding memory operations. On the other hand, atomic operations in WGSL cannot be parameterized, and default to a relaxed memory order.
+
+%To support limited synchronization, WebGPU provides two primitive barrier operations, \texttt{workgroupBarrier} and \texttt{storageBarrier}. Both barriers operate as a workgroup control barrier, ensuring that all threads in the workgroup reach the barrier before executing further instructions. Additionally, the barriers impart a release/acquire memory order to surrounding memory operations. The scope of the \texttt{workgroupBarrier} is limited to workgroup shared memory, as only threads from the same workgroup can access workgroup memory locations.
+
+%Initial versions of WebGPU's MCS gave the \texttt{storageBarrier} device wide scope, disallowing behaviors like the \textbf{MP} weak behavior. However, previous work~\cite{mc-mutants} found that the \texttt{storageBarrier} could not provide inter-workgroup synchronization due to the weakness of Apple's Metal MCS. The WebGPU specification was subsequently weakened to give the \texttt{storageBarrier} only workgroup level scope. In the future, WebGPU may wish to re-introduce inter-workgroup synchronization, so in this work we discuss how our tools and data can be utilized to test changes to specifications.
+
+% SafeRace Background:
+
+\subsection{GPU Execution Model \label{sec:gpu-exec-model}}
+
+GPU frameworks consist of a host API which executes on the CPU and a programming (or \textit{shading}) language which executes on the GPU. Applications allocate resources, transfer data, and schedule execution using the host API, while shaders are dispatched to run on the GPU asynchronously. GPU frameworks continue to be an important part of graphics workloads, but for this work we focus on \textit{compute} shaders, which perform general-purpose computation on GPUs.
+
+GPU execution models are hierarchical, with several execution scopes and memory address spaces. Below, we outline the execution scopes defined in WebGPU and how they relate to different address spaces. While this list is not exhaustive (especially when considering vendor-specific frameworks, such as CUDA), it is sufficient for this work.
+
+\begin{itemize}
+\item \textit{Thread}: The base unit of computation, executing a stream of instructions\footnote{In WebGPU, a thread is called an \textit{invocation}, but we use \textit{thread} as it is the more general term in parallel programming.}. The \textit{private} address space is local to a single thread.
+
+%\item \textit{Subgroup}: Threads are organized into (mostly) fixed size groups depending on the specific hardware. For example, subgroups on NVIDIA devices (which NVIDIA calls \textit{warps}), are usually of size 32. Threads in the same subgroup are spatially close to each other and can execute special instructions for operations like shuffles, scans, and reductions.
+
+\item \textit{Workgroup}: Threads are organized into sets called workgroups (called thread blocks in CUDA). All threads in a workgroup share access to the \textit{workgroup} address space (called shared memory in CUDA). The size of this memory is fixed at shader launch time.
+
+\item \textit{Device}: The widest scope of execution on a single GPU, consisting of all threads that execute in the same shader stage. All threads can access device memory, which  WebGPU calls the \textit{storage} address space, through fixed-length buffers which are allocated and initialized before execution starts.
+\end{itemize}
+
+%There are several other execution scopes and memory address spaces that we do not consider in this work. Many GPU frameworks includes a smaller execution scope, which NVIDIA calls a \textit{warp}, but WebGPU does not yet implement this scope. WebGPU additionally includes the following addresses spaces: (1)~the \textit{function} address space, which we do not test due to its similar semantics to the \textit{private} address space; and (2)~the \textit{uniform} address space, which is for read-only constant memory with a small maximum size compared to the \textit{storage} address space.
+
+\paragraph{WebGPU} WebGPU is a high-level GPU framework that targets lower-level GPU frameworks at runtime. There are currently three major runtimes being developed for WebGPU: Dawn~\cite{dawn} for Chromium based browsers, wgpu~\cite{wgpu} for Firefox, and a Safari implementation. Runtimes target different GPU framework backends based on operating system: DirectX~\cite{directx-specs} on Windows, Vulkan~\cite{vulkan1.3} on Linux and Android, and Metal~\cite{apple_metal} on OSX and iOS.
+
+%Running a GPU framework from the browser comes with its own unique challenges.
+Some browsers, e.g., Chrome, run GPU commands from all tabs on one process, foregoing any process isolation properties provided by operating systems~\cite{chromium_webgpu_report}. WebGPU also relies on low-level GPU frameworks preserving safety properties, which as we showed in \mysec\ref{sec:spec-vuln} is unsound.
+
+\subsection{Memory Consistency Models \label{sec:mcm}}
+
+A memory consistency model (MCM) defines the allowed behaviors of shared memory parallel programs. Both hardware models~\cite{owens2009x86, flur2016arm} and language models~\cite{c11, java} have been developed, with language models also describing the conditions under which a data race occurs.
+
+In the WebGPU MCM, memory locations are either atomic or non-atomic. Memory locations cannot be cast to another type, so it is not possible to non-atomically access an atomic location, like it would be in other languages, e.g., C++. Memory operations access sets of 8-bit memory locations. If two threads perform non-atomic operations on the same set of memory locations, with at least one operation being a write and without proper synchronization, a data race occurs. On the other hand, threads are allowed to concurrently perform atomic operations on the same set of memory locations without causing data races. Prior work has also shown how \textit{mixed-size} non-aligned accesses may lead to data races on atomic locations~\cite{flur2017mixed}, but WebGPU's memory layout restrictions ensures this cannot occur.
+
+%Prior work has shown how architectures allow \textit{mixed-size} accesses~\cite{flur2017mixed} as small as one byte, including showing how loads may return values written by multiple stores. In the WGSL MCS, programs with data races may contain torn reads, but Property 2 ensures torn reads on racy variables do not affect the value of non-racy variables. In the underlying frameworks WGSL targets, it is also possible that memory accesses to non-aligned atomic memory locations, or mixing atomic and non-atomic accesses to the same memory locations, may lead to data races or torn reads on those locations. However, WGSL only supports four byte scalar atomic types and does not allow for mixing of atomic and non-atomic accesses, ensuring that these operations remain well-defined.
+
+Atomic operations, along with special synchronization operations, e.g., workgroup barriers, can be used for synchronization, avoiding data races and constraining allowed behaviors. However, data races are a global property, so a race \textit{anywhere} in a program poses risks. Therefore, we consider only synchronization-free fragments of programs and analyze memory safety in the presence of non-atomic operations and non-synchronizing atomic operations, which are called \textit{relaxed} atomic operations.
+%, which are provided in the WebGPU MCM, as well as other C++-style frameworks.
+
+While relaxed atomic operations cannot be used on their own to synchronize threads, they do provide some guarantees. A relaxed atomic operation must happen indivisibly, i.e., it cannot be split into separate operations. The value of a relaxed atomic load may not be assumed, prohibiting optimizations such as a rematerializing a load from memory if the compiler has already optimized based on some value for that load. These operations and restrictions apply in both WGSL and in the languages that WebGPU targets.
+
+\subsection{Sources of Memory Safety Violations \label{sec:ub-sources}}
+
+Shaders written in WGSL can include behaviors that are normally undefined in low-level languages, including data races, uninitialized or out-of-bounds accesses, and undefined arithmetic. If left unchecked, these operations can lead to unexpected outcomes, including causing crashes or triggering security vulnerabilities. WebGPU therefore gives well-defined semantics to uninitialized accesses and undefined arithmetic. Other operations, including data races and out-of-bounds accesses, are classified as \textit{dynamic errors}. If a dynamic error occurs during shader execution, WebGPU specifies that memory accesses should affect only memory allocated for that shader~\cite[\mysec 7.3]{wgslspec}.
+
+%The requirement that dynamic errors not lead to memory safety vulnerabilities is in conflict with our finding that WebGPU's specification does not preserve memory safety through the compilation stack in the presence of data races. This conflict is due to the relationship between dynamic errors in WGSL programs and undefined behavior in lower-level languages.
+
+\paragraph{Out-of-bounds Accesses} WGSL ensures memory safety by either (1)~relying on underlying framework guarantees; (2)~preemptively clamping memory accesses; or, (3)~inserting checks that drop them if they would occur out-of-bounds. For example, DirectX guarantees that out-of-bounds reads on device memory must return 0, while out-of-bounds writes are discarded~\cite{microsoft2024d3d11csaccess}. Vulkan provides an optional feature called \textit{robust buffer access} that enables the same protections on device memory at some cost to performance~\cite{vulkan2024robustness}. However, both DirectX~\cite{ldraw2024} and Vulkan~\cite[\mysec 3.52.8]{spirv2024} leave the behavior of out-of-bounds accesses in workgroup and private memory undefined. Metal, by not describing their behavior, implicitly leaves all out-of-bounds accesses undefined~\cite{metal-shading-language}.
+
+In a program free of data races, the combination of underlying guarantees and inserted bounds checks are enough to provide memory safety. However, the presence of data races raises additional complications. In fact, one of the possible outcomes of clamping an out-of-bounds access \textit{is a data race}, as the clamped index, which is now in-bounds, may already be accessed by some other thread. Therefore, it is necessary to consider the effects of data races on all programs with potential out-of-bounds accesses.
+
+\paragraph{Data Races} Beyond classifying data races as dynamic errors, the WGSL specification is ambiguous about how they affect program behavior, a fatal flaw due to the treatment of data races in underlying frameworks. Vulkan is the only one of the three native frameworks with a publicly available formal memory model, which enforces that programs must be free of data races to be well-defined~\cite[App. B]{vulkan1.3}. Metal is based on the C++14 specification, which specifies that data races lead to undefined behavior~\cite{cppreference2024multithread}. DirectX does not describe the consequences of data races at all, implicitly leaving their behavior undefined. %In the next section, we show how valid compiler optimizations in the presence of data races might lead to memory safety violations and introduce our solution.

@@ -63,11 +63,13 @@
 \newcommand{\mytab}{Tab.\@~}
 \newcommand{\mysec}{Sec.\@~}
 \newcommand{\myfig}{Fig.\@~}
+\newcommand{\mychap}{Chap.\@~}
 \newcommand{\myfiglong}{Figure~}
 \newcommand{\mytablong}{Table~}
 \newcommand{\myseclong}{Section~}
 \newcommand{\mylisting}{Listing~}
 \newcommand{\mylistinglong}{Listing~}
+\newcommand{\mychaplong}{Chapter~}
 
 \newcommand{\myalg}{Alg.\@~}
 
@@ -135,18 +137,10 @@
 \begin{acknowledgement}
 	\input{contents/0.3.acknowledgements}
 \end{acknowledgement}
+\input{contents/0.4.prelude}
 \addtocontents{toc}{\protect\vspace{15pt}}%
 %% Mainmatter
 \mainmatter
-
-\thispagestyle{empty}
-\begin{center}
-	\includegraphics[width=\textwidth]{images/intro/sea_hath_its_pearls.jpg}
-
-	\vspace{1em}
-	{William Henry Margetson, \textit{The Sea Hath its Pearls} (1897).}
-\end{center}
-\setcounter{page}{0}
 \input{contents/1.introduction}
 \input{contents/2.background}
 \input{contents/3.mc_mutants}

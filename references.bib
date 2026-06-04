@@ -1254,23 +1254,6 @@ booktitle = {Proceedings of the ACM SIGOPS 28th Symposium on Operating Systems P
   url = {https://research.nvidia.com/publication/2016-03_single-pass-parallel-prefix-scan-decoupled-look-back}
 }
 
-@article{lamport-sc,
-author = {Lamport, Leslie},
-title = {Time, clocks, and the ordering of events in a distributed system},
-year = {1978},
-issue_date = {July 1978},
-publisher = {Association for Computing Machinery},
-volume = {21},
-number = {7},
-issn = {0001-0782},
-url = {https://doi.org/10.1145/359545.359563},
-doi = {10.1145/359545.359563},
-journal = {Commun. ACM},
-month = jul,
-pages = {558–565},
-numpages = {8},
-}
-
 @inproceedings{coop-kernels,
 author = {Sorensen, Tyler and Evrard, Hugues and Donaldson, Alastair F.},
 title = {Cooperative kernels: GPU multitasking for blocking algorithms},
@@ -1902,7 +1885,7 @@ series = {GECCO '17}
   pages={8 pp.-15},
   doi={10.1109/E-SCIENCE.2005.76}}
 
-  @INPROCEEDINGS{8916327,
+  @INPROCEEDINGS{reuther2019survey,
   author={Reuther, Albert and Michaleas, Peter and Jones, Michael and Gadepally, Vijay and Samsi, Siddharth and Kepner, Jeremy},
   booktitle={2019 IEEE High Performance Extreme Computing Conference (HPEC)},
   title={Survey and benchmarking of machine learning accelerators},
@@ -1911,6 +1894,17 @@ series = {GECCO '17}
   number={},
   pages={1-9},
   doi={10.1109/HPEC.2019.8916327}}
+
+  @article{alexnet,
+author = {Krizhevsky, Alex and Sutskever, Ilya and Hinton, Geoffrey E.},
+title = {ImageNet classification with deep convolutional neural networks},
+year = {2017},
+publisher = {Association for Computing Machinery},
+issn = {0001-0782},
+doi = {10.1145/3065386},
+journal = {Commun. ACM},
+}
+
 
   @article{pandey2022transformational,
   title={The transformational role of {GPU} computing and deep learning in drug discovery},
@@ -1923,7 +1917,7 @@ series = {GECCO '17}
   publisher={Nature Publishing Group UK London}
 }
 
-@article{10.1007/s11227-021-03980-5,
+@article{ozerk2022encrypt,
 author = {\"{O}zerk, \"{O}zg\"{u}n and Elgezen, Can and Mert, Ahmet Can and \"{O}zt\"{u}rk, Erdin\c{c} and Sava\c{s}, Erkay},
 title = {Efficient number theoretic transform implementation on GPU for homomorphic encryption},
 year = {2022},
@@ -1941,14 +1935,17 @@ numpages = {33},
 keywords = {SEAL, CUDA, Lattice-based cryptography, GPU, Number theoretic transform, Polynomial multiplication, Homomorphic encryption}
 }
 
-@article{self-driving,
-Title = "Autonomous cars: no longer just science fiction",
-Author = "Esther Francis",
-year = {2014},
-publisher={Automotive Industries (AI)}
+@misc{bojarski2016endendlearningselfdriving,
+      title={End to End Learning for Self-Driving Cars},
+      author={Mariusz Bojarski and Davide Del Testa and Daniel Dworakowski and Bernhard Firner and Beat Flepp and Prasoon Goyal and Lawrence D. Jackel and Mathew Monfort and Urs Muller and Jiakai Zhang and Xin Zhang and Jake Zhao and Karol Zieba},
+      year={2016},
+      eprint={1604.07316},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/1604.07316},
 }
 
-@book{10.5555/3386433,
+@book{nagarajan2020primer,
 author = {Nagarajan, Vijay and Sorin, Daniel J. and Hill, Mark D. and Wood, David A. and Jerger, Natalie Enright},
 title = {A primer on memory consistency and cache coherence},
 year = {2020},
@@ -2041,4 +2038,92 @@ series = {MICRO-46}
   year         = {2021},
   howpublished = {Linux Kernel Mailing List (LKML)},
   url          = {https://lore.kernel.org/lkml/CAHk-=wgJZVjdZYO7iNb0hFz-iynrEBcxNcT8_u317J0-nzv59w@mail.gmail.com/},
+}
+
+@article{owens2007gpgpu,
+author = {Owens, John D. and Luebke, David and Govindaraju, Naga and Harris, Mark and Krüger, Jens and Lefohn, Aaron E. and Purcell, Timothy J.},
+title = {A Survey of General-Purpose Computation on Graphics Hardware},
+journal = {Computer Graphics Forum},
+doi = {https://doi.org/10.1111/j.1467-8659.2007.01012.x},
+year = {2007}
+}
+
+@misc{levine2026llamaweb,
+      title={Llamas on the Web: Memory-Efficient, Performance-Portable, and Multi-Precision LLM Inference with WebGPU},
+      author={Reese Levine and Rithik Sharma and Nikhil Jain and Abhijit Ramesh and Zheyuan Chen and Neha Abbas and James Contini and Tyler Sorensen},
+      year={2026},
+      eprint={2605.20706},
+      archivePrefix={arXiv},
+      primaryClass={cs.DC},
+      url={https://arxiv.org/abs/2605.20706},
+}
+
+@INPROCEEDINGS{xiao2010interblock,
+  author={Xiao, Shucai and Feng, Wu-chun},
+  booktitle={2010 IEEE International Symposium on Parallel & Distributed Processing (IPDPS)},
+  title={Inter-block GPU communication via fast barrier synchronization},
+  year={2010},
+  volume={},
+  number={},
+  pages={1-12},
+  keywords={Synchronization;Central Processing Unit;Kernel;Dynamic programming;Fast Fourier transforms;Computer architecture;Computer science;Graphics processing unit;Clocks},
+  doi={10.1109/IPDPS.2010.5470477}}
+
+@inproceedings{giner2024cacheattack,
+author = {Giner, Lukas and Czerny, Roland and Gruber, Christoph and Rauscher, Fabian and Kogler, Andreas and Braga, Daniel De Almeida and Gruss, Daniel},
+title = {Generic and Automated Drive-by GPU Cache Attacks from the Browser},
+year = {2024},
+publisher = {Association for Computing Machinery},
+doi = {10.1145/3634737.3656283},
+booktitle = {Proceedings of the 19th ACM Asia Conference on Computer and Communications Security},
+}
+
+@misc{ferguson2024webgpuspyfindingfingerprintssandbox,
+      title={WebGPU-SPY: Finding Fingerprints in the Sandbox through GPU Cache Attacks},
+      author={Ethan Ferguson and Adam Wilson and Hoda Naghibijouybari},
+      year={2024},
+      eprint={2401.04349},
+      archivePrefix={arXiv},
+      primaryClass={cs.CR},
+      url={https://arxiv.org/abs/2401.04349},
+}
+
+@ARTICLE{adve1996relaxed,
+  author={Adve, S.V. and Gharachorloo, K.},
+  journal={Computer},
+  title={Shared memory consistency models: a tutorial},
+  year={1996},
+  volume={29},
+  number={12},
+  pages={66-76},
+  keywords={Tutorial;Magnetic heads;Programming profession;Hardware;High level languages;Read-write memory;Message passing;Optimizing compilers;Computer architecture;Software design},
+  doi={10.1109/2.546611}}
+
+  @article{10.1145/17356.17406,
+author = {Dubois, M. and Scheurich, C. and Briggs, F.},
+title = {Memory access buffering in multiprocessors},
+year = {1986},
+issue_date = {May 1986},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {14},
+number = {2},
+issn = {0163-5964},
+url = {https://doi.org/10.1145/17356.17406},
+doi = {10.1145/17356.17406},
+abstract = {In highly-pipelined machines, instructions and data are prefetched and buffered in both the processor and the cache. This is done to reduce the average memory access latency and to take advantage of memory interleaving. Lock-up free caches are designed to avoid processor blocking on a cache miss. Write buffers are often included in a pipelined machine to avoid processor waiting on writes. In a shared memory multiprocessor, there are more advantages in buffering memory requests, since each memory access has to traverse the memory- processor interconnection and has to compete with memory requests issued by different processors. Buffering, however, can cause logical problems in multiprocessors. These problems are aggravated if each processor has a private memory in which shared writable data may be present, such as in a cache-based system or in a system with a distributed global memory. In this paper, we analyze the benefits and problems associated with the buffering of memory requests in shared memory multiprocessors. We show that the logical problem of buffering is directly related to the problem of synchronization. A simple model is presented to evaluate the performance improvement resulting from buffering.},
+journal = {SIGARCH Comput. Archit. News},
+month = may,
+pages = {434–442},
+numpages = {9}
+}
+
+
+@inproceedings{dubois1986weak,
+author = {Dubois, M. and Scheurich, C. and Briggs, F.},
+title = {Memory access buffering in multiprocessors},
+year = {1986},
+isbn = {081860719X},
+publisher = {IEEE Computer Society Press},
+booktitle = {Proceedings of the 13th Annual International Symposium on Computer Architecture},
 }

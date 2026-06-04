@@ -1,51 +1,50 @@
 % !TeX root = ../main.tex
 \chapter[Introduction]{Introduction}
-\label{chapter:introduction}
+\label{chap:introduction}
 
 \epigraph{\textit{I felt the weight of unmapped worlds, unborn language.}}{--- William Finnegan \\\footnotesize\textit{Barbarian Days: A Surfing Life}}
 
+The Graphics Processing Unit, or GPU, has transcended its name and early use for only rendering graphics, as modern applications have harnessed its parallel processing ability to accelerate an ever-increasing number of general-purpose compute workloads (GPGPU)~\cite{owens2007gpgpu}. Their use in training convolutional neural networks helped trigger the deep learning revolution~\cite{alexnet}, and GPUs are currently used by a variety of machine learning applications~\cite{reuther2019survey}. GPUs help power fundamental applications like encryption~\cite{ozerk2022encrypt}, as well as transformational technologies like particle simulation for drug discovery~\cite{pandey2022transformational} and self-driving cars~\cite{bojarski2016endendlearningselfdriving}.
 
-\section{The GPU hath its weak behaviors. \label{sec:intro-motivation}}
+CUDA~\cite{cuda}, developed by NVIDIA, was the first widely successful GPGPU framework, and highlighted the advantages of using a compute-focused language to accelerate parallel computing on GPUs. However, modern GPU computing spans devices and software stacks from multiple vendors, with hardware characteristics that vary across vendors, targeted platform (e.g., datacenter vs. desktop vs. mobile) and architecture generations within each vendor. To support cross-platform development and portable applications, GPU programming frameworks have been developed to provide common abstractions across devices. OpenCL established an early cross-vendor model, but prior empirical studies found meaningful differences when running applications on GPUs from several vendors~\cite{opencl-hitchhiker}. More recently, Vulkan~\cite{vulkan} has established itself as a modern GPU framework that provides cross-platform compatibility in native environments, while WebGPU~\cite{webgpu} brings GPU compute into the browser. These abstractions now support emerging workloads like cross-platform and browser-based large language model (LLM) inference libraries~\cite{ruan2024webllmhighperformanceinbrowserllm,transformersjsDocs,levine2026llamaweb}.
 
-From UC Santa Cruz's Engineering 2 Building, where much of the work in this thesis had its genesis, it is a one mile walk through a shaded redwood forest to East Field, where the trees give way to a large sloping meadow looking out over Santa Cruz and the entire Monterey Bay. It is here that the author of this thesis often went to think through a hard problem, or just to get away from the computer screen and let the mind settle. And while this thesis is focused on validating the correctness and security of concurrent shared-memory behavior on GPUs, it seems apt to use UC Santa Cruz's proximity to a place as impressive as the Monterey Bay to create a metaphor between it and the research presented here.
+One of the fundamental aspects of any programming framework is how it defines operations on memory. In programming frameworks where multiple threads run concurrently, these definitions must also specify the semantics when multiple processing elements (commonly called \textit{threads}) concurrently access the same underlying memory. This set of definitions and rules is called a \textit{memory consistency specification} (MCS). Complicating matters further, modern processors exploit reordering, buffering, and deep cache hierarchies, where memory operations do not necessarily become visible to other threads in intuitive orders~\cite{nagarajan2020primer,expensive-sc,understanding-power,x86-semantics}. To deal with this complexity, CPU-centric programming languages like C++ and Java were the first to formalize their MCSs, allowing programmers, compilers, and hardware to share a common contract~\cite{c11,java}.
 
-Viewed from the vantage point of East Field, 600 feet up, the Pacific Ocean often looks calm and empty, with only the afternoon whitecaps hinting that its peaceful veneer is nothing more than a facade. Because in fact, the Monterey Bay teeming with life; it is one of the most biodiverse environments on Earth, and its opaque surface hides from view the deepest submarine canyon on the North American coast, with walls plunging over a mile down into the depths.
+In comparison, cross-platform GPU frameworks are newer, targeting a diverse set of underlying architectures from many vendors with behaviors that are not well understood. While previous work formalized the MCS of GPUs from specific vendors~\cite{ptxformal, remote-scopewickerson}, and even developed a formal MCS for cross-platform frameworks like OpenCL~\cite{battyopencl}, the empirically observable behaviors of GPUs from different vendors has been shown to vary substantially and numerous bugs in GPU software and hardware stacks have been found throughout the years~\cite{gpu-concurrency, fences, gpu-foundations}. These results highlight a critical gap between formal models and the behaviors of the GPUs the models are supposed to represent.
 
-A trip to the tidepools at Natural Bridges State Beach or a whale watching boat tour are great ways to sample the Monterey Bay and leave one awe-inspired, but these experiences only give a glimpse into the complex and ever-changing environment that lies below. For it is the submarine canyon itself that is responsible for the Monterey Bay's incredible biodiversity, as ocean currents interact with the canyon's geography to bring cold, nutrient-rich water closer to the surface. From the hermit crab scuttling across the rocky reefs, to the sea otters wrapped securely in the kelp forests just offshore, to the orca pods patrolling the edges of the submarine canyon, all of the visible wonders ultimately depend on the upwellings from the hidden submarine canyon.
+Beyond ensuring that hardware and compilers conform to a given MCS, empirically testing and understanding the concurrent shared-memory behavior of cross-platform frameworks on a variety of GPUs is also important for application correctness and security. Early work on accelerating GPU applications simply assumed that non-intuitive MCS behaviors could not occur~\cite{xiao2010interblock}, while further work showed that these assumptions were flawed and could lead to bugs depending on the environment an application runs in~\cite{gpu-exposing}. An MCS is also responsible for defining which memory patterns are meaningful and which lead to harmful data races that fall outside the model, helping to determine where implementations and runtimes must be hardened to avoid memory safety vulnerabilities. Numerous exploits targeting various levels of GPU memory hierarchies have been found in recent years~\cite{leftover-locals,whispering-pixels,cuda-leaks,guo2024usenix}, and security concerns are ratcheted up another level in the browser, where users often execute code from untrusted sources, and where GPU vulnerabilities have been used to steal webpages~\cite{stealing-webpages} and create sidechannels~\cite{giner2024cacheattack}.
 
-Similarly, this thesis is an exploration into the depths of GPU programming models, investigating the relatively little-understood concurrent shared memory behaviors of modern GPU hardware and their software stacks. Just as the Monterey Bay submarine canyon is responsible for upholding its entire ecosystem, correct specifications and implementations of concurrent memory provide the backbone that modern GPU applications are built on.
-
-%In the rest of this section, the work in this thesis is motivated, continuing the metaphor between GPU programming models and the biodiversity of the Monterey Bay. Next, in \mysec\ref{sec:intro-contrib}, the ideas behind the three core thesis contributions which make up the following chapters are directly presented, and \mysec\ref{sec:intro-pub} lists the papers and venues where this research has been published. Finally, \mysec\ref{sec:intro-ack} acknowledges the contributions of all others who contributed to the work presented in this thesis.
-
-\begin{figure*}
-    \centering
-    \includegraphics[width=.7\textwidth]{images/intro/sea_devil.jpg}
-    \caption{The sea hath its devils. MBARI, 2014.}
-\end{figure*}
+To understand the difficulties involved in validating an MCS, we now turn to a quick primer on memory consistency.
 
 \newcommand{\mprlxintrolitmustest}{
     \begin{tabular}{l l}
     \midrule
-    \underline{thread 0} & \underline{thread 1} \\
-        \circledBlack{\vphantom{A}a}\hspace{.1cm} \texttt{store(data, 1)} &  \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{let r0 = load(data)}  \\
-%        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{fence(release)} &  \circledWhite{\vphantom{A}e}\hspace{.1cm} \texttt{fence(acquire)}  \\
-        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{store(flag, 1)} &
-        \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{let r1 = load(flag)}  \\
+    \multicolumn{1}{c}{\underline{thread 0}} & \multicolumn{1}{c}{\underline{thread 1}} \\
+        \introMpEventA\hspace{.1cm} \texttt{store(data, 1)} &  \introMpEventC\hspace{.1cm} \texttt{let r0 = load(flag)}  \\
+        \introMpEventB\hspace{.1cm} \texttt{store(flag, 1)} &
+        \introMpEventD\hspace{.1cm} \texttt{let r1 = load(data)}  \\
         \midrule
-        \multicolumn{2}{c}{Condition: \texttt{r0 == 1 \&\& r1 == 0}}
+        %\multicolumn{2}{c}{Condition: \texttt{r0 == 1 \&\& r1 == 0}}
     \end{tabular} \hspace{1cm}
 }
+
+\newcommand{\introMpEventA}{\circledBlack{\vphantom{A}a}\xspace}
+\newcommand{\introMpEventB}{\circledBlack{\vphantom{A}b}\xspace}
+\newcommand{\introMpEventC}{\circledWhite{\vphantom{A}c}\xspace}
+\newcommand{\introMpEventD}{\circledWhite{\vphantom{A}d}\xspace}
+\newcommand{\introMpFenceX}{\circledBlack{\vphantom{A}x}\xspace}
+\newcommand{\introMpFenceY}{\circledWhite{\vphantom{A}y}\xspace}
 
 \newcommand{\mprelacqintrolitmustest}{
     \begin{tabular}{l l}
     \midrule
-    \underline{thread 0} & \underline{thread 1} \\
-        \circledBlack{\vphantom{A}a}\hspace{.1cm} \texttt{store(data, 1)} &  \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{let r0 = load(data)}  \\
-        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{fence(release)} &  \circledWhite{\vphantom{A}e}\hspace{.1cm} \texttt{fence(acquire)}  \\
-        \circledBlack{\vphantom{A}b}\hspace{.1cm} \texttt{store(flag, 1)} &
-        \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{let r1 = load(flag)}  \\
+    \multicolumn{1}{c}{\underline{thread 0}} & \multicolumn{1}{c}{\underline{thread 1}} \\
+        \introMpEventA\hspace{.1cm} \texttt{store(data, 1)} &  \introMpEventC\hspace{.1cm} \texttt{let r0 = load(flag)}  \\
+        \introMpFenceX\hspace{.1cm} \texttt{fence(release)} &  \introMpFenceY\hspace{.1cm} \texttt{fence(acquire)}  \\
+        \introMpEventB\hspace{.1cm} \texttt{store(flag, 1)} &
+        \introMpEventD\hspace{.1cm} \texttt{let r1 = load(data)}  \\
         \midrule
-        \multicolumn{2}{c}{Condition: \texttt{r0 == 1 \&\& r1 == 0}}
+        %\multicolumn{2}{c}{Condition: \texttt{r0 == 1 \&\& r1 == 0}}
     \end{tabular} \hspace{1cm}
 }
 
@@ -54,57 +53,166 @@ Similarly, this thesis is an exploration into the depths of GPU programming mode
 \centering
 \small
 \captionsetup[subfigure]{width=.7\columnwidth}
-\subfloat[Message Passing Program]{\mprlxintrolitmustest \label{fig:intro-mprlx}} \\
-\subfloat[Message Passing rel/acq (MP-relacq) litmus test]{\mprelacqintrolitmustest \label{fig:intro-mprelacq}}
-\caption{Two litmus tests that illustrate bugs in WebGPU found by our work.  We observed executions that resulted in the condition being true, even though it is disallowed by the MCS. All memory is initialized to 0.}
+\subfloat[Message Passing]{\mprlxintrolitmustest \label{fig:intro-mprlx}} \\
+\subfloat[Message Passing with Fences]{\mprelacqintrolitmustest \label{fig:intro-mprelacq}}
+\caption{An introduction to memory consistency.}
 \label{fig:intro-mp}
 \end{figure}
 
 
-\subsection{Memory Consistency}
 
-what is memory consistency? rocket science of CS, describe the message passing program, motivate GPUs? need to decide in which order to motivate GPUs and memory consistency, or together somehow?
+\section{A Primer on Memory Consistency}
+
+Ever since computer scientists had the temerity to combine multiple processors that shared access to a common memory region with private caches for each processor, memory consistency has vexed and confounded hardware and language designers alike. In fact, memory consistency has been called the rocket sience of computer science by none other than the designer of Linux~\cite{rocket-science}. Yet, perhaps not unlike modern Don Quixotes tilting at windmills, computer scientists continue charging headlong into the fray of building and testing models of memory consistency, and it is this quest that we now join as well.
+
+\myfiglong~\ref{fig:intro-mprlx} shows a small, two-thread program that operates on memory locations \texttt{data} and \texttt{flag}. Assume for now that these are direct hardware instructions, which store and load the associated values on a processor with some cache hierarchy. This program is a form of \textit{message passing}; the first thread stores some value to \texttt{data}, then signals that \texttt{data} is ready by storing the value 1 to \texttt{flag}. IN parallel, the second thread first reads \texttt{flag} and then reads \texttt{data}. The question then becomes what the possible outcomes of this program are.
+
+The most intuitive way to analyze this program is to consider the possible orderings while respecting the fact that event \introMpEventA occurs before \introMpEventB on thread 0 and event \introMpEventC occurs before \introMpEventD on thread 1. This model of execution is known as \textit{sequential consistency} (SC)~\cite{Lamport79}. \mytablong\ref{tab:intro-mp-orderings} shows some possible outcomes under this model. The first two rows show schedules where each thread executes sequentially; if thread 0 executes first, then both \texttt{r0} and \texttt{r1} end up with the value 1, whereas if the orders are reversed, both end up with the value 0. Given that the threads are operating in parallel, it is also possible that the events are interleaved. The middle 4 rows show possible interleaved schedules; in all cases, \texttt{r0} ends up with the value 0 and \texttt{r1} ends up with the value 1.
+
+\begin{table}[t]
+\centering
+\begin{tabular}{l l l}
+\toprule
+\multicolumn{1}{c}{\textbf{Outcome}} & \multicolumn{1}{c}{\textbf{Event Ordering}} & \multicolumn{1}{c}{\textbf{Schedule}} \\
+\midrule
+\texttt{r0 == 1 \&\& r1 == 1} & \introMpEventA $\rightarrow$ \introMpEventB $\rightarrow$ \introMpEventC $\rightarrow$ \introMpEventD & \multirow{2}{*}{\texttt{Sequential}} \\
+\texttt{r0 == 0 \&\& r1 == 0} & \introMpEventC $\rightarrow$ \introMpEventD $\rightarrow$ \introMpEventA $\rightarrow$ \introMpEventB & \\
+\midrule
+\multirow{4}{*}{\texttt{r0 == 0 \&\& r1 == 1}} & \introMpEventA $\rightarrow$ \introMpEventC $\rightarrow$ \introMpEventB $\rightarrow$ \introMpEventD & \multirow{4}{*}{\texttt{Interleaved}} \\
+ & \introMpEventA $\rightarrow$ \introMpEventC $\rightarrow$ \introMpEventD $\rightarrow$ \introMpEventB & \\
+ & \introMpEventC $\rightarrow$ \introMpEventA $\rightarrow$ \introMpEventD $\rightarrow$ \introMpEventB & \\
+ & \introMpEventC $\rightarrow$ \introMpEventA $\rightarrow$ \introMpEventB $\rightarrow$ \introMpEventD & \\
+\midrule
+\multirow{2}{*}{\texttt{r0 == 1 \&\& r1 == 0}} & \introMpEventB $\rightarrow$ \introMpEventC $\rightarrow$ \introMpEventD $\rightarrow$ \introMpEventA & \multirow{2}{*}{\texttt{Weak}} \\
+ & \introMpEventD $\rightarrow$ \introMpEventA $\rightarrow$ \introMpEventB $\rightarrow$ \introMpEventC & \\
+\bottomrule
+\end{tabular}
+\caption{Example orderings for the message-passing events in \myfig\ref{fig:intro-mprlx}.}
+\label{tab:intro-mp-orderings}
+\end{table}
+
+Unfortunately, almost all modern multiprocessors, including GPUs, are not sequentially consistent. Due to out-of-order processing, private caches, load and store buffers, and other proprietary features that increase overall performance, the order in which threads observe the effects of other threads operating on memory is non-deterministic and governed by many complex rules. A non-SC MCS is called a \textit{relaxed}~\cite{adve1996relaxed} or \textit{weak}~\cite{dubois1986weak} model, today often interchangeably. For consistency (heh) in this thesis a non-SC model is referred to as \textit{relaxed}, whereas the behaviors allowed by that model are referred to as \textit{weak behaviors}.
+
+The bottom two rows show the weak outcome, where \texttt{r0} ends up with the value 1 but \texttt{r1} ends up with the value 0. Note that for this outcome to occur, it must appear as if either \introMpEventA is reordered with respect to \introMpEventB, or \introMpEventC is reordered with respect to \introMpEventD, e.g., due to the order in which cache lines are flushed to main memory. Given a set of plain loads and stores on hardware, the results in this thesis show that modern GPUs from every major vendor will allow this outcome to occur (\mychap\ref{chap:gpuharbor}).
+
+In many scenarios, the weak outcome is not desirable. Say that a programmer would like to use \texttt{flag} to signal to another thread that some value is ready; given the possibility of a weak outcome using plain loads and stores, there is no way for the thread to know whether the value of \texttt{data} is valid. Therefore, modern hardware also implements special instructions called \textit{fences}, which signal that memory operations should be propagated in certain orders. For example, \myfig\ref{fig:intro-mprelacq} shows the same message passing program, but this time with fences inserted between the events on each thread. Specifically, the fence on thread 0 is a \textit{release} fence, which indicates to the hardware that any stores or loads that occur before the store event \introMpEventB must appear to occur before \introMpEventB itself, from the viewpoint of other threads. The fence on thread 1 is a complementary \textit{acquire} fence, which indicates that any load or store that occurs after the load event \introMpEventC must appear to occur after \introMpEventC. Under the constraints added by these fences, it is no longer for the weak behavior to legally occur, giving programmers the ability to reliably transfer data across threads when necessary.
+
+So far, we have assumed that the store and load instructions in the message programming program have been occurring directly on hardware. Of course, most code is not written to run directly on hardware, but rather in higher-level representations that are then compiled into formats that hardware can run. Languages like C++ and Java have formalized their own MCSs~\cite{c11,java} and shown that they are compatible with MCSs for CPUs like x86~\cite{owens2009x86}, Arm~\cite{arm-formal}, and Power~\cite{formal-power}. In the GPU ecosystem, NVIDIA has formalized an MCS for their higher-level PTX instruction set which maps to their hardware~\cite{formal-ptx}, but other GPU vendors lag behind on documenting the behaviors that can occur on their hardware. This has led cross-platform GPU frameworks like Vulkan and WebGPU to provide a lowest-common-denominator MCS and depend on words of assurance from each vendor that they can support that MCS on their hardware.
+
+The presence of optimizing compilers and drivers between high-level programming languages and the code that actually executes on hardware complicates the development of the language-level MCS. Compilers look for opportunities to eliminate and reorder instructions while maintaining the semantics of the original program. Memory operations are one of the expensive areas compilers seek to optimize, removing redundant loads or stores to the same memory location or reordering loads and stores to take better advantage of hardware pipelining. However, these optimizations are often in conflict with the goals of programmers seeking to explicitly communicate across threads using memory operations. Therefore, modern languages like C++ (along with many GPU languages) have introduced the idea of \textit{atomic} memory operations, which signal to the compiler that these operations' associated memory locations may be accessed concurrently by multiple threads. Going back to the example in \myfig\ref{fig:intro-mprelacq}, each of the stores and loads would need to be written as atomic operations in a high-level language for the message passing idiom to work correctly.
+
+If the instructions in \myfig\ref{fig:intro-mp} are written in a high-level language but not specified to be atomic, then according to the MCS a \textit{data race} occurs. Data races may have all sorts of bad outcomes~\cite{no-benign-races,bounding-races}, to the point which languages like C++ leave data races completely undefined, giving no guarantees about the correctness or security of applications if they contain even a single data race. In some contexts, e.g., web browsers, allowing data races to undermine security is unacceptable, so browser-based CPU languages like JavaScript and WebAssembly do carefully give very weak semantics to data races~\cite{repairing-js,weak-wasm}. However, GPU languages have not generally grappled with the complexity of the security concerns with data races, which is especially concerning given the large number of GPU memory safety vulnerabilities found in recent years~\cite{stealing-webpages,donaldson2017glfuzz,leftover-locals,whispering-pixels,guo2024usenix}.
+
+\section{Insufficiencies in Validating the Correctness and Safety of MCS Implementations}
+
+Analyzing small programs like the ones in \myfig\ref{fig:intro-mp} are useful for understanding what a given MCS does and does not allow, but it does not give any insight into what actually occurs when the program is run on real hardware. As GPU usage continues to increase, and cross-platform GPU frameworks gain more prominence, ensuring application correctness and safety by validating MCS implementations is critical. This thesis identifies three areas where existing techniques, especially for GPUs, are insufficient: measuring the effectiveness of MCS testing, scaling MCS testing to reach the diversity of GPUs available today, and analyzing the intersection of MCS and memory safety guarantees to increase the security of modern GPU frameworks.
+
+\subsection{Effectiveness of MCS Testing}
+
+For a programmer to be able to reason about the outcomes of their program, they assume that the platform they are running on, i.e., the combination of compilers, drivers, and hardware, implement an MCS correctly. Unfortunately, this is not always the case; MCS testing strategies have found numerous bugs in runtime platforms~\cite{oopsla2020,asplos15,power-bug,rtl-check, fences}. Early MCS testing work executed sequences of memory accesses~\cite{archtest, tsostore} and then analyzed a trace of the observed values.  More recent work uses formal specifications to derive small concurrent tests like the message programming in \myfig\ref{fig:intro-mp}. These programs, called \textit{litmus tests}, are then executed for many iterations, checking for a weak behavior at each iteration~\cite{litmus}.
+
+The effectiveness of litmus testing approaches is \textit{extremely} sensitive to the testing environment, i.e.\ the context around the litmus test that creates stress on the platform. When testing, it is impossible to tell if an unobserved illegal execution, e.g., an execution of \myfig\ref{fig:intro-mprelacq} where the weak behavior is observed, is impossible or if it is simply rare and was not exposed by the tests. Thus, effective MCS testing requires tuning testing environments to reduce the possibility of a missed bug. However, legitimate MCS violations are exceeding rare, and thus cannot be used as a metric for such tuning efforts. Existing approaches have tuned their testing environments by maximizing the number of weak, but allowed, behaviors of some litmus tests, yet have not provided justification on why this metric is valid. Existing MCS testing techniques also do not provide an empirical confidence metric in their ability to find MCS bugs. Consequently, it is difficult to gauge whether it is worth the time to perform more testing, especially when running in time-constrained environments such as a conformance test suite. The result of these limitations has been a lack of adoption of existing MCS testing approaches.
+
+\subsection{Scale of MCS Testing}
+
+Previous GPU testing work had limited scope, testing only a small number of devices~\cite{gpu-foundations}, with the largest study testing eight devices~\cite{gpu-concurrency}. These approaches did not scale due to the difficulty of portable GPU application development and deployment, e.g., while frameworks like OpenCL~\cite{opencl} are portable in theory, there are many difficulties in practice~\cite{opencl-hitchhiker}.  Consequently, little is known about the MCS conformance and weak behavior profiles \emph{at large}.  This is especially problematic as portable GPU frameworks depend upon many layers and environments (e.g., architectures, compilers, runtimes, operating systems, etc.); it is difficult to extrapolate insights from a small number of platforms tested in controlled environments to the diverse universe of deployed GPUs.
+
+Apart from conformance, a device's weak behavior \textit{profile}, i.e., the frequency at which allowed weak behaviors occur and how system stress influences this frequency, is also a useful metric. For example, this can be useful in developing conformance testing strategies and enables developers to reason about tradeoffs between accuracy and performance in approximate computing that judiciously elides synchronization~\cite{hogwild, 10.1145/2414729.2414737, 10.1145/2540708.2540711}.
 
 
+\subsection{Intersection of the MCS and Memory Safety}
 
+Over the past several decades, CPU-based languages have been designed to provide \textit{memory safety}, and runtimes, e.g., operating systems, have developed protections for memory isolations between processes, e.g., via segfaults. Some of the most notorious exploits and vulnerabilities found in recent decades were related to memory safety~\cite{heartbleed, trident, slammer-worm}, and large-scale corporate studies have found that the majority of all vulnerabilities are related to memory safety~\cite{microsoft2019safer, google2019queue}.
 
+Due to their lean, performance oriented implementations and relatively more recent adoption, not all GPU runtimes have these defensive measures in place. One area where memory safety is extremely important is in the browser, where web pages can execute code from untrusted sources which may maliciously try to access data from other tabs or applications on a user's machine. New GPU frameworks like WebGPU provide low-level access to the GPU from the browser but must also ensure that GPU code running in one tab cannot access memory from another tab. This problem is complicated by the fact that the WebGPU implementation does not directly control the final assembly that runs on the GPU; rather, it goes through several intermediate languages and frameworks each with their own specifications and implementations.
 
-, an area which has been called the rocket science of computer science~\cite{torvalds2021rs}.
+The guarantees provided by MCSs are directly interwtined with a programming model's overall guarantees around memory safety. Data races can lead to unexpected and unintuitive behaviors, including memory safety violations, as shown in \mychap\ref{chap:saferace}. While previous work on CPU-based languages has sought to constrain the effects of data races~\cite{bounding-races} and develop safe languages that run in the browser~\cite{repairing-js,weak-wasm}, no research has focused on the complexity of maintaining GPU memory safety in the presence of data races.
 
-\begin{itemize}
-    \item you can go down to the beach in santa cruz, and you can look out over the ocean, but you can't see the sea floor. you can see the waves, but you can't see the bottom. it's a bit like that with GPUs. there are a lot of vendors, a lot of different possible behaviors, we don't know what exactly can happen all the time.
-    \item For example, Monterey Bay Submarine canyon has 1-mile deep walls, largest underwater canyon in north america. black seadevil anglerflish, only filmed twice alive, filmed in 2014 in the monterey bay submarine canyon. what behaviors are we not seeing from GPUs? What bugs are we missing?
-    \item subsection, introduce message passing (relaxed + strengthened figures), talk about how we can know whether there's a bug in the implementation of memory consistency
-    \item subsection, talk about diversity of GPU vendors and implementations, how do we test them all and find bugs, and what can their behaviors tell us
-    \item subsection what else is down in the depths of GPU programming models? memory safety x data races. how do we know whether there are memory safety bugs in GPU programming frameworks, and how do we fix them?
-\end{itemize}
+%Under a relaxed MCS, writes may become visible to different threads at different times, and operations that appear ordered in source code may be observed out of order unless the program uses explicit synchronization~\cite{c11,formal-opencl,fences}. Release and acquire operations, often expressed through fences or atomic accesses, allow programmers to selectively restore ordering where synchronization is needed. At the language level, atomics also tell the compiler that a location may be accessed concurrently, preventing optimizations that would otherwise be valid only for thread-local or non-racing memory~\cite{c11,java,vafeiadis2015c11}. When conflicting accesses occur without the required synchronization, the program has a \textit{data race}; in mainstream language memory models, data races typically place the program outside the guarantees of the model, which is why they are both a correctness problem and a security concern~\cite{no-benign-races,bounding-races,repairing-js}.
 
-\section{Contributions.}
+%The combination of weak memory, heterogeneous hardware, and rapidly evolving cross-platform GPU frameworks creates a validation problem that is both technically difficult and practically important. Prior work has shown that GPU weak-memory bugs are real: litmus-test-based studies have exposed unexpected behaviors on deployed GPUs, and application-level studies have shown that incorrect synchronization assumptions can lead to incorrect programs~\cite{gpu-concurrency,gpu-exposing,gpu-foundations}. However, memory consistency testing is inherently nondeterministic and highly dependent on the testing environment, which makes it difficult to know whether a negative result reflects a correct implementation or merely an ineffective test harness. This motivates techniques for evaluating the quality of memory consistency testing itself, rather than only the systems under test~\cite{mc-mutants}.
+
+%The portability goal of frameworks such as OpenCL, Vulkan, and WebGPU also demands testing at scale. A convincing assessment must span many devices, vendors, drivers, and software stacks, both to find bugs and to characterize the empirical behaviors that future specifications may need to explain or constrain~\cite{opencl-hitchhiker,gpu-forward-progress,levine2023gpuharbor}. At the same time, the security stakes are rising. GPUs are now exposed to untrusted inputs in browsers, client devices, and shared machine-learning deployments, and prior work has repeatedly demonstrated memory disclosure and other security vulnerabilities in GPU systems~\cite{stealing-webpages,donaldson2017glfuzz,leftover-locals,whispering-pixels,guo2024usenix}. The central challenge, then, is to develop methods that can assess and improve both the correctness and the security of modern GPU programming frameworks.
+
+\section{Dissertation Overview}
 \label{sec:intro-contrib}
 
-\begin{itemize}
-\item this thesis addresses above issues through three main contributions
-\item mc mutants (chapter 3), summarize it
-\item gpuharbor (chapter 4), summarize it
-\item saferace (chapter 5), summarize it
-\end{itemize}
+This thesis directly addresses the lack of rigorous techniques to validate the correctness and safety of MCS implementations on GPUs. First, \mychaplong\ref{chap:background} provides background on memory consistency and GPU programming. Then, each of the next three chapters describes the core original contributions of this thesis, which are introduced briefly here.
+
+\paragraph{MC Mutants.}  \mychaplong\ref{chap:mc_mutants} introduces \textit{MC Mutants}, a methodology for evaluating the effectiveness of MCS testing, and evaluate it on several GPUs. MC Mutants is a mutation testing approach for evaluating MCS testing environments. This approach mutates MCS tests such that the mutants simulate bugs that might occur. A testing environment can then be evaluated using a mutation score. MC Mutants is used to evaluate a novel parallel testing environment, implemented in WebGPU, which improves testing speed compared to previous approaches by three order of magnitude. MC Mutants also provids an MCS testing confidence strategy that is parameterized over a time budget and confidence threshold, showing that GPU MCS tests using the parallel testing environment need to run for only $\sim$ 1 minute per test, compared to hours or even days by previous methods. MC Mutants is evaluated on four GPUs from four vendors, identifying two MCS bugs in WebGPU implementations and leading to the official WebGPU conformance test suite adopting tests developed using MC Mutants.
+
+\paragraph{GPUHarbor.} \mychaplong\ref{chap:gpuharbor} presents \textit{GPUHarbor}, a widescale GPU MCS testing tool with a web interface and an Android app. GPUHarbor is used to run a testing campaign that checks conformance to an MCS and characterizes weak behaviors. GPUHarbor was advertissed on forums and social media, leading to data collection from 106 devices spanning 7 vendors. In terms of devices tested, this constitutes the largest study on weak memory behaviors by at least $10\times$, and moreover the conformance tests run during the testing campaign identified two new bugs on embedded Arm and NVIDIA devices. Analyzing characterization data yields many insights, including quantifying and comparing weak behavior occurrence rates (e.g., AMD GPUs show $25.3\times$ more weak behaviors on average than Intel).
+The results from the GPUHarbor study are also discussed in relation to the impact they have on software development for GPUs.
+
+\paragraph{SafeRace.} \mychaplong\ref{chap:saferace} introduces \textit{SafeRace}, consisting of a set of tools that are used to perform targeted security assessments of existing sytems and several proposals to increase the security of WebGPU's programming language, WGSL. SafeRace is motivated by the identification of a \textit{specification vulnerability} in WebGPU, where code with data races can be compiled to intermediate representations in which an optimizing compiler could legitimately remove memory safety guardrails. While the threat assessments shows that this vulnerability does not appear to be exploitable on current systems, it creates a ``ticking time bomb'', especially as compilers in this area are rapidly evolving. Given this, the SafeRace Memory Safety Guarantee (SMSG) is introduced, two components that preserve memory safety in the WGSL execution stack even in the presence of data races. The first component specifies that program slices contributing to memory indexing must be race free and is implemented via a compiler pass for WebGPU programs. The second component is a requirement on intermediate representations that limits the effects of data races so that they cannot impact race-free program slices.
+
+The first component is evaluated by implementing a new transformation in a WGSL compiler and showing that it has minimal performance overhead on existing WebGPU applications. The second component is evaluated by performing a fuzzing campaign of 81 hours across 21 compilation stacks that shows lower-level GPU frameworks could relatively straightforwardly adopt the necessary requirements. The threat assessments discover GPU memory isolation vulnerabilities in Apple and AMD GPUs, as well as a security-critical miscompilation of WGSL in a pre-release version of Firefox.
+
+
+Finally, \mychaplong\ref{chap:conclusion} summarizes all findings and provides a discussion of future work.
+
 
 \section{Publications}
 \label{sec:intro-pub}
 
+The three major contributions in this thesis, MC Mutants, GPUHarbor, and SafeRace, represent research projects that I lead and have been published in peer-reviewed conferences. These works have also led to several related and follow-on works, which have either been published in peer-reviewed venues, submitted as preprints to open-access research repositories, or are curently under submission. Organized by the nature of my contribution, the full list of publications is:
+
+\paragraph{Lead Author}
 \begin{itemize}
-  \item mc mutants at asplos 2023
-  \item gpuharbor at issta 2023
-  \item saferace at oopsla 2025
-  \item other works have been shaped by the ideas and techniques in this thesis, including
-  \item memory disorder, arxiv 2026
-  \item behind bars, usenix security 2026
-  \item grace hopper memory consistency testing, ismm 2026
-  \item work on building an efficient GPU LLM inference framework for the browser, arxiv 2026
-  \item work under submission on performance portability in webgpu
-  \item work under review tackling heterogeneous gpu memory consistency
+  \item \textbf{Reese Levine}, Tianhao Guo, Mingun Cho, Alan Baker, Raph Levien, David Neto, Andrew Quinn, and Tyler Sorensen. 2023. \textit{MC Mutants: Evaluating and Improving Testing for Memory Consistency Specifications}. In Proceedings of the 28th ACM International Conference on Architectural Support for Programming Languages and Operating Systems, Volume 2 (ASPLOS 2023).
+  \begin{itemize}
+    \item This work received both \textbf{Distinguished Paper} and \textbf{Distinguished Artifact} awards.
+    \item The contributions in this work are presented in \mychaplong\ref{chap:mc_mutants}.
+  \end{itemize}
+
+  \item \textbf{Reese Levine}, Mingun Cho, Devon McKee, Andrew Quinn, and Tyler Sorensen. 2023. \textit{GPUHarbor: Testing GPU Memory Consistency at Large (Experience Paper)}. In Proceedings of the 32nd ACM SIGSOFT International Symposium on Software Testing and Analysis (ISSTA 2023).
+  \begin{itemize}
+    \item This work received a \textbf{Distinguished Artifact} award.
+    \item The contributions in this work are presented in \mychaplong\ref{chap:gpuharbor}.
+  \end{itemize}
+
+  \item \textbf{Reese Levine}, Ashley Lee, Neha Abbas, Kyle Little, and Tyler Sorensen. 2025. \textit{SafeRace: Assessing and Addressing WebGPU Memory Safety in the Presence of Data Races}. Proc. ACM Program. Lang. 9, OOPSLA2, Article 297 (October 2025).
+  \begin{itemize}
+    \item The contributions in this work are presented in \mychaplong\ref{chap:saferace}.
+  \end{itemize}
 \end{itemize}
 
+\paragraph{Co-Author}
+\begin{itemize}
+  \item Sean Siddens, Sanya Srivastava, \textbf{Reese Levine}, Josiah Dykstra, and Tyler Sorensen. 2026. \textit{Memory DisOrder: Memory Re-orderings as a Timerless Side-channel}. arXiv preprint arXiv:2601.08770.
+  \begin{itemize}
+    \item My contributions to this work are discussed in \mychaplong\ref{chap:gpuharbor}.
+  \end{itemize}
 
-\section{Formal Acknowledgements}
-\label{sec:intro-ack}
+  \item Cheng Gu, \textbf{Reese Levine}, Zhenkai Zhang, Tyler Sorensen, and Yanan Guo. 2026. \textit{Behind Bars: A Side-Channel Attack on NVIDIA MIG Cache Partitioning Using Memory Barriers}. In 35th USENIX Security Symposium (USENIX Security 2026).
+  \begin{itemize}
+    \item My contributions to this work are discussed in \mychaplong\ref{chap:gpuharbor}.
+  \end{itemize}
+
+  \item Soham Bagchi, Sanya Srivastava, \textbf{Reese Levine}, Tyler Sorensen, Ryan Stutsman, and Vijay Nagarajan. 2026. \textit{Consistency and Coherence of the NVIDIA Grace-Hopper Superchip}. In ACM SIGPLAN International Symposium on Memory Management (ISMM 2026).
+  \begin{itemize}
+    \item My contributions to this work are discussed in \mychaplong\ref{chap:gpuharbor}.
+  \end{itemize}
+
+  \item Dennis Sprokholt, \textbf{Reese Levine}, Susmit Sarkar, Andr\'es Goens, Vijay Nagarajan, and Soham Chakraborty. \textit{Beyond the Fence: Sound Compilation for GPU and Heterogeneous CPU+GPU Systems}. Under submission.
+  \begin{itemize}
+    \item My contributions to this work are discussed in \mychaplong\ref{chap:gpuharbor}.
+  \end{itemize}
+
+\end{itemize}
+
+\paragraph{Workshop and Article}
+\begin{itemize}
+  \item \textbf{Reese Levine} and Tyler Sorensen. 2023. \textit{Probabilistic Memory Consistency Specifications}. In ACM Young Architect Workshop.
+  \begin{itemize}
+    \item My contributions to this work are discussed in \mychaplong\ref{chap:gpuharbor}.
+  \end{itemize}
+
+  \item Arkaprava Basu, Natalia Gavrilenko, Keijo Heljanko, \textbf{Reese Levine}, Ajay Ashok Nayak, Hern\'an Ponce de Le\'on, Tyler Sorensen, and Haining Tong. 2025. \textit{GPU Memory Consistency: Specifications, Testing, and Opportunities for Performance Tooling}. ACM SIGARCH Blog.
+  \begin{itemize}
+    \item My contributions to this work are discussed in \mychaplong\ref{chap:gpuharbor}.
+  \end{itemize}
+
+\end{itemize}
+
+\paragraph{Funding Acknowledgement.} I have been fortunate to have been supported in part by a National Defense Science and Engineering Graduate (NDSEG) Fellowship.
