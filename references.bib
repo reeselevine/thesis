@@ -41,9 +41,8 @@ doi = {10.1109/TC.1979.1675439},
 
 @misc{metal-sl,
 author = {{Apple}},
-title = "{Metal} Shading Language Specification, Version 2.4",
-year = {2021},
-month = {October},
+title = "{Metal} Shading Language Specification, Version 4.0",
+year = {2026},
 howpublished = "\url{https://developer.apple.com/metal/Metal-Shading-Language-Specification.pdf}"
 }
 
@@ -243,24 +242,6 @@ doi = {10.1145/2908080.2908114},
 booktitle = {PLDI},
 }
 
-@article{10.1145/106973.106997,
-author = {Gharachorloo, Kourosh and Gupta, Anoop and Hennessy, John},
-title = {Performance Evaluation of Memory Consistency Models for Shared-Memory Multiprocessors},
-year = {1991},
-issue_date = {Apr. 1991},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-volume = {26},
-number = {4},
-issn = {0362-1340},
-url = {https://doi.org/10.1145/106973.106997},
-doi = {10.1145/106973.106997},
-journal = {SIGPLAN Not.},
-month = {apr},
-pages = {245–257},
-numpages = {13}
-}
-
 @INPROCEEDINGS{tsostore,
   author={Hangal, S. and Vahia, D. and Manovit, C. and Lu, J.-Y.J. and Narayanan, S.},
   booktitle={International Symposium on Computer Architecture {(ISCA)}, 2004.},
@@ -280,6 +261,21 @@ publisher = {{ACM}},
 doi = {10.1145/106972.106997},
 booktitle = { ASPLOS },
 }
+
+@article{black-box,
+title = {Program Testing by Specification Mutation},
+journal = {Computer Languages},
+volume = {10},
+number = {1},
+pages = {63-73},
+year = {1985},
+issn = {0096-0551},
+doi = {https://doi.org/10.1016/0096-0551(85)90011-6},
+url = {https://www.sciencedirect.com/science/article/pii/0096055185900116},
+author = {Timothy A. Budd and Ajei S. Gopal},
+keywords = {Testing, Specifications, Validation, Verification, Programming languages, Predicate calculus, Mutation analysis},
+}
+
 
 @ARTICLE{mutation-survey,
   author={Jia, Yue and Harman, Mark},
@@ -1161,7 +1157,6 @@ doi = {10.1007/978-3-030-17138-4_4}
   url = {https://github.com/gfx-rs/wgpu/issues/4972},
   note = {Accessed: 2025-03-12}
 }
-``
 @article{sorensen2021progress,
 author = {Sorensen, Tyler and Salvador, Lucas F. and Raval, Harmit and Evrard, Hugues and Wickerson, John and Martonosi, Margaret and Donaldson, Alastair F.},
 title = {Specifying and testing GPU workgroup progress models},
@@ -2060,7 +2055,7 @@ year = {2007}
 
 @INPROCEEDINGS{xiao2010interblock,
   author={Xiao, Shucai and Feng, Wu-chun},
-  booktitle={2010 IEEE International Symposium on Parallel & Distributed Processing (IPDPS)},
+  booktitle={2010 IEEE International Symposium on Parallel \& Distributed Processing (IPDPS)},
   title={Inter-block GPU communication via fast barrier synchronization},
   year={2010},
   volume={},
@@ -2126,4 +2121,145 @@ year = {1986},
 isbn = {081860719X},
 publisher = {IEEE Computer Society Press},
 booktitle = {Proceedings of the 13th Annual International Symposium on Computer Architecture},
+}
+
+@inproceedings{lahav2017repairingc11,
+author = {Lahav, Ori and Vafeiadis, Viktor and Kang, Jeehoon and Hur, Chung-Kil and Dreyer, Derek},
+title = {Repairing sequential consistency in C/C++11},
+year = {2017},
+publisher = {Association for Computing Machinery},
+doi = {10.1145/3062341.3062352},
+booktitle = {Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation},
+}
+
+@inproceedings{lustig2019ptx,
+author = {Lustig, Daniel and Sahasrabuddhe, Sameer and Giroux, Olivier},
+title = {A Formal Analysis of the NVIDIA PTX Memory Consistency Model},
+year = {2019},
+publisher = {Association for Computing Machinery},
+doi = {10.1145/3297858.3304043},
+booktitle = {Proceedings of the Twenty-Fourth International Conference on Architectural Support for Programming Languages and Operating Systems},
+}
+
+@misc{nvidia_blackwell_tuning_guide,
+  title        = {NVIDIA Blackwell Tuning Guide},
+  author       = {{NVIDIA Corporation}},
+  year         = {2025},
+  howpublished = {\url{https://docs.nvidia.com/cuda/blackwell-tuning-guide/index.html}},
+  note         = {Accessed: 2026-06-07}
+}
+
+@misc{apple_m5_announcement,
+  author       = {{Apple Inc.}},
+  title        = {Apple Unleashes M5, the Next Big Leap in AI Performance for Apple Silicon},
+  year         = {2025},
+  month        = oct,
+  url          = {https://www.apple.com/newsroom/2025/10/apple-unleashes-m5-the-next-big-leap-in-ai-performance-for-apple-silicon/},
+  note         = {Apple Newsroom, October 15, 2025. Accessed: 2026-06-07}
+}
+
+@inproceedings{wickerson2015remotescope,
+author = {Wickerson, John and Batty, Mark and Beckmann, Bradford M. and Donaldson, Alastair F.},
+title = {Remote-scope promotion: clarified, rectified, and verified},
+year = {2015},
+publisher = {Association for Computing Machinery},
+doi = {10.1145/2814270.2814283},
+booktitle = {Proceedings of the 2015 ACM SIGPLAN International Conference on Object-Oriented Programming, Systems, Languages, and Applications},
+}
+
+@inproceedings{batty2016opencl,
+author = {Batty, Mark and Donaldson, Alastair F. and Wickerson, John},
+title = {Overhauling SC atomics in C11 and OpenCL},
+year = {2016},
+publisher = {Association for Computing Machinery},
+doi = {10.1145/2837614.2837637},
+booktitle = {Proceedings of the 43rd Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+}
+
+@inproceedings{jiang2024sync,
+author = {Jiang, Qisheng and Wang, Chundong},
+title = {Sync+Sync: a covert channel built on fsync with storage},
+year = {2024},
+publisher = {USENIX Association},
+booktitle = {Proceedings of the 33rd USENIX Conference on Security Symposium},
+}
+
+@misc{guo2022adversarialprefetchnewcrosscore,
+      title={Adversarial Prefetch: New Cross-Core Cache Side Channel Attacks},
+      author={Yanan Guo and Andrew Zigerelli and Youtao Zhang and Jun Yang},
+      year={2022},
+      eprint={2110.12340},
+      archivePrefix={arXiv},
+      primaryClass={cs.CR},
+      url={https://arxiv.org/abs/2110.12340},
+}
+
+@INPROCEEDINGS{wang2024gpuzip,
+  author={Wang, Yingchen and Paccagnella, Riccardo and Gang, Zhao and Vasquez, Willy R. and Kohlbrenner, David and Shacham, Hovav and Fletcher, Christopher W.},
+  booktitle={2024 IEEE Symposium on Security and Privacy (SP)},
+  title={GPU.zip: On the Side-Channel Implications of Hardware-Based Graphical Data Compression},
+  year={2024},
+  volume={},
+  number={},
+  pages={3716-3734},
+  keywords={Privacy;Prevention and mitigation;Software algorithms;Random access memory;Side-channel attacks;Market research;Software},
+  doi={10.1109/SP54263.2024.00084}}
+
+@techreport{nvidia2020ampere,
+  title       = {NVIDIA A100 Tensor Core GPU Architecture},
+  author      = {{NVIDIA Corporation}},
+  year        = {2020},
+  url         = {https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf},
+}
+
+@INPROCEEDINGS{arvind2006memmodel,
+  author={Arvind, A. and Maessen, J.-W.},
+  booktitle={33rd International Symposium on Computer Architecture (ISCA'06)},
+  title={Memory Model = Instruction Reordering + Store Atomicity},
+  year={2006},
+  volume={},
+  number={},
+  pages={29-40},
+  keywords={Yarn;Power system modeling;Computer architecture;Interleaved codes;Sun;Laboratories;Coherence;Protocols;History;Gold},
+  doi={10.1109/ISCA.2006.26}}
+
+@inproceedings{dutta2023spy,
+author = {Dutta, Sankha Baran and Naghibijouybari, Hoda and Gupta, Arjun and Abu-Ghazaleh, Nael and Marquez, Andres and Barker, Kevin},
+title = {Spy in the GPU-box: Covert and Side Channel Attacks on Multi-GPU Systems},
+year = {2023},
+publisher = {Association for Computing Machinery},
+doi = {10.1145/3579371.3589080},
+booktitle = {Proceedings of the 50th Annual International Symposium on Computer Architecture},
+}
+
+@inproceedings{naghi2017covert,
+author = {Naghibijouybari, Hoda and Khasawneh, Khaled N. and Abu-Ghazaleh, Nael},
+title = {Constructing and characterizing covert channels on GPGPUs},
+year = {2017},
+publisher = {Association for Computing Machinery},
+doi = {10.1145/3123939.3124538},
+booktitle = {Proceedings of the 50th Annual IEEE/ACM International Symposium on Microarchitecture},
+}
+
+@inproceedings{nazaraliyev2025refresh,
+author = {Nazaraliyev, Ravan and Zhang, Yicheng and Dutta, Sankha Baran and Marquez, Andres and Barker, Kevin and Abu-Ghazaleh, Nael},
+title = {Not so refreshing: attacking GPUs using RFM rowhammer mitigation},
+year = {2025},
+publisher = {USENIX Association},
+booktitle = {Proceedings of the 34th USENIX Conference on Security Symposium},
+}
+
+@inproceedings{zhang2024invalidate,
+author = {Zhang, Zhenkai and Cai, Kunbei and Guo, Yanan and Yao, Fan and Gao, Xing},
+title = {INVALIDATE+COMPARE: a timer-free GPU cache attack primitive},
+year = {2024},
+isbn = {978-1-939133-44-1},
+publisher = {USENIX Association},
+address = {USA},
+abstract = {While extensive research has been conducted on CPU cache side-channel attacks, the landscape of similar studies on modern GPUs remains largely uncharted. In this paper, we investigate potential information leakage threats posed by the caches in GPUs of NVIDIA's latest Ampere and Ada Lovelace generations. We first exploit a GPU cache maintenance instruction to reverse engineer certain key properties of the cache hierarchy in these GPUs, and then we introduce a novel GPU cache side-channel attack primitive named INVALIDATE+COMPARE that is designed to spy on the GPU cache activities of a victim in a timer-free manner. We further showcase the use of this primitive with two case studies. The first one is a website fingerprinting attack that can accurately identify the web pages visited by a user, while the second one uncovers keystroke data entered via a virtual keyboard. To our knowledge, these stand as the first demonstrations of timer-free cache side-channel attacks on GPUs.},
+booktitle = {Proceedings of the 33rd USENIX Conference on Security Symposium},
+articleno = {118},
+numpages = {18},
+location = {Philadelphia, PA, USA},
+series = {SEC '24}
 }

@@ -2,6 +2,9 @@
 \chapter[Evaluating and Improving Testing For Memory Consistency Specifications]{Evaluating and Improving Testing For Memory Consistency Specifications}
 \label{chap:mc_mutants}
 
+\epigraph{\textit{Mutation. It is the key to our evolution.}}{--- Professor X \\\footnotesize\textit{X-Men}}
+
+
 \newcommand{\sys}{MC Mutants\xspace}
 
 \section{Personal Context}
@@ -48,7 +51,7 @@
     \label{fig:litmus-examples}
 \end{figure}
 
-\section{Motivation}
+\section{Introduction}
 
 A memory consistency specification (MCS) for a shared memory runtime platform  defines the legal values that loads are allowed to observe, and thus, is crucial for program reasoning.  For efficiency reasons~\cite{mem-model-performance}, many platforms provide a \textit{relaxed} MCS, which allows complex behaviors. Validating that a platform implementation honors its MCS is a difficult, yet important, since a bug may lead to rare, non-deterministic application errors~\cite{pldi16,program-transforms}.
 
@@ -122,7 +125,7 @@ in WebGPU \cite{webgpu}, a new web-based \textit{general purpose} GPU (GPGPU) fr
 %
 %WebGPU sets itself apart from other frameworks by targeting the widest range of GPU devices for any GPU platform with an MCS. This ambitious
 %
-However, the WebGPU MCS differs from other specifications in that it targets devices from a wide range of vendors, e.g., Intel, AMD, Apple, and NVIDIA.\footnote{With mobile support planned in the future, this will include even more vendors, e.g.\ Qualcomm, ARM and Imagination.} In fact, it has the \textit{largest} set of backends targeted by any GPGPU MCS. To provide a portable abstraction across these devices, WebGPU currently has relatively few options for synchronization; there are no sequentially consistent atomic operations as seen in NVIDIA's PTX~\cite{ptx-memory-model}, or OpenCL~\cite{sc-in-opencl}. However, the few ordering properties that WebGPU provides, such as coherency across atomic accesses, must be preserved across all devices. Given this unique context, MCS testing is both \textit{critical}, as it must ensure a single consistent MCS on a diverse set of backends, and \textit{challenging}, as testing environments must be effective across many devices.
+However, the WebGPU MCS differs from other specifications in that it targets devices from a wide range of vendors, e.g., Intel, AMD, Apple, and NVIDIA.\footnote{With mobile support planned in the future, this will include even more vendors, e.g.\ Qualcomm, ARM and Imagination.} In fact, it has the \textit{largest} set of backends targeted by any GPGPU MCS. To provide a portable abstraction across these devices, WebGPU currently has relatively few options for synchronization; there are no sequentially consistent atomic operations as seen in NVIDIA's PTX~\cite{lustig2019ptx}, or OpenCL~\cite{sc-in-opencl}. However, the few ordering properties that WebGPU provides, such as coherency across atomic accesses, must be preserved across all devices. Given this unique context, MCS testing is both \textit{critical}, as it must ensure a single consistent MCS on a diverse set of backends, and \textit{challenging}, as testing environments must be effective across many devices.
 %
 
 This work targets only one level (or \textit{scope}) of the GPU execution hierarchy, specifically threads that are in different workgroups. We pick this scope for three reasons: (1)~it is pragmatic, as there is no other way for inter-workgroup threads to communicate without the expensive routine of stopping and relaunching the kernel, (2)~prior work developed stress techniques targeting this scope~\cite{oopsla2020}, providing testing environments that we can tune and evaluate, and (3)~WebGPU does not (yet) expose the subgroup (or warp in CUDA) scope, and thus it cannot be tested. However, \sys applies generally to MCS testing, and we aim to apply it to the more complete GPU execution hierarchy as the specification, stress testing techniques, and application use-cases continue to evolve.
