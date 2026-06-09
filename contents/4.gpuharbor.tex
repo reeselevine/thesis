@@ -6,62 +6,36 @@
 
 \section{Personal Context}
 
-\section{Motivation}
+\section{Introduction}
 
-\paragraph{\gpuharbor}
+This chapter presents a large-scale study of GPU MCS testing, which tests $10\times$ more devices than previous studies. The techniques that enable this study also are applied in two other ways: (1)~a deep investigation of the MCS implemented by NVIDIA's A100, H100, and GH200 GPUs (\mysec\ref{sec:gpuharbor-nvidia-mcs}), and (2)~an investigation into how observations of weak behaviors can be used to create a low-bandwidth GPU side-channel, which also provided the foundation for the creation of a more sophisticated side-channel across NVIDIA MIG instances on an A100 GPU (\mysec\ref{sec:gpuharbor-sidechannel}).
 
-In this paper, we present a large-scale study of GPU MCS testing, which, to the best of our knowledge, tests $10\times$ more devices than previous studies. \myfiglong\ref{tab:gpu-overview} summarizes our study, including the number of GPUs that we tested (\totalDevices), broken down by two frameworks (WebGPU and Vulkan) and seven vendors (Intel, Apple, NVIDIA, AMD, Arm, Qualcomm, and Imagination).
-%Our study involves running billions of relaxed memory test iterations across GPUs from seven vendors: Intel, Apple, NVIDIA, AMD, ARM, QualComm, and PowerVR.
-This scale is empowered by \gpuharbor, a new cross-platform GPU MCS testing tool suite.  \gpuharbor includes two front-ends, a browser web app (using WebGPU) and an Android app (using Vulkan). We advertised our web app on campus forums and social media to obtain a significant number of WebGPU results. We test much fewer Vulkan devices as our Android app is not yet widely accessible on the Google Play Store, but in \mysec\ref{sec:fut-work} we discuss how we will enable larger mobile studies on both Android and iOS.
+\paragraph{GPUHarbor.} \myfiglong\ref{tab:gpu-overview} summarizes the large-scale study, including the number of GPUs that we tested (\totalDevices), broken down by two frameworks (WebGPU and Vulkan) and seven vendors (Intel, Apple, NVIDIA, AMD, Arm, Qualcomm, and Imagination). This scale is empowered by \gpuharbor, a new cross-platform GPU MCS testing tool suite.  \gpuharbor includes two front-ends, a browser web app (using WebGPU) and an Android app (using Vulkan). The web app was advertised on campus forums and social media to obtain a significant number of WebGPU results. Fewer Vulkan devices are tested as the Android app was not published on the Google Play Store.
 
-%Thus, we had to manually install an APK to a select few devices. However, our aim is to deploy the app widely, and expand to iOS targets, see \mysec\ref{sec:fut-work}.
-
-\gpuharbor uses \emph{litmus tests}, small concurrent programs that check for load/store reordering corresponding to weak memory behaviors.
-%\gpuharbor utilizes \emph{litmus tests}, small concurrent programs that check for a relaxed memory behavior.
-%If the relaxed behavior for a given litmus is disallowed by an MCS, then we say that it is a conformance litmus test; otherwise it is a characterizing litmus test.
-Current GPU MCS testing tools execute litmus tests many times in succession to check conformance and characterize devices~\cite{gpu-exposing, gpu-concurrency, gpu-foundations}.
-%(see \mysec\ref{sec:litmus-testing}).
-However, these prior approaches have several shortcomings: (1)~they are implemented in vendor-specific languages, e.g., CUDA; (2)~they require  expert users to build, configure, and execute tests on each device, e.g., as is the case for OpenCL; or (3)~litmus tests were embedded in vendor-specific stress testing environments and thus, would not execute efficiently on other devices.
-%languages and thus required expert users to build, configure, and execute tests on each device individually, which is especially difficult since litmus test configurations must be highly tuned to evince bugs~\cite{mc-mutants}.
-This cumbersome litmus testing workflow made it infeasible to perform a large-scale study.  In contrast, \gpuharbor defines litmus tests using a neutral configuration (written in JSON), which it compiles to a portable shading language (WGSL~\cite{webgpu-sl} or SPIR-V~\cite{spir-v}). The resulting litmus testing application then tunes the testing stress automatically. The net result is a fully automated and easy-to-use tool for GPU MCS testing at large. \mytablong\ref{tab:gpu-overview} shows how many weak memory litmus test iterations were run and how many weak behaviors were observed in our study.
+As does the work in the previous chapter, \gpuharbor uses litmus tests to evaluate MCS behaviors. Existing GPU MCS testing tools execute litmus tests many times in succession to check conformance and characterize devices~\cite{gpu-exposing, gpu-concurrency, gpu-foundations}. However, these prior approaches have several shortcomings: (1)~they are implemented in vendor-specific languages, e.g., CUDA; (2)~they require  expert users to build, configure, and execute tests on each device, e.g., as is the case for OpenCL; or (3)~litmus tests were embedded in vendor-specific stress testing environments and thus, would not execute efficiently on other devices. This cumbersome litmus testing workflow made it infeasible to perform a large-scale study.  In contrast, \gpuharbor defines litmus tests using a neutral configuration (written in JSON), which it compiles to a portable shading language (WGSL~\cite{webgpu-sl} or SPIR-V~\cite{spir-v}). The resulting litmus testing application then tunes the testing stress automatically. The net result is a fully automated and easy-to-use tool for GPU MCS testing at large. \mytablong\ref{tab:gpu-overview} shows how many weak memory litmus test iterations were run and how many weak behaviors were observed in our study.
 
 We perform the following two investigations on our data set: (1)~we examine the results of MCS conformance tests and find two new bugs in mobile device GPUs from Arm and NVIDIA, and (2)~we characterize weak memory behavior profiles, e.g., the rates at which allowed weak behaviors occur and their sensitivity to system stress. Additionally, we provide several analyses on the weak memory profiles. First, we comment on how per-vendor average profiles compare; for example, AMD shows an average percentage of 1.5\% weak behaviors, while Intel shows only .06\%. We then cluster different GPUs and find that, surprisingly, cross-vendor devices often have similar profiles, while devices from the \textit{same} vendor sometimes have vastly different profiles. Finally, we discuss how the wide range of different profiles we observed can impact testing strategies and the implementation of synchronization algorithms.
-%These explorations are only the beginning of the wealth of insights that this data set can provide and we plan to open source this data to the wider community.
-
-%and (3) we show how MCS behaviors can classify and distinguish GPUs, which suggests the possibility of browser fingerprinting and suggests changes to conformance testing strategies; and
-
-% Old paragraph about our study and analyses
-% \mytablong\ref{tab:gpu-overview} shows the number of GPUs broken down by framework and vendor.  The data we collect from these GPUs allows us to characterize the rates of weak behaviors in devices, revealing how behaviors change across vendors and architectures. We also show how MCS behavioral data can be used to classify and distinguish GPUs, with implications on browser fingerprints and conformance testing strategies. Finally, we discover two bugs in GPUs on mobile devices, confirming that widescale testing is needed to guarantee the robustness of cross platform GPU frameworks.
 
 \subsection{Contributions}
 
-\paragraph{Contributions}
-
-In summary, our contributions are:
+In summary, the contributions of this chapter are:
 \begin{enumerate}
-    \item \textbf{Tooling}: We introduce \gpuharbor, a new cross-platform GPU MCS testing tool with accessible web and Android interfaces (\mysec\ref{sec:sys-overview}). %\gpuharbor enables large-scale litmus tests due to its cross-platform support (\mysec\ref{sec:sys-overview}).
-    %that includes a web interface and an Android app.  \gpuharbor enables large-scale litmus tests due to its cross-platform support.
+    \item \textbf{Tooling}: \gpuharbor, a new cross-platform GPU MCS testing tool with accessible web and Android interfaces (\mysec\ref{sec:sys-overview}).
 
-    \item \textbf{GPU MCS Weak Behavior Characterization}: We conduct a large GPU weak memory characterization and conformance testing study, collecting data from \totalDevices GPUs (\mysec\ref{sec:wb-char}).
+    \item \textbf{GPU MCS Weak Behavior Characterization}: A large GPU weak memory characterization and conformance testing study, collecting data from \totalDevices GPUs (\mysec\ref{sec:wb-char}).
 
     \item \textbf{Conformance Testing and Analysis}:
         \begin{enumerate}
-            \item We discover two unreported bugs in Arm and NVIDIA devices (\mysec\ref{sec:vulkan-bugs}).
-            \item We analyze statistical similarities across GPUs and describe the impact on testing strategies and device fingerprinting (\mysec\ref{sec:webgpu-sim}).
-            \item We discuss how weak behavior profiles impact the development and testing of synchronization algorithms on GPUs (\mysec\ref{sec:vulkan-locks}).
+            \item The discovery of two unreported bugs in Arm and NVIDIA devices (\mysec\ref{sec:vulkan-bugs}).
+            \item An analysis of statistical similarities across GPUs and a description of the impact on testing strategies and device fingerprinting (\mysec\ref{sec:webgpu-sim}).
+            \item A discussion on how weak behavior profiles impact the development and testing of synchronization algorithms on GPUs (\mysec\ref{sec:vulkan-locks}).
         \end{enumerate}
-    \item \textbf{Lessons Learned: } We detail the lessons learned while designing and running this study,  providing a guide to other researchers seeking to implement similar large experimental explorations (\mysec\ref{sec:lessons-learned}).
-    %In particular, we discuss the importance of making tools accessible to non-expert practitioners, minimizing time for experiments to complete to increase the amount of data collected, how large scale studies enable the investigation of new research questions, and ensuring testing frameworks are extensible (\mysec\ref{sec:lessons-learned}).}
+    \item \textbf{Lessons Learned: } A set of lessons learned while designing and running this study, providing a guide to other researchers seeking to implement similar large experimental explorations (\mysec\ref{sec:lessons-learned}).
 
     %\item \textbf{Pedagogical Impacts}: We show how our tool, \gpuharbor, can be used as a pedagogical tool for teaching students parallel GPU programming, <TYLER WRITE SOME MORE HERE>.
 \end{enumerate}
 
-\noindent
-All of the data we collected as part of our study, and the tools used to do so, are available as part of our artifact~\cite{gpuharbor-artifact}. In addition, \gpuharbor's web interface is hosted by UC Santa Cruz and can be found at \url{https://gpuharbor.ucsc.edu/webgpu-mem-testing/}.
-
-
-
-
+%All of the data we collected as part of the large-scale study, and the tools used to do so, are available as part of our artifact~\cite{gpuharbor-artifact}. In addition, \gpuharbor's web interface is hosted by UC Santa Cruz and can be found at \url{https://gpuharbor.ucsc.edu/webgpu-mem-testing/}.
 
 \newcommand{\exchangelock}{
     \begin{tabular}{l l}
