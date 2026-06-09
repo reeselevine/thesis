@@ -1,0 +1,78 @@
+{
+  "files.associations": {
+    "*.tex": "latex"
+  },
+  "cSpell.enableFiletypes": [
+    "bibtex",
+    "latex",
+    "markdown"
+  ],
+  "cSpell.language": "en-US",
+  "editor.wordWrap": "on",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.latex.watch.usePolling": true,
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.bcf",
+    "*.blg",
+    "*.fdb_latexmk",
+    "*.fls",
+    "*.idx",
+    "*.ilg",
+    "*.ind",
+    "*.lof",
+    "*.log",
+    "*.lot",
+    "*.nav",
+    "*.out",
+    "*.run.xml",
+    "*.snm",
+    "*.synctex.gz",
+    "*.toc",
+    "*.xdv"
+  ],
+  "latex-workshop.latex.outDir": "%DIR%",
+  "latex-workshop.latex.recipe.default": "latexmk (pdf)",
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk (pdf)",
+      "tools": [
+        "latexmk-pdf"
+      ]
+    },
+    {
+      "name": "latexmk (continuous)",
+      "tools": [
+        "latexmk-pdf-continuous"
+      ]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk-pdf",
+      "command": "latexmk",
+      "args": [
+        "-pdf",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ]
+    },
+    {
+      "name": "latexmk-pdf-continuous",
+      "command": "latexmk",
+      "args": [
+        "-pdf",
+        "-pvc",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "version": "0.2",
+  "language": "en-US",
+  "useGitignore": true,
+  "files": [
+    "**/*.bib",
+    "**/*.md",
+    "**/*.tex"
+  ],
+  "ignorePaths": [
+    "images/**",
+    "main.bbl"
+  ],
+  "words": [
+    "GPUHarbor",
+    "GPUs",
+    "litmus",
+    "WebGPU",
+    "WGSL",
+    "workgroups"
+  ]
+}

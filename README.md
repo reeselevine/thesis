@@ -21,8 +21,10 @@ Repository: https://github.com/GauSyu/thesisucsc maintained by [Xu Gao](https://
     - `bibliography` is in `contents/bib` [^2]
     - `index` is in `contents/index` [^3]
 8. Complie `main.tex`
-9. If you need to use packages or midify the settings, see `sample.pdf` or below for which .tex file to edit.
+9. If you need to use packages or modify the settings, see below for which `.tex` file to edit.
 10. Now the `\maketitle` has a stared version `\maketitle*` which only print the title page, not the copyright.
+
+Run `make clean` to remove generated LaTeX files and the PDF for `main.tex`.
 
 [^0]:You can empty these file and put your stuff instead.
 [^1]:Be careful about the package conflicts. One way to handle this is to use `scrhack` (see the manual of `scrbook`)

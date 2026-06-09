@@ -1,0 +1,58 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "LaTeX: build thesis",
+      "type": "shell",
+      "command": "latexmk",
+      "args": [
+        "-pdf",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "main.tex"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "LaTeX: build thesis (continuous)",
+      "type": "shell",
+      "command": "latexmk",
+      "args": [
+        "-pdf",
+        "-pvc",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "main.tex"
+      ],
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "LaTeX: clean thesis artifacts",
+      "type": "shell",
+      "command": "latexmk",
+      "args": [
+        "-c",
+        "main.tex"
+      ],
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
