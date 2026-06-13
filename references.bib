@@ -417,7 +417,7 @@ series = {POPL '16}
 }
 
 @misc{mc-mutants-ae,
-  author = {Levine, Reese and Guo, Tianhao and Cho, Mingun and Baker, Alan and Levien, Raph and Neto, David and Quinn, Andrew and Sorensen, Tyler},
+  author = {Levine, Reese and Guo, Tianhao and Cho, Mingun and Baker, Alan and Levien, Raph and Neto, David and Quinn, Andi and Sorensen, Tyler},
   title = {MC Mutants Artifact},
   month = {October},
   year = 2022,
@@ -430,7 +430,7 @@ series = {POPL '16}
   author       = {Reese Levine and
                   Mingun Cho and
                   Devon McKee and
-                  Andrew Quinn and
+                  Andi Quinn and
                   Tyler Sorensen},
   editor       = {Ren{\'{e}} Just and
                   Gordon Fraser},
@@ -983,13 +983,6 @@ year = {2012},
 doi = {10.1145/2254064.2254104},
 booktitle = {Proceedings of the 33rd ACM SIGPLAN Conference on Programming Language Design and Implementation},
 }
-
- @ARTICLE{mutation-testing,
-  author={DeMillo, R.A. and Lipton, R.J. and Sayward, F.G.},
-  journal={Computer},
-  title={Hints on test data selection: help for the practicing programmer},
-  year={1978},
-  doi={10.1109/C-M.1978.218136}}
 
 @misc{chromium_webgpu_report,
   title = {WebGPU technical report},
@@ -2253,13 +2246,85 @@ booktitle = {Proceedings of the 34th USENIX Conference on Security Symposium},
 author = {Zhang, Zhenkai and Cai, Kunbei and Guo, Yanan and Yao, Fan and Gao, Xing},
 title = {INVALIDATE+COMPARE: a timer-free GPU cache attack primitive},
 year = {2024},
-isbn = {978-1-939133-44-1},
 publisher = {USENIX Association},
-address = {USA},
-abstract = {While extensive research has been conducted on CPU cache side-channel attacks, the landscape of similar studies on modern GPUs remains largely uncharted. In this paper, we investigate potential information leakage threats posed by the caches in GPUs of NVIDIA's latest Ampere and Ada Lovelace generations. We first exploit a GPU cache maintenance instruction to reverse engineer certain key properties of the cache hierarchy in these GPUs, and then we introduce a novel GPU cache side-channel attack primitive named INVALIDATE+COMPARE that is designed to spy on the GPU cache activities of a victim in a timer-free manner. We further showcase the use of this primitive with two case studies. The first one is a website fingerprinting attack that can accurately identify the web pages visited by a user, while the second one uncovers keystroke data entered via a virtual keyboard. To our knowledge, these stand as the first demonstrations of timer-free cache side-channel attacks on GPUs.},
 booktitle = {Proceedings of the 33rd USENIX Conference on Security Symposium},
-articleno = {118},
-numpages = {18},
-location = {Philadelphia, PA, USA},
-series = {SEC '24}
+}
+
+@article{goens2023compound,
+author = {Goens, Andr\'{e}s and Chakraborty, Soham and Sarkar, Susmit and Agarwal, Sukarn and Oswald, Nicolai and Nagarajan, Vijay},
+title = {Compound Memory Models},
+year = {2023},
+publisher = {Association for Computing Machinery},
+doi = {10.1145/3591267},
+journal = {Proc. ACM Program. Lang.},
+}
+
+@misc{basu2025gpu-mcs-blog,
+author = {Basu, Arkaprava and Gavrilenko, Natalia and Heljanko, Keijo and Levine, Reese and Nayak, Ajay Ashok and Ponce de Leon, Hernan Luis and Sorensen, Tyler and Tong, Haining},
+title = {GPU Memory Consistency: Specifications, Testing, and Opportunities for Performance Tooling},
+year = {2025},
+month = jun,
+howpublished = {SIGARCH Computer Architecture Today},
+url = {https://www.sigarch.org/gpu-memory-consistency-specifications-testing-and-opportunities-for-performance-tooling/},
+}
+
+@mastersthesis{srivastava2024testing,
+  author = {Srivastava, Sanya},
+  title = {Testing Memory Models of Heterogeneous CPU-GPU Systems},
+  school = {University of California, Santa Cruz},
+  year = {2024},
+  url = {https://escholarship.org/uc/item/5hm7q1jv}
+}
+
+@inproceedings{panneke2026jmt,
+author = {Panneke, Lukas and Wehrheim, Heike},
+title = {jMT: Testing Correctness of Java Memory Models},
+year = {2026},
+isbn = {978-3-032-22748-5},
+publisher = {Springer-Verlag},
+address = {Berlin, Heidelberg},
+url = {https://doi.org/10.1007/978-3-032-22749-2_13},
+doi = {10.1007/978-3-032-22749-2_13},
+abstract = {According to common belief, the Java memory model is broken. In the past, several approaches have proposed repairs, often only to find new programs exhibiting unexpected, unintuitive behavior or the model forbidding standard compiler optimizations. The complexity of defining a memory model for concurrent Java lies in the fact that it requires a multi-execution model. Multi-execution models need to inspect many potential executions of a program in order to find the valid ones. Tools automatically validating novel proposals of Java memory models are, however, largely lacking.To alleviate this problem, we introduce jMT, a novel tool for constructing multi-execution semantics for concurrent Java programs. jMT relies on single-execution models defining well-formed execution graphs, based on which it builds valid multi-execution semantics via causality checking. Thereby, jMT supports evaluating new proposals of Java memory models (JMMs) on a per-program basis. jMT can furthermore be employed for testing the conformance of JMMs to existing compilation schemes and compilers. Our evaluation of jMT on 169 litmus tests reveals a number of interesting insights into existing JMMs.},
+booktitle = {Tools and Algorithms for the Construction and Analysis of Systems: 32nd International Conference, TACAS 2026, Held as Part of the International Joint Conferences on Theory and Practice of Software, ETAPS 2026, Turin, Italy, April 11–16, 2026, Proceedings, Part II},
+pages = {257–276},
+numpages = {20},
+keywords = {Java memory model, multi-execution models, compilation},
+location = {Turin, Italy}
+}
+
+@misc{olah_research_taste,
+  author = {Christopher Olah},
+  title = {Research Taste Exercises},
+  howpublished = {\url{https://colah.github.io/notes/taste/}},
+}
+
+@misc{cheng2025barbariansgateaiupending,
+      title={Barbarians at the Gate: How AI is Upending Systems Research},
+      author={Audrey Cheng and Shu Liu and Melissa Pan and Zhifei Li and Bowen Wang and Alex Krentsel and Tian Xia and Mert Cemri and Jongseok Park and Shuo Yang and Jeff Chen and Lakshya Agrawal and Aditya Desai and Jiarong Xing and Koushik Sen and Matei Zaharia and Ion Stoica},
+      year={2025},
+      eprint={2510.06189},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2510.06189},
+}
+
+@online{neurips2026_ai_generated_papers,
+  author = {{NeurIPS 2026 Communication Chairs}},
+  title = {AI-Generated Papers in the NeurIPS 2026 Position Paper Track},
+  year = {2026},
+  month = jun,
+  day = {2},
+  url = {https://blog.neurips.cc/2026/06/02/ai-generated-papers-in-the-neurips-2026-position-paper-track/},
+  note = {Accessed: 2026-06-12}
+}
+
+@online{pangram2025_iclr_reviews_ai,
+  title = {Pangram Predicts 21\% of ICLR Reviews are AI-Generated},
+  organization = {Pangram Labs},
+  year = {2025},
+  month = nov,
+  day = {18},
+  url = {https://www.pangram.com/blog/pangram-predicts-21-of-iclr-reviews-are-ai-generated},
+  note = {Accessed: 2026-06-12}
 }

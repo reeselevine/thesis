@@ -125,9 +125,16 @@
 \maketitle
 \begin{singlespace}
 	\tableofcontents
-\addchap{Figures and Tables}
+\addchap{Figures, Tables, Listings, and Algorithms}
 	\listoffigures
 	\listoftables
+	\begingroup
+		\makeatletter
+		\renewcommand*\float@listhead[1]{\section*{#1}}
+		\makeatother
+		\lstlistoflistings
+		\listofalgorithms
+	\endgroup
 \end{singlespace}
 \begin{abstract}
 	\input{contents/0.1.abstract}
@@ -149,10 +156,10 @@
 \input{contents/5.saferace}
 \input{contents/6.conclusion}
 \clearpage
-\appendix
-\part*{Appendix}
-\addparttocentry{}{Appendix}
-	\input{contents/appendix}
+%\appendix
+%\part*{Appendix}
+%\addparttocentry{}{Appendix}
+%	\input{contents/appendix}
 \addtocontents{toc}{\protect\vspace{10pt}}%
 \backmatter
 	\begin{singlespace}
