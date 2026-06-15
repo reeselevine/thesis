@@ -1,13 +1,8 @@
-@article{Lamport79,
+@article{lamport1979multiprocessor,
 author = {Lamport, L.},
 title = {How to Make a Multiprocessor Computer That Correctly Executes Multiprocess Programs},
 year = {1979},
-publisher = {IEEE},
-volume = {28},
-number = {9},
 journal = {IEEE Trans. Comput.},
-pages = {690–691},
-numpages = {2},
 doi = {10.1109/TC.1979.1675439},
 }
 
@@ -15,7 +10,7 @@ doi = {10.1109/TC.1979.1675439},
 author = {{Apple}},
 title = "{Metal} Shading Language Specification, Version 4.0",
 year = {2026},
-howpublished = "\url{https://developer.apple.com/metal/Metal-Shading-Language-Specification.pdf}"
+url = {https://developer.apple.com/metal/Metal-Shading-Language-Specification.pdf}
 }
 
 
@@ -23,130 +18,104 @@ howpublished = "\url{https://developer.apple.com/metal/Metal-Shading-Language-Sp
 author = {{Khronos Groups}},
 title = {{Test message passing using permuted indices}},
 year = {2022},
-month = {February},
-howpublished="\url{https://github.com/KhronosGroup/VK-GL-CTS/commit/0f0473342f80ab4ddcdd3588c034fc41b285e6ca}"
+url = {https://github.com/KhronosGroup/VK-GL-CTS/commit/0f0473342f80ab4ddcdd3588c034fc41b285e6ca}
 }
 
 @misc{archtest,
 author = {{William W. Collier}},
 title = {{ARCHTEST}},
-howpublished = "\url{http://www.mpdiag.com/archtest.html}",
+url = {http://www.mpdiag.com/archtest.html},
 year = {1994},
-month = {January}
 }
 
 @misc{directx,
 author = {{Microsoft}},
 title = {Programming guide for {Direct3D} 11},
-howpublished = "\url{https://docs.microsoft.com/en-us/windows/win32/direct3d11/dx-graphics-overviews}",
+url = {https://docs.microsoft.com/en-us/windows/win32/direct3d11/dx-graphics-overviews},
 year = "2020"
 }
 
 @misc{webgpu-spec-change,
 author = {Alan Baker},
 title = {Fixes to memory model for barriers and atomics},
-howpublished="\url{https://github.com/gpuweb/gpuweb/pull/2297}",
+url = {https://github.com/gpuweb/gpuweb/pull/2297},
 year = {2021},
-month = {November}
 }
 
 @misc{webgpu-cts,
 author = {Reese Levine},
 title = {Add comprehensive memory model tests},
-howpublished="\url{https://github.com/gpuweb/cts/pull/1330}",
+url = {https://github.com/gpuweb/cts/pull/1330},
 year = {2022},
-month = {May}
 }
 
-@inproceedings{memsynth,
+@inproceedings{bornholt2017memsynth,
   author    = {James Bornholt and
                Emina Torlak},
   title     = {Synthesizing Memory Models From Framework Sketches and Litmus Tests},
   booktitle = {Programming
                Language Design and Implementation ({PLDI})},
-  publisher = {{ACM}},
   year      = {2017},
   doi       = {10.1145/3062341.3062353},
 }
 
-@inproceedings{HAM11,
+@inproceedings{madorhaim2011litmus,
   author    = {Sela Mador{-}Haim and
                Rajeev Alur and
                Milo M. K. Martin},
   title     = {Litmus Tests for Comparing Memory Consistency Models: How Long do
                They Need to be?},
   booktitle = {Design Automation Conference ({DAC})},
-  publisher = {{ACM}},
   year      = {2011},
   doi       = {10.1145/2024724.2024842},
 }
 
-@INPROCEEDINGS{perple,
+@inproceedings{melissaris2020perple,
   author={Melissaris, Themis and Markakis, Markos and Shaw, Kelly and Martonosi, Margaret},
   booktitle={International Symposium on Microarchitecture (MICRO)},
-  title={PerpLE: Improving the Speed and Effectiveness of Memory Consistency Testing},
+  title={{PerpLE}: Improving the Speed and Effectiveness of Memory Consistency Testing},
   year={2020},
   doi={10.1109/MICRO50266.2020.00037}}
 
-@ARTICLE{mutation-testing,
+@article{demillo1978hints,
   author={DeMillo, R.A. and Lipton, R.J. and Sayward, F.G.},
   journal={Computer},
   title={Hints on Test Data Selection: Help for the Practicing Programmer},
   year={1978},
-  volume={11},
-  number={4},
-  pages={34-41},
   doi={10.1109/C-M.1978.218136}}
 
-@INPROCEEDINGS{concurrent-mut,
+@inproceedings{carver1993mutation,
   author={Carver, R.},
   booktitle={Proceedings of IEEE International Test Conference - (ITC)},
   title={Mutation-Based Testing of Concurrent Programs},
   year={1993},
-  volume={},
-  number={},
-  pages={845-853},
   doi={10.1109/TEST.1993.470617}}
 
-@inbook{flaky-tests,
+@inproceedings{shi2019flaky,
 author = {Shi, August and Bell, Jonathan and Marinov, Darko},
 title = {Mitigating the Effects of Flaky Tests on Mutation Testing},
 year = {2019},
-isbn = {9781450362245},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/3293882.3330568},
+doi = {10.1145/3293882.3330568},
 booktitle = {Proceedings of the 28th ACM SIGSOFT International Symposium on Software Testing and Analysis},
-pages = {112–122},
-numpages = {11}
 }
 
-@article{black-box,
+@article{budd1985specification,
 title = {Program Testing by Specification Mutation},
 journal = {Computer Languages},
-volume = {10},
-number = {1},
-pages = {63-73},
 year = {1985},
-issn = {0096-0551},
-doi = {https://doi.org/10.1016/0096-0551(85)90011-6},
-url = {https://www.sciencedirect.com/science/article/pii/0096055185900116},
+doi = {10.1016/0096-0551(85)90011-6},
 author = {Timothy A. Budd and Ajei S. Gopal},
-keywords = {Testing, Specifications, Validation, Verification, Programming languages, Predicate calculus, Mutation analysis},
 }
 
 
-@ARTICLE{mutation-survey,
+@article{jia2011mutation,
   author={Jia, Yue and Harman, Mark},
   journal={IEEE Transactions on Software Engineering},
   title={An Analysis and Survey of the Development of Mutation Testing},
   year={2011},
-  volume={37},
-  number={5},
-  pages={649-678},
   doi={10.1109/TSE.2010.62}}
 
-@article{power-bug,
+@misc{manerkar2016counterexamples,
   author    = {Yatin A. Manerkar and
                Caroline Trippel and
                Daniel Lustig and
@@ -154,122 +123,93 @@ keywords = {Testing, Specifications, Validation, Verification, Programming langu
                Margaret Martonosi},
   title     = {Counterexamples and Proof Loophole for the {C/C++} to {POWER} and
                {ARMv7} Trailing-Sync Compiler Mappings},
-  journal   = {CoRR},
-  volume    = {abs/1611.01507},
   year      = {2016},
-  eprinttype = {arXiv},
+  eprinttype = {arxiv},
   eprint    = {1611.01507},
 }
 
-@inproceedings{rtl-check,
+@inproceedings{manerkar2017rtlcheck,
   author    = {Yatin A. Manerkar and
                Daniel Lustig and
                Margaret Martonosi and
                Michael Pellauer},
 
-  title     = {RTLcheck: Verifying the Memory Consistency of {RTL} Designs},
+  title     = {{RTLcheck}: Verifying the Memory Consistency of {RTL} Designs},
   booktitle = { MICRO },
-  publisher = {{ACM}},
   year      = {2017},
   doi       = {10.1145/3123939.3124536},
 }
 
 
 
-@INPROCEEDINGS{autonomous-gpu-testing,
+@inproceedings{ta2019autonomous,
   author={Ta, Tuan and Zhang, Xianwei and Gutierrez, Anthony and Beckmann, Bradford M.},
   booktitle={2019 IEEE International Symposium on Workload Characterization (IISWC)},
   title={Autonomous Data-Race-Free {GPU} Testing},
   year={2019},
-  volume={},
-  number={},
-  pages={81-92},
   doi={10.1109/IISWC47752.2019.9042019}}
 
-@inproceedings{x86-formal,
+@inproceedings{owens2009x86,
 author = {Owens, Scott and Sarkar, Susmit and Sewell, Peter},
 booktitle={Theorem Proving in Higher Order Logics},
 year = {2009},
-month = {08},
-pages = {391-407},
 title = {A Better x86 Memory Model: {x86-TSO}},
-isbn = {978-3-642-03358-2},
 doi = {10.1007/978-3-642-03359-9_27}
 }
 
-@inproceedings{arm-formal,
+@inproceedings{alglave2009semantics,
 author = {Alglave, Jade and Fox, Anthony and Ishtiaq, Samin and Myreen, Magnus O. and Sarkar, Susmit and Sewell, Peter and Nardelli, Francesco Zappa},
 title = {The Semantics of {Power} and {ARM} Multiprocessor Machine Code},
 year = {2009},
-isbn = {9781605584171},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/1481839.1481842},
 doi = {10.1145/1481839.1481842},
 booktitle = {Workshop on Declarative Aspects of Multicore Programming},
-pages = {13–24},
-numpages = {12}
 }
 
-@inproceedings{sharedarraybuffer,
+@inproceedings{watt2020repairing,
 author = {Watt, Conrad and Pulte, Christopher and Podkopaev, Anton and Barbier, Guillaume and Dolan, Stephen and Flur, Shaked and Pichon-Pharabod, Jean and Guo, Shu-yu},
 title = {Repairing and Mechanising the {JavaScript} Relaxed Memory Model},
 year = {2020},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/3385412.3385973},
 doi = {10.1145/3385412.3385973},
 booktitle = {Programming Language Design and Implementation {(PLDI)}},
 
 }
 
-@inproceedings{hrf-direct,
+@inproceedings{hower2014hrf,
 author = {Hower, Derek R. and Hechtman, Blake A. and Beckmann, Bradford M. and Gaster, Benedict R. and Hill, Mark D. and Reinhardt, Steven K. and Wood, David A.},
 title = {Heterogeneous-Race-Free Memory Models},
 year = {2014},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/2541940.2541981},
 booktitle = {Architectural Support for Programming Languages and Operating Systems ({ASPLOS})},
 }
 
-@misc{mc-mutants-ae,
+@misc{levine2022mcmutantsartifact,
   author = {Levine, Reese and Guo, Tianhao and Cho, Mingun and Baker, Alan and Levien, Raph and Neto, David and Quinn, Andi and Sorensen, Tyler},
-  title = {MC Mutants Artifact},
-  month = {October},
+  title = {{MC Mutants} Artifact},
   year = 2022,
   publisher = {Zenodo},
-  doi = {10.5281/zenodo.7196061},
-  url = {https://doi.org/10.5281/zenodo.7196061}
+  doi = {10.5281/zenodo.7196061}
 }
 
-@inproceedings{gpuharbor,
+@inproceedings{levine2023gpuharbor,
   author       = {Reese Levine and
                   Mingun Cho and
                   Devon McKee and
                   Andi Quinn and
                   Tyler Sorensen},
-  editor       = {Ren{\'{e}} Just and
-                  Gordon Fraser},
-  title        = {GPUHarbor: Testing {GPU} Memory Consistency at Large (Experience Paper)},
+  title        = {{GPUHarbor}: Testing {GPU} Memory Consistency at Large (Experience Paper)},
   booktitle    = { ISSTA },
-  pages        = {779--791},
-  publisher    = {{ACM}},
   year         = {2023},
-  url          = {https://doi.org/10.1145/3597926.3598095},
-  doi          = {10.1145/3597926.3598095},
-  timestamp    = {Mon, 17 Jul 2023 12:40:11 +0200},
-  biburl       = {https://dblp.org/rec/conf/issta/LevineCM0023.bib},
-  bibsource    = {dblp computer science bibliography, https://dblp.org}
+  doi          = {10.1145/3597926.3598095}
 }
 
-@misc{rocket-science,
-author = {{ Linus Torvalds }},
-title = "LWN.net",
+@misc{torvalds2021volatileif,
+author = {Linus Torvalds},
+title = {Re: [RFC] LKMM: Add volatile\_if()},
 year = {2021},
-month = {June},
-howpublished= "\url{https://lwn.net/ml/linux-kernel/CAHk-=wgJZVjdZYO7iNb0hFz-iynrEBcxNcT8_u317J0-nzv59w@mail.gmail.com/}"
+url = {https://lwn.net/ml/linux-kernel/CAHk-=wgJZVjdZYO7iNb0hFz-iynrEBcxNcT8_u317J0-nzv59w@mail.gmail.com/}
 }
 
-@article{cuda-leaks,
+@article{dipietro2016cudaleaks,
 author = {Pietro, Roberto Di and Lombardi, Flavio and Villani, Antonio},
 title = {{CUDA} leaks: a detailed hack for {CUDA} and a (partial) fix},
 year = {2016},
@@ -277,57 +217,59 @@ doi = {10.1145/2801153},
 journal = {ACM Trans. Embed. Comput. Syst.},
 }
 
-@INPROCEEDINGS{stealing-webpages,
+@inproceedings{lee2014stealing,
   author={Lee, Sangho and Kim, Youngsok and Kim, Jangwoo and Kim, Jong},
   booktitle={2014 IEEE Symposium on Security and Privacy},
   title={Stealing webpages rendered on your browser by exploiting {GPU} vulnerabilities},
   year={2014},
   doi={10.1109/SP.2014.9}}
 
-@article{leftover-locals,
+@misc{sorensen2024leftoverlocals,
       title={Leftover{L}ocals: listening to {LLM} responses through leaked {GPU} local memory},
       author={Tyler Sorensen and Heidy Khlaaf},
       year={2024},
-      doi={10.48550/arXiv.2401.16603},
+      eprint={2401.16603},
+      eprinttype={arxiv},
 }
 
-@article{whispering-pixels,
+@misc{pustelnik2024whispering,
       title={Whispering pixels: exploiting uninitialized register accesses in modern {GPU}s},
       author={Frederik Dermot Pustelnik and Xhani Marvin Saß and Jean-Pierre Seifert},
       year={2024},
-      doi={10.48550/arXiv.2401.08881},
+      eprint={2401.08881},
+      eprinttype={arxiv},
 }
 
 @misc{heartbleed,
   author       = {NIST National Vulnerability Database},
   title        = {{CVE-2014-0160 (Heartbleed)}},
   year         = {2014},
-  howpublished = {\url{https://nvd.nist.gov/vuln/detail/cve-2014-0160}},
+  url          = {https://nvd.nist.gov/vuln/detail/cve-2014-0160},
 }
 
 @misc{trident,
   author       = {NIST National Vulnerability Database},
   title        = {{CVE-2016-4655}},
   year         = {2016},
-  howpublished = {\url{https://nvd.nist.gov/vuln/detail/CVE-2016-4655}},
+  url          = {https://nvd.nist.gov/vuln/detail/CVE-2016-4655},
 }
 
 @misc{slammer-worm,
   author       = {NIST National Vulnerability Database},
   title        = {{CVE-2002-0649}},
   year         = {2002},
-  howpublished = {\url{https://nvd.nist.gov/vuln/detail/CVE-2002-0649}},
+  url          = {https://nvd.nist.gov/vuln/detail/CVE-2002-0649},
 }
 
-@inproceedings{no-benign-races,
+@inproceedings{boehm2011benign,
 author = {Hans-J. Boehm},
 title = {How to miscompile programs with "benign" data races },
 booktitle = {3rd USENIX Workshop on Hot Topics in Parallelism},
 year = {2011},
-url = {https://dl.acm.org/doi/10.5555/2001252.2001255},
+doi = {10.5555/2001252.2001255},
 }
 
-@article{weak-wasm,
+@article{watt2019weakening,
 author = {Watt, Conrad and Rossberg, Andreas and Pichon-Pharabod, Jean},
 title = {Weakening {W}eb{A}ssembly},
 year = {2019},
@@ -339,30 +281,30 @@ journal = {Proc. ACM Program. Lang.},
   author       = {Microsoft Security Response Center},
   title        = {We need a safer systems programming language},
   year         = {2019},
-  howpublished = {\url{https://msrc.microsoft.com/blog/2019/07/we-need-a-safer-systems-programming-language/}},
+  url          = {https://msrc.microsoft.com/blog/2019/07/we-need-a-safer-systems-programming-language/},
 }
 
 @misc{google2019queue,
   author       = {Google Security Blog},
   title        = {Queue hardening enhancements},
   year         = {2019},
-  howpublished = {\url{https://security.googleblog.com/2019/05/queue-hardening-enhancements.html}},
+  url          = {https://security.googleblog.com/2019/05/queue-hardening-enhancements.html},
 }
 
-@misc{vulkan1.3,
+@misc{vulkan,
   author       = {Khronos Group},
-  title        = {Vulkan 1.3 Specification},
-  howpublished = {\url{https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html}},
+  title        = {Vulkan Specification},
+  url          = {https://registry.khronos.org/vulkan/specs/latest/html/vkspec.html},
 }
 
 @misc{apple_metal,
   author       = {{Apple Inc.}},
   title        = {Metal},
-  howpublished = {\url{https://developer.apple.com/documentation/metal/}},
+  url          = {https://developer.apple.com/documentation/metal/},
   year = {2025}
 }
 
-@inproceedings{java,
+@inproceedings{manson2005java,
 author = {Manson, Jeremy and Pugh, William and Adve, Sarita V.},
 title = {The {Java} memory model},
 year = {2005},
@@ -370,7 +312,7 @@ doi = {10.1145/1040305.1040336},
 booktitle = {Proceedings of the 32nd ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
 }
 
-@inproceedings{bounding-races,
+@inproceedings{dolan2018bounding,
 author = {Dolan, Stephen and Sivaramakrishnan, KC and Madhavapeddy, Anil},
 title = {Bounding data races in space and time},
 year = {2018},
@@ -379,15 +321,15 @@ booktitle = {Proceedings of the 39th ACM SIGPLAN Conference on Programming Langu
 }
 
 @misc{dawn,
+  author = {{Dawn Authors}},
   title = {Dawn: A {WebGPU} implementation},
-  howpublished = {\url{https://dawn.googlesource.com/dawn}},
-  year = {2024}
+  url = {https://dawn.googlesource.com/dawn},
 }
 
 @misc{wgpu,
   author       = {Rust Graphics Mages},
   title        = {{w}gpu},
-  howpublished = {\url{https://github.com/gfx-rs/wgpu}},
+  url          = {https://github.com/gfx-rs/wgpu},
 }
 
 @software{WebKit,
@@ -412,7 +354,7 @@ doi = {10.1145/3591294},
 journal = {Proc. ACM Program. Lang.},
 }
 
-@inproceedings{csmith,
+@inproceedings{yang2011csmith,
 author = {Yang, Xuejun and Chen, Yang and Eide, Eric and Regehr, John},
 title = {Finding and understanding bugs in {C} compilers},
 year = {2011},
@@ -423,11 +365,11 @@ booktitle = {Proceedings of the 32nd ACM SIGPLAN Conference on Programming Langu
 @misc{nist_cve_2022_32947,
   author       = {NIST National Vulnerability Database},
   title        = {{CVE}-2022-32947},
-  howpublished = {\url{https://nvd.nist.gov/vuln/detail/CVE-2022-32947}},
+  url          = {https://nvd.nist.gov/vuln/detail/CVE-2022-32947},
   year         = {2022},
 }
 
-@inproceedings {guo2024usenix,
+@inproceedings{guo2024usenix,
 author = {Yanan Guo and Zhenkai Zhang and Jun Yang},
 title = {{GPU} memory exploitation for fun and profit},
 booktitle = {33rd USENIX Security Symposium (USENIX Security 24)},
@@ -443,7 +385,7 @@ doi = {10.1145/3453483.3454092},
 booktitle = {Proceedings of the 42nd ACM SIGPLAN International Conference on Programming Language Design and Implementation},
 }
 
-@article{McKeeman1998DifferentialTF,
+@article{mckeeman1998differential,
   title={Differential testing for software},
   author={William M. McKeeman},
   journal={Digit. Tech. J.},
@@ -451,13 +393,14 @@ booktitle = {Proceedings of the 42nd ACM SIGPLAN International Conference on Pro
   url={https://api.semanticscholar.org/CorpusID:14018070}
 }
 
-@article{chen1998metamorphic,
+@misc{chen1998metamorphic,
   author       = {Tsong Yueh Chen and
                   Shing{-}Chi Cheung and
                   Siu{-}Ming Yiu},
   title        = {Metamorphic testing: {a} new approach for generating next test cases},
   year         = {1998},
-  doi          = {10.48550/arXiv.2002.12543}
+  eprint       = {2002.12543},
+  eprinttype   = {arxiv}
 }
 
 @inproceedings{flanagan2010destraces,
@@ -532,7 +475,7 @@ doi = {10.1145/1889997.1890000},
 journal = {ACM Trans. Program. Lang. Syst.},
 }
 
-@INPROCEEDINGS{schweizer2015atomiccost,
+@inproceedings{schweizer2015atomiccost,
   author={Schweizer, Hermann and Besta, Maciej and Hoefler, Torsten},
   booktitle={2015 International Conference on Parallel Architecture and Compilation},
   title={Evaluating the cost of atomic operations on modern architectures},
@@ -542,9 +485,9 @@ journal = {ACM Trans. Program. Lang. Syst.},
 @inproceedings{burtchell2024characterizing,
    title={Characterizing {CUDA} and {OpenMP} synchronization primitives},
    author={Burtchell, Brandon Alexander and Burtscher, Martin},
-   booktitle={2024 IEEE International Symposium on Workload Characterization},
+   booktitle={2024 IEEE International Symposium on Workload Characterization (IISWC)},
    year={2024},
-   url={https://userweb.cs.txstate.edu/~burtscher/papers/iiswc24b.pdf}
+   doi={10.1109/IISWC63097.2024.00034}
 }
 
 @inproceedings{betts2012gpuverify,
@@ -571,7 +514,7 @@ doi = {10.1145/1882291.1882320},
 booktitle = {Proceedings of the Eighteenth ACM SIGSOFT International Symposium on Foundations of Software Engineering},
 }
 
-@INPROCEEDINGS{johnson2013nostatic,
+@inproceedings{johnson2013nostatic,
   author={Johnson, Brittany and Song, Yoonki and Murphy-Hill, Emerson and Bowdidge, Robert},
   booktitle={2013 35th International Conference on Software Engineering},
   title={Why don't software developers use static analysis tools to find bugs?},
@@ -586,17 +529,19 @@ doi = {10.1145/3188720},
 journal = {Commun. ACM},
 }
 
-@INPROCEEDINGS{nachtigall2019explainingstatic,
+@inproceedings{nachtigall2019explainingstatic,
   author={Nachtigall, Marcus and Nguyen Quang Do, Lisa and Bodden, Eric},
   booktitle={2019 34th IEEE/ACM International Conference on Automated Software Engineering Workshop},
   title={Explaining Static Analysis - A Perspective},
   year={2019},
   doi={10.1109/ASEW.2019.00023}}
 
-@article{abbott1976toctou,
+@techreport{abbott1976toctou,
 author = {Abbott, R. and Chin, J. and Donnelley, Jed and Konigsford, W. and Tokubo, S. and Webb, D.},
 year = {1976},
 title = {Security analysis and enhancements of computer operating systems},
+institution = {National Bureau of Standards},
+number = {NBSIR 76-1041},
 url = {https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nbsir76-1041.pdf}
 }
 
@@ -608,7 +553,7 @@ doi = {10.1145/2837614.2837615},
 booktitle = {Proceedings of the 43rd Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
 }
 
-@ARTICLE{weiser1984slicing,
+@article{weiser1984slicing,
   author={Weiser, Mark},
   journal={IEEE Transactions on Software Engineering},
   title={Program slicing},
@@ -618,45 +563,31 @@ booktitle = {Proceedings of the 43rd Annual ACM SIGPLAN-SIGACT Symposium on Prin
 @misc{microsoft2024d3d11csaccess,
   title = {{Direct3D} 11 Advanced Stages - Compute Shader Access},
   author = {Microsoft},
-  year = {2024},
   url = {https://learn.microsoft.com/en-us/windows/win32/direct3d11/direct3d-11-advanced-stages-cs-access},
 }
 
 @misc{vulkan2024robustness,
   title = {Vulkan Guide - Robustness},
   author = {Khronos Group},
-  year = {2024},
   url = {https://docs.vulkan.org/guide/latest/robustness.html},
 }
 
 @misc{cppreference2024multithread,
   title = {Multithreading - {C++} Language Documentation},
   author = {cppreference.com},
-  year = {2024},
   url = {https://en.cppreference.com/w/cpp/language/multithread},
 }
 
 @misc{wgslspec,
   title = {{WebGPU Shading Language (WGSL)}},
   author = {{W3C}},
-  howpublished = {\url{https://www.w3.org/TR/WGSL/}},
-  year = {2024},
-  note = {Accessed: 2024-10-08}
+  url = {https://www.w3.org/TR/WGSL/},
 }
 
 @misc{ldraw2024,
   title = {{ld\_raw (sm5 - asm)}},
   author = {{Microsoft}},
-  howpublished = {\url{https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/ld-raw--sm5---asm-}},
-  year = {2024},
-}
-
-@misc{spirv2024,
-  title = {{SPIR-V} Unified Specification},
-  author = {Khronos Group},
-  year = {2024},
-  howpublished = {\url{https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html\#_memory_instructions}},
-  note = {Accessed: 2024-10-07}
+  url = {https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/ld-raw--sm5---asm-},
 }
 
 @article{liew2024dataraces,
@@ -684,17 +615,15 @@ booktitle = {Proceedings of the 33rd ACM SIGPLAN Conference on Programming Langu
 }
 
 @misc{chromium_webgpu_report,
-  title = {WebGPU technical report},
+  title = {{WebGPU} technical report},
   author = {Chromium Project},
-  year = {2023},
-  howpublished = {\url{https://chromium.googlesource.com/chromium/src/+/main/docs/security/research/graphics/webgpu_technical_report.md}},
+  url = {https://chromium.googlesource.com/chromium/src/+/main/docs/security/research/graphics/webgpu_technical_report.md},
 }
 
 @article{kopcke2024descend,
 author = {K\"{o}pcke, Bastian and Gorlatch, Sergei and Steuwer, Michel},
 title = {Descend: a safe {GPU} systems programming language},
 year = {2024},
-url = {https://doi.org/10.1145/3656411},
 doi = {10.1145/3656411},
 journal = {Proc. ACM Program. Lang.},
 }
@@ -706,75 +635,67 @@ journal = {Proc. ACM Program. Lang.},
   url          = {https://github.com/gfx-rs/wgpu/pull/6431},
 }
 
-@manual{nvidia2024cudaada,
-  title        = {CUDA Ada GPU architecture tuning guide},
+@misc{nvidia2024cudaada,
+  title        = {{CUDA} Ada {GPU} architecture tuning guide},
   author       = {NVIDIA Corporation},
-  year         = 2024,
-  note         = {\url{https://docs.nvidia.com/cuda/ada-tuning-guide/index.html}},
-  organization = {NVIDIA Corporation},
+  url          = {https://docs.nvidia.com/cuda/ada-tuning-guide/index.html},
 }
 
 @misc{ruan2024webllmhighperformanceinbrowserllm,
-      title={WebLLM: a high-performance in-browser LLM inference engine},
+      title={{WebLLM}: a high-performance in-browser {LLM} inference engine},
       author={Charlie F. Ruan and Yucheng Qin and Xun Zhou and Ruihang Lai and Hongyi Jin and Yixin Dong and Bohan Hou and Meng-Shiun Yu and Yiyan Zhai and Sudeep Agarwal and Hangrui Cao and Siyuan Feng and Tianqi Chen},
       year={2024},
       eprint={2412.15803},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2412.15803},
+      eprinttype={arxiv},
 }
 
 @misc{XenovaPhi3WebGPU,
   author = {Xenova},
   title = {Experimental {Phi-3} {WebGPU}},
-  year = {2025},
   url = {https://huggingface.co/spaces/Xenova/experimental-phi3-webgpu},
 }
 
 @misc{WebGPUSamples,
   author = {{WebGPU Samples}},
-  title = {WebGPU Samples},
-  year = {2025},
+  title = {{WebGPU} Samples},
   url = {https://webgpu.github.io/webgpu-samples/},
 }
 
 @misc{FFTOceanDemo,
   author = {{Babylon.js Team}},
-  title = {Babylon.js FFT ocean demo},
-  year = {2025},
+  title = {{Babylon.js} {FFT} ocean demo},
   url = {https://playground.babylonjs.com/?webgpu#YX6IB8#758},
 }
 
 @misc{onnxruntime_webgpu_tutorial,
-  title = {Using WebGPU with ONNX Runtime},
+  title = {Using {WebGPU} with {ONNX Runtime}},
   author = {ONNX Runtime developers},
-  year = {2025},
-  howpublished = {\url{https://onnxruntime.ai/docs/tutorials/web/ep-webgpu.html}},
+  url = {https://onnxruntime.ai/docs/tutorials/web/ep-webgpu.html},
 }
 
 @misc{apache_tvm,
-  title = {Apache TVM: Open Deep Learning Compiler Stack},
+  title = {Apache {TVM}: Open Deep Learning Compiler Stack},
   author = {Apache Software Foundation},
-  howpublished = {\url{https://github.com/apache/tvm}},
+  url = {https://github.com/apache/tvm},
 }
 
 @inproceedings{sinclair2017rats,
 author = {Sinclair, Matthew D. and Alsop, Johnathan and Adve, Sarita V.},
-title = {Chasing away RAts: semantics and evaluation for relaxed atomics on heterogeneous systems},
+title = {Chasing away {RAts}: semantics and evaluation for relaxed atomics on heterogeneous systems},
 year = {2017},
 doi = {10.1145/3079856.3080206},
 booktitle = {Proceedings of the 44th Annual International Symposium on Computer Architecture},
 }
 
 @inproceedings{serbryany2012asan,
-title	= {AddressSanitizer: a fast address sanity checker},
+title	= {{AddressSanitizer}: a fast address sanity checker},
 author	= {Konstantin Serebryany and Derek Bruening and Alexander Potapenko and Dmitry Vyukov},
 year	= {2012},
-URL	= {https://www.usenix.org/conference/usenixfederatedconferencesweek/addresssanitizer-fast-address-sanity-checker},
+url	= {https://www.usenix.org/conference/usenixfederatedconferencesweek/addresssanitizer-fast-address-sanity-checker},
 booktitle	= {USENIX ATC 2012}
 }
 
-@InProceedings{ruef2019checkedc,
+@inproceedings{ruef2019checkedc,
 author="Ruef, Andrew
 and Lampropoulos, Leonidas
 and Sweet, Ian
@@ -789,39 +710,33 @@ doi = {10.1007/978-3-030-17138-4_4}
 @misc{whisperLargeV3TurboWebGPU,
   author = "{webml-community}",
   title = "{Whisper Large V3 Turbo WebGPU}",
-  year = {2025},
   url = {https://huggingface.co/spaces/webml-community/whisper-large-v3-turbo-webgpu},
 }
 
 @misc{mediapipeStudioLLM,
   author = "{Google MediaPipe Studio}",
   title = "{MediaPipe Studio: LLM inference demo}",
-  year = {2025},
   url = {https://mediapipe-studio.webapps.google.com/studio/demo/llm_inference},
 }
 
 @misc{transformersjsDocs,
   author = "{Hugging Face}",
   title = "{Transformers.js documentation}",
-  year = {2025},
   url = {https://huggingface.co/docs/transformers.js/en/index},
 }
 
 @misc{wgpuIssue4972,
   author = "{gfx-rs Developers}",
   title = "{wgpu Issue \#4972: support for buffer mapping in chrome WebGPU}",
-  year = {2025},
   url = {https://github.com/gfx-rs/wgpu/issues/4972},
-  note = {Accessed: 2025-03-12}
 }
 @misc{cppreferenceAtomic,
   author = "{cppreference.com}",
   title = "{std::atomic - C++ Reference}",
-  year = {2025},
   url = {https://en.cppreference.com/w/cpp/atomic/atomic},
 }
 
-@ARTICLE{zeller2002deltadebugging,
+@article{zeller2002deltadebugging,
   author={Zeller, A. and Hildebrandt, R.},
   journal={IEEE Transactions on Software Engineering},
   title={Simplifying and isolating failure-inducing input},
@@ -830,521 +745,311 @@ doi = {10.1007/978-3-030-17138-4_4}
 
 @misc{DereiKohWebGPU_MSM_BLS12_2023,
   author       = {Tal Derei and Koh Wei Jie},
-  title        = {{webgpu-msm-bls12-377}: WebGPU MSM implementation for BLS12‑377 curve (ZPrize 2023)},
-  howpublished = {\url{https://github.com/td-kwj-zp2023/webgpu-msm-bls12-377}},
+  title        = {{webgpu-msm-bls12-377}: {WebGPU} {MSM} implementation for {BLS12-377} curve ({ZPrize} 2023)},
+  url          = {https://github.com/td-kwj-zp2023/webgpu-msm-bls12-377},
   year         = {2023}
 }
 
 @misc{ZPrize2025,
   author       = {{ZPrize Initiative}},
-  title        = {ZPrize: accelerating the future of zero‑knowledge cryptography},
-  howpublished = {\url{https://www.zprize.io/}},
-  note         = {Accessed on 2025‑07‑24},
-  year         = {2025}
+  title        = {{ZPrize}: accelerating the future of zero‑knowledge cryptography},
+  url          = {https://www.zprize.io/},
 }
 
 @misc{misracpp,
   author       = {{MISRA Consortium}},
   title        = {{MISRA C++}: guidelines for the use of C++ in critical systems},
-  howpublished = {\url{https://www.misra.org.uk/misra-c-plus-plus/}},
-  note         = {Originally published June 5, 2008; latest edition released October 2023. Accessed 2025‑07‑24},
-  year        = {2023}
+  url          = {https://www.misra.org.uk/misra-c-plus-plus/},
+  year         = {2023}
 }
 
 @misc{LLVM_LangRef,
   author       = {{LLVM Project}},
-  title        = {LLVM Language Reference Manual},
-  howpublished = {\url{https://llvm.org/docs/LangRef.html}},
-  year         = {2025}
+  title        = {{LLVM} Language Reference Manual},
+  url          = {https://llvm.org/docs/LangRef.html},
 }
 
 @misc{CVE-2024-36353,
   author       = {NIST National Vulnerability Database},
   title        = {{CVE-2024-36353 (AMD Leftover Global Memory)}},
-  year         = {2025},
-  howpublished = "\url{https://nvd.nist.gov/vuln/detail/CVE-2024-36353}",
+  year         = {2024},
+  url          = {https://nvd.nist.gov/vuln/detail/CVE-2024-36353},
 }
 
 @misc{levine2025saferaceartifact,
   author       = {Levine, Reese and Lee, Ashley and Abbas, Neha and Little, Kyle and Sorensen, Tyler},
-  title        = {Artifact for SafeRace: assessing and addressing WebGPU memory safety in the presence of data races},
+  title        = {Artifact for {SafeRace}: assessing and addressing {WebGPU} memory safety in the presence of data races},
   year         = {2025},
   publisher    = {Zenodo},
   doi          = {10.5281/zenodo.16915241},
 }
 
-@inproceedings{expensive-sc,
+@inproceedings{gharachorloo1991performance,
 author = {Gharachorloo, Kourosh and Gupta, Anoop and Hennessy, John},
 title = {Performance evaluation of memory consistency models for shared-memory multiprocessors},
 year = {1991},
-isbn = {0897913809},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/106972.106997},
 doi = {10.1145/106972.106997},
 booktitle = {Proceedings of the Fourth International Conference on Architectural Support for Programming Languages and Operating Systems},
-pages = {245–257},
-numpages = {13},
-series = {ASPLOS IV}
 }
 
-@INPROCEEDINGS{gpu-sync,
+@inproceedings{feng2010synchronize,
   author={Feng, Wu-chun and Xiao, Shucai},
   booktitle={2010 IEEE International Symposium on Circuits and Systems (ISCAS)},
-  title={To GPU synchronize or not GPU synchronize?},
+  title={To {GPU} synchronize or not {GPU} synchronize?},
   year={2010},
-  volume={},
-  number={},
-  pages={3801-3804},
   doi={10.1109/ISCAS.2010.5537722}}
 
-@inproceedings{gpu-concurrency,
+@inproceedings{alglave2015gpu,
 author = {Alglave, Jade and Batty, Mark and Donaldson, Alastair F. and Gopalakrishnan, Ganesh and Ketema, Jeroen and Poetzl, Daniel and Sorensen, Tyler and Wickerson, John},
-title = {GPU concurrency: Weak behaviours and programming assumptions},
+title = {{GPU} concurrency: Weak behaviours and programming assumptions},
 year = {2015},
-isbn = {9781450328357},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/2694344.2694391},
 doi = {10.1145/2694344.2694391},
 booktitle = {International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS)},
-pages = {577–591},
-numpages = {15},
-keywords = {formal model, Nvidia PTX, memory consistency, litmus testing, test generation, openCL, GPU},
-series = {ASPLOS '15}
 }
 
-@article{gpu-foundations,
+@article{kirkham2020foundations,
 author = {Kirkham, Jake and Sorensen, Tyler and Tureci, Esin and Martonosi, Margaret},
 title = {Foundations of empirical memory consistency testing},
 year = {2020},
-issue_date = {November 2020},
-publisher = {Association for Computing Machinery},
-volume = {4},
-number = {OOPSLA},
-url = {https://doi.org/10.1145/3428294},
 doi = {10.1145/3428294},
 journal = {Proc. ACM Program. Lang.},
-month = nov,
-articleno = {226},
-numpages = {29},
-keywords = {memory consistency, conformance testing, OpenCL, GPUs, autotuning}
 }
 
-@inproceedings{gpu-exposing,
+@inproceedings{sorensen2016exposing,
 author = {Sorensen, Tyler and Donaldson, Alastair F.},
-title = {Exposing errors related to weak memory in GPU applications},
+title = {Exposing errors related to weak memory in {GPU} applications},
 year = {2016},
-isbn = {9781450342612},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/2908080.2908114},
 doi = {10.1145/2908080.2908114},
 booktitle = {Proceedings of the 37th ACM SIGPLAN Conference on Programming Language Design and Implementation},
-pages = {100–113},
-numpages = {14},
-keywords = {synchronisation, memory fences, CUDA, stress test- ing, concurrency, Nvidia, weak memory, GPU},
-series = {PLDI '16}
 }
 
-@inproceedings{mc-mutants,
+@inproceedings{levine2023mcmutants,
 author = {Levine, Reese and Guo, Tianhao and Cho, Mingun and Baker, Alan and Levien, Raph and Neto, David and Quinn, Andrew and Sorensen, Tyler},
-title = {MC mutants: Evaluating and improving testing for memory consistency specifications},
+title = {{MC Mutants}: Evaluating and improving testing for memory consistency specifications},
 year = {2023},
-isbn = {9781450399166},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/3575693.3575750},
 doi = {10.1145/3575693.3575750},
-abstract = {Shared memory platforms provide a memory consistency specification (MCS) so that developers can reason about the behaviors of their parallel programs. Unfortunately, ensuring that a platform conforms to its MCS is difficult, as is exemplified by numerous bugs in well-used platforms. While existing MCS testing approaches find bugs, their efficacy depends on the testing environment (e.g. if synthetic memory pressure is applied). MCS testing environments are difficult to evaluate since legitimate MCS violations are too rare to use as an efficacy metric. As a result, prior approaches have missed critical MCS bugs. This work proposes a mutation testing approach for evaluating MCS testing environments: MC Mutants. This approach mutates MCS tests such that the mutants simulate bugs that might occur. A testing environment can then be evaluated using a mutation score. We utilize MC Mutants in two novel contributions: (1) a parallel testing environment, and (2) An MCS testing confidence strategy that is parameterized over a time budget and confidence threshold. We implement our contributions in WebGPU, a new web-based GPU programming specification, and evaluate our techniques across four GPUs. We improve testing speed by three orders of magnitude over prior work, empowering us to create a conformance test suite that reproduces many mutated tests with high confidence and requires only 64 seconds per test. We identified two bugs in WebGPU implementations, one of which led to a specification change. Moreover, the official WebGPU conformance test suite has adopted our approach due to its efficiency, effectiveness, and broad applicability.},
 booktitle = {Proceedings of the 28th ACM International Conference on Architectural Support for Programming Languages and Operating Systems, Volume 2},
-pages = {473–488},
-numpages = {16},
-keywords = {parallel programming models, mutation testing, memory consistency},
-series = {ASPLOS 2023}
 }
 
-@inproceedings{litmus,
+@inproceedings{alglave2011litmus,
 author = {Alglave, Jade and Maranget, Luc and Sarkar, Susmit and Sewell, Peter},
 year = {2011},
-month = {03},
-pages = {41-44},
 title = {Litmus: Running tests against hardware},
-volume = {6605},
-isbn = {978-3-642-19834-2},
 doi = {10.1007/978-3-642-19835-9_5},
 booktitle="Tools and Algorithms for the Construction and Analysis of Systems (TACAS)"
 }
 
-@article{shasha-snir,
+@article{shasha1988efficient,
 author = {Shasha, Dennis and Snir, Marc},
 title = {Efficient and correct execution of parallel programs that share memory},
 year = {1988},
-issue_date = {April 1988},
-publisher = {Association for Computing Machinery},
-volume = {10},
-number = {2},
-issn = {0164-0925},
-url = {https://doi.org/10.1145/42190.42277},
 doi = {10.1145/42190.42277},
 journal = {ACM Trans. Program. Lang. Syst.},
-month = apr,
-pages = {282–312},
-numpages = {31}
 }
 
-@inproceedings{automated-litmus-synthesis,
+@inproceedings{lustig2017automated,
 author = {Lustig, Daniel and Wright, Andrew and Papakonstantinou, Alexandros and Giroux, Olivier},
 title = {Automated synthesis of comprehensive memory model litmus test suites},
 year = {2017},
-isbn = {9781450344654},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/3037697.3037723},
 doi = {10.1145/3037697.3037723},
 booktitle = {Proceedings of the Twenty-Second International Conference on Architectural Support for Programming Languages and Operating Systems},
-pages = {661–675},
-numpages = {15},
-keywords = {litmus tests, memory consistency models, synthesis, synchronization},
-series = {ASPLOS '17}
 }
 
-@inproceedings{memalloy,
+@inproceedings{wickerson2017automatically,
 author = {Wickerson, John and Batty, Mark and Sorensen, Tyler and Constantinides, George A.},
 title = {Automatically comparing memory consistency models},
 year = {2017},
-isbn = {9781450346603},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/3009837.3009838},
 doi = {10.1145/3009837.3009838},
 booktitle = {Proceedings of the 44th ACM SIGPLAN Symposium on Principles of Programming Languages},
-pages = {190–204},
-numpages = {15},
-keywords = {shared memory concurrency, C/C++, graphics processor (GPU), constraint solving, program synthesis, model checking, OpenCL, weak memory models},
-series = {POPL '17}
 }
 
-@inproceedings{c11,
+@inproceedings{batty2011mathematizing,
 author = {Batty, Mark and Owens, Scott and Sarkar, Susmit and Sewell, Peter and Weber, Tjark},
 title = {Mathematizing C++ concurrency},
 year = {2011},
-isbn = {9781450304900},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/1926385.1926394},
 doi = {10.1145/1926385.1926394},
 booktitle = {Symposium on Principles of Programming Languages (POPL)},
-pages = {55–66},
-numpages = {12},
-keywords = {relaxed memory models, semantics},
-series = {POPL '11}
-}
-
-@misc{vulkan,
-author = {{Khronos Group}},
-title = {{Vulkan 1.3 Core API}},
-year = {2022},
-month = dec
 }
 
 @misc{webgpu,
 author = {{World Wide Web Consortium (W3C)}},
 title = {{WebGPU: W3C working draft}},
-howpublished = "\url{https://www.w3.org/TR/webgpu/}",
-year = {2023},
-month = feb
+url = {https://www.w3.org/TR/webgpu/},
 }
 
 @misc{webgpu-security,
 author = {{World Wide Web Consortium (W3C)}},
 title = {{WebGPU: W3C working draft: Privacy considerations}},
-howpublished = "\url{https://www.w3.org/TR/webgpu/\#privacy-considerations}",
-year = {2023},
-month = feb
+url = {https://www.w3.org/TR/webgpu/\#privacy-considerations},
 }
 
-@inproceedings{x86-semantics,
+@inproceedings{sarkar2009semantics,
 author = {Sarkar, Susmit and Sewell, Peter and Nardelli, Francesco Zappa and Owens, Scott and Ridge, Tom and Braibant, Thomas and Myreen, Magnus O. and Alglave, Jade},
-title = {The semantics of x86-CC multiprocessor machine code},
+title = {The semantics of {x86-CC} multiprocessor machine code},
 year = {2009},
-isbn = {9781605583792},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/1480881.1480929},
 doi = {10.1145/1480881.1480929},
 booktitle = {Proceedings of the 36th Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
-pages = {379–391},
-numpages = {13},
-keywords = {relaxed memory models, semantics},
-series = {POPL '09}
 }
 
-@article{gpu-forward-progress,
+@article{sorensen2021progress,
 author = {Sorensen, Tyler and Salvador, Lucas F. and Raval, Harmit and Evrard, Hugues and Wickerson, John and Martonosi, Margaret and Donaldson, Alastair F.},
-title = {Specifying and testing GPU workgroup progress models},
+title = {Specifying and testing {GPU} workgroup progress models},
 year = {2021},
-issue_date = {October 2021},
-publisher = {Association for Computing Machinery},
-volume = {5},
-number = {OOPSLA},
-url = {https://doi.org/10.1145/3485508},
 doi = {10.1145/3485508},
-abstract = {As GPU availability has increased and programming support has matured, a wider variety of applications are being ported to these platforms. Many parallel applications contain fine-grained synchronization idioms; as such, their correct execution depends on a degree of relative forward progress between threads (or thread groups). Unfortunately, many GPU programming specifications (e.g. Vulkan and Metal) say almost nothing about relative forward progress guarantees between workgroups. Although prior work has proposed a spectrum of plausible progress models for GPUs, cross-vendor specifications have yet to commit to any model. This work is a collection of tools and experimental data to aid specification designers when considering forward progress guarantees in programming frameworks. As a foundation, we formalize a small parallel programming language that captures the essence of fine-grained synchronization. We then provide a means of formally specifying a progress model, and develop a termination oracle that decides whether a given program is guaranteed to eventually terminate with respect to a given progress model. Next, we formalize a set of constraints that describe concurrent programs that require forward progress to terminate. This allows us to synthesize a large set of 483 progress litmus tests. Combined with the termination oracle, we can determine the expected status of each litmus test -- i.e. whether it is guaranteed to eventually terminate -- under various progress models. We present a large experimental campaign running the litmus tests across 8 GPUs from 5 different vendors. Our results highlight that GPUs have significantly different termination behaviors under our test suite. Most notably, we find that Apple and ARM GPUs do not support the linear occupancy-bound model, as was hypothesized by prior work.},
 journal = {Proc. ACM Program. Lang.},
-month = {oct},
-articleno = {131},
-numpages = {30},
-keywords = {GPU, liveness, model checking, semantics, test case synthesis}
 }
 
 @misc{webgpu-sl,
 author = {{World Wide Web Consortium (W3C)}},
 title = {{WebGPU shading language: Editor’s draft}},
-howpublished = "\url{https://gpuweb.github.io/gpuweb/wgsl/}",
-year = {2022},
-month = {March}
+url = {https://gpuweb.github.io/gpuweb/wgsl/},
 }
 
-@Misc{spir-v,
+@misc{spir-v,
 author = {{Khronos Group}},
-title = "{SPIR-V} specification version 1.6, revision 1",
-year = {2021},
-howpublished = "\url{https://www.khronos.org/registry/SPIR-V/specs/unified1/SPIRV.html}"
+title = {{SPIR-V} Specification},
+url = {https://registry.khronos.org/SPIR-V/specs/unified1/SPIRV.html}
 }
 
-@Misc{opencl,
+@misc{opencl,
 author = {{Khronos Group}},
-title = "The OpenCL C Specification",
+title = "The {OpenCL C} Specification",
 year = {2022},
-howpublished = "\url{https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_C.html}"
+url = {https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_C.html}
 }
 
-@Misc{clspv,
+@misc{clspv,
 author = {{Google}},
-title = "Clspv",
-year = {2023},
-howpublished="\url{https://github.com/google/clspv}"
+title = "{Clspv}",
+url = {https://github.com/google/clspv}
 }
 
-@Misc{cuda,
+@misc{cuda,
 author = {{NVIDIA}},
-title = "CUDA C++ programming guide",
-year = {2023},
-howpublished="\url{https://docs.nvidia.com/cuda/cuda-c-programming-guide/}"
+title = "{CUDA C++} programming guide",
+url = {https://docs.nvidia.com/cuda/cuda-c-programming-guide/}
 }
 
-@article{prng,
+@article{park1988random,
 author = {Park, S. K. and Miller, K. W.},
 title = {Random number generators: Good ones are hard to find},
 year = {1988},
-issue_date = {Oct. 1988},
-publisher = {Association for Computing Machinery},
-volume = {31},
-number = {10},
-issn = {0001-0782},
-url = {https://doi.org/10.1145/63039.63042},
 doi = {10.1145/63039.63042},
-abstract = {Practical and theoretical issues are presented concerning the design, implementation, and use of a good, minimal standard random number generator that will port to virtually all systems.},
 journal = {Commun. ACM},
-month = {oct},
-pages = {1192–1201},
-numpages = {10}
 }
 
-@INPROCEEDINGS{tsotool,
+@inproceedings{hangal2004tsotool,
   author={Hangal, S. and Vahia, D. and Manovit, C. and Lu, J.-Y.J. and Narayanan, S.},
   booktitle={International Symposium on Computer Architecture {(ISCA)}, 2004.},
   title={{TSOtool}: A program for verifying memory systems using the memory consistency model},
   year={2004},
-  volume={},
-  number={},
-  pages={114-123},
   doi={10.1109/ISCA.2004.1310768}}
 
-@article{herding-cats,
+@article{alglave2014herding,
 author = {Alglave, Jade and Maranget, Luc and Tautschnig, Michael},
 title = {Herding cats: Modelling, simulation, testing, and data mining for weak memory},
 year = {2014},
-issue_date = {July 2014},
-publisher = {Association for Computing Machinery},
-volume = {36},
-number = {2},
-issn = {0164-0925},
-url = {https://doi.org/10.1145/2627752},
 doi = {10.1145/2627752},
 journal = {Trans. Program. Lang. Syst. (TOPLAS)},
-month = jul,
-articleno = {7},
-numpages = {74},
-keywords = {weak memory models, software verification, Concurrency}
 }
 
-@InProceedings{fences,
-author="Alglave, Jade
-and Maranget, Luc
-and Sarkar, Susmit
-and Sewell, Peter",
-editor="Touili, Tayssir
-and Cook, Byron
-and Jackson, Paul",
-title="Fences in weak memory models",
-booktitle="Computer Aided Verification",
-year="2010",
-publisher="Springer Berlin Heidelberg",
-pages="258-272",
-isbn="978-3-642-14295-6"
+@inproceedings{alglave2010fences,
+author = {Alglave, Jade and Maranget, Luc and Sarkar, Susmit and Sewell, Peter},
+title = {Fences in weak memory models},
+year = {2010},
+doi = {10.1007/978-3-642-14295-6_25},
+booktitle = {Proceedings of the 22nd International Conference on Computer Aided Verification},
 }
 
-@inproceedings{formal-opencl,
+@inproceedings{batty2016overhauling,
 author = {Batty, Mark and Donaldson, Alastair F. and Wickerson, John},
-title = {Overhauling SC atomics in C11 and OpenCL},
+title = {Overhauling {SC} atomics in {C11} and {OpenCL}},
 year = {2016},
-isbn = {9781450335492},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/2837614.2837637},
 doi = {10.1145/2837614.2837637},
-abstract = {Despite the conceptual simplicity of sequential consistency (SC), the semantics of SC atomic operations and fences in the C11 and OpenCL memory models is subtle, leading to convoluted prose descriptions that translate to complex axiomatic formalisations. We conduct an overhaul of SC atomics in C11, reducing the associated axioms in both number and complexity. A consequence of our simplification is that the SC operations in an execution no longer need to be totally ordered. This relaxation enables, for the first time, efficient and exhaustive simulation of litmus tests that use SC atomics. We extend our improved C11 model to obtain the first rigorous memory model formalisation for OpenCL (which extends C11 with support for heterogeneous many-core programming). In the OpenCL setting, we refine the SC axioms still further to give a sensible semantics to SC operations that employ a ‘memory scope’ to restrict their visibility to specific threads. Our overhaul requires slight strengthenings of both the C11 and the OpenCL memory models, causing some behaviours to become disallowed. We argue that these strengthenings are natural, and that all of the formalised C11 and OpenCL compilation schemes of which we are aware (Power and x86 CPUs for C11, AMD GPUs for OpenCL) remain valid in our revised models. Using the HERD memory model simulator, we show that our overhaul leads to an exponential improvement in simulation time for C11 litmus tests compared with the original model, making *exhaustive* simulation competitive, time-wise, with the *non-exhaustive* CDSChecker tool.},
 booktitle = {Proceedings of the 43rd Annual ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
-pages = {634–648},
-numpages = {15},
-keywords = {program simulation, graphics processing unit (GPU), weak memory models, heterogeneous programming, language design, Formal methods, HOL theorem prover},
-series = {POPL '16}
 }
 
-@inproceedings{litmus-contrasting,
+@inproceedings{madorhaim2010generating,
 author = {Mador-Haim, Sela and Alur, Rajeev and Martin, Milo M K.},
 title = {Generating litmus tests for contrasting memory consistency models},
 year = {2010},
-isbn = {364214294X},
-publisher = {Springer-Verlag},
-url = {https://doi.org/10.1007/978-3-642-14295-6_26},
 doi = {10.1007/978-3-642-14295-6_26},
 booktitle = {Proceedings of the 22nd International Conference on Computer Aided Verification},
-pages = {273–287},
-numpages = {15},
-series = {CAV'10}
 }
 
-@inproceedings{understanding-power,
+@inproceedings{sarkar2011understanding,
 author = {Sarkar, Susmit and Sewell, Peter and Alglave, Jade and Maranget, Luc and Williams, Derek},
 title = {Understanding {POWER} multiprocessors},
 year = {2011},
-isbn = {9781450306638},
-publisher = {Association for Computing Machinery},
-url = {https://doi.org/10.1145/1993498.1993520},
 doi = {10.1145/1993498.1993520},
 booktitle = {Proceedings of the 32nd ACM SIGPLAN Conference on Programming Language Design and Implementation},
-pages = {175–186},
-numpages = {12},
-keywords = {semantics, relaxed memory models},
-series = {PLDI '11}
 }
 
-@inproceedings{opencl-hitchhiker,
+@inproceedings{sorensen2016hitchhiker,
 author = {Sorensen, Tyler and Donaldson, Alastair F.},
-title = {The hitchhiker's guide to cross-platform OpenCL application development},
+title = {The hitchhiker's guide to cross-platform {OpenCL} application development},
 year = {2016},
-isbn = {9781450343381},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/2909437.2909440},
-abstract = {One of the benefits to programming of OpenCL is platform portability. That is, an OpenCL program that follows the OpenCL specification should, in principle, execute reliably on any platform that supports OpenCL. To assess the current state of OpenCL portability, we provide an experience report examining two sets of open source benchmarks that we attempted to execute across a variety of GPU platforms, via OpenCL. We report on the portability issues we encountered, where applications would execute successfully on one platform but fail on another. We classify issues into three groups: (1) framework bugs, where the vendor-provided OpenCL framework fails; (2) specification limitations, where the OpenCL specification is unclear and where different GPU platforms exhibit different behaviours; and (3) programming bugs, where non-portability arises due to the program exercising behaviours that are incorrect or undefined according to the OpenCL specification. The issues we encountered slowed the development process associated with our sets of applications, but we view the issues as providing exciting motivation for future testing and verification efforts to improve the state of OpenCL portability; we conclude with a discussion of these.},
 booktitle = {Proceedings of the 4th International Workshop on OpenCL},
-articleno = {2},
-numpages = {12},
-series = {IWOCL '16}
 }
 
-@inproceedings{hogwild,
+@inproceedings{niu2011hogwild,
 author = {Niu, Feng and Recht, Benjamin and Re, Christopher and Wright, Stephen J.},
-title = {HOGWILD! A lock-free approach to parallelizing stochastic gradient descent},
+title = {{HOGWILD!} A lock-free approach to parallelizing stochastic gradient descent},
 year = {2011},
-isbn = {9781618395993},
-publisher = {Curran Associates Inc.},
-abstract = {Stochastic Gradient Descent (SGD) is a popular algorithm that can achieve state-of-the-art performance on a variety of machine learning tasks. Several researchers have recently proposed schemes to parallelize SGD, but all require performance-destroying memory locking and synchronization. This work aims to show using novel theoretical analysis, algorithms, and implementation that SGD can be implemented without any locking. We present an update scheme called HOGWILD! which allows processors access to shared memory with the possibility of overwriting each other's work. We show that when the associated optimization problem is sparse, meaning most gradient updates only modify small parts of the decision variable, then HOGWILD! achieves a nearly optimal rate of convergence. We demonstrate experimentally that HOGWILD! outperforms alternative schemes that use locking by an order of magnitude.},
+url = {https://dl.acm.org/doi/10.5555/2986459.2986537},
 booktitle = {Proceedings of the 24th International Conference on Neural Information Processing Systems},
-pages = {693–701},
-numpages = {9},
-series = {NIPS'11}
 }
 
-@article{graphicsfuzz,
+@article{donaldson2017graphicsfuzz,
 author = {Donaldson, Alastair F. and Evrard, Hugues and Lascu, Andrei and Thomson, Paul},
 title = {Automated testing of graphics shader compilers},
 year = {2017},
-issue_date = {October 2017},
-publisher = {Association for Computing Machinery},
-volume = {1},
-number = {OOPSLA},
 doi = {10.1145/3133917},
-abstract = {We present an automated technique for finding defects in compilers for graphics shading languages. key challenge in compiler testing is the lack of an oracle that classifies an output as correct or incorrect; this is particularly pertinent in graphics shader compilers where the output is a rendered image that is typically under-specified. Our method builds on recent successful techniques for compiler validation based on metamorphic testing, and leverages existing high-value graphics shaders to create sets of transformed shaders that should be semantically equivalent. Rendering mismatches are then indicative of shader compilation bugs. Deviant shaders are automatically minimized to identify, in each case, a minimal change to an original high-value shader that induces a shader compiler bug. We have implemented the approach as a tool, GLFuzz, targeting the OpenGL shading language, GLSL. Our experiments over a set of 17 GPU and driver configurations, spanning the main 7 GPU designers, have led to us finding and reporting more than 60 distinct bugs, covering all tested configurations. As well as defective rendering, these issues identify security-critical vulnerabilities that affect WebGL, including a significant remote information leak security bug where a malicious web page can capture the contents of other browser tabs, and a bug whereby visiting a malicious web page can lead to a ``blue screen of death'' under Windows 10. Our findings show that shader compiler defects are prevalent, and that metamorphic testing provides an effective means for detecting them automatically.},
 journal = {Proc. ACM Program. Lang.},
-month = {oct},
-articleno = {93},
-numpages = {29},
-keywords = {OpenGL, GPUs, shaders, GLSL, compilers, testing}
 }
 
-@article{seti,
+@article{anderson2002seti,
 author = {Anderson, David P. and Cobb, Jeff and Korpela, Eric and Lebofsky, Matt and Werthimer, Dan},
-title = {SETI@home: An experiment in public-resource computing},
+title = {{SETI@home}: An experiment in public-resource computing},
 year = {2002},
-issue_date = {November 2002},
-publisher = {Association for Computing Machinery},
-volume = {45},
-number = {11},
-issn = {0001-0782},
 doi = {10.1145/581571.581573},
-abstract = {Millions of computer owners worldwide contribute computer time to the search for extraterrestrial intelligence, performing the largest computation ever.},
 journal = {Commun. ACM},
-month = {nov},
-pages = {56–61},
-numpages = {6}
 }
 
-@inproceedings{neural-vc,
+@inproceedings{desell2017large,
 author = {Desell, Travis},
 title = {Large scale evolution of convolutional neural networks using volunteer computing},
 year = {2017},
-isbn = {9781450349390},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/3067695.3076002},
-abstract = {This work presents a new algorithm called evolutionary exploration of augmenting convolutional topologies (EXACT), which is capable of evolving the structure of convolutional neural networks (CNNs). EXACT is in part modeled after the neuroevolution of augmenting topologies (NEAT) algorithm, with notable exceptions to allow it to scale to large scale distributed computing environments and evolve networks with convolutional filters. In addition to multithreaded and MPI versions, EXACT has been implemented as part of a BOINC volunteer computing project, allowing large scale evolution. During a period of two months, over 4,500 volunteered computers on the Citizen Science Grid trained over 120,000 CNNs and evolved networks reaching 98.32\% test data accuracy on the MNIST handwritten digits dataset. These results are even stronger as the backpropagation strategy used to train the CNNs was fairly rudimentary (ReLU units, L2 regularization and Nesterov momentum) and these were initial test runs done without refinement of the backpropagation hyperparameters. Further, the EXACT evolutionary strategy is independent of the method used to train the CNNs, so they could be further improved by advanced techniques like elastic distortions, pretraining and dropout. The evolved networks are also quite interesting, showing "organic" structures and significant differences from standard human designed architectures.},
 booktitle = {Proceedings of the Genetic and Evolutionary Computation Conference Companion},
-pages = {127–128},
-numpages = {2},
-keywords = {distributed evolutionary algorithms, neuroevolution, convolutional neural networks, image classification},
-series = {GECCO '17}
 }
 
-@INPROCEEDINGS{gene-sequence,
+@inproceedings{pellicer2005gene,
   author={Pellicer, S. and Ahmed, N. and Yi Pan and Yao Zheng},
   booktitle={2005 International Conference on Parallel Processing Workshops (ICPPW'05)},
   title={Gene sequence alignment on a public computing platform},
   year={2005},
-  volume={},
-  number={},
-  pages={95-102},
   doi={10.1109/ICPPW.2005.35}}
 
-@INPROCEEDINGS{climate-vc,
+@inproceedings{christensen2005challenge,
   author={Christensen, C. and Aina, T. and Stainforth, D.},
   booktitle={First International Conference on e-Science and Grid Computing (e-Science'05)},
   title={The challenge of volunteer computing with lengthy climate model simulations},
   year={2005},
-  volume={},
-  number={},
-  pages={8 pp.-15},
   doi={10.1109/E-SCIENCE.2005.76}}
 
-@INPROCEEDINGS{reuther2019survey,
+@inproceedings{reuther2019survey,
   author={Reuther, Albert and Michaleas, Peter and Jones, Michael and Gadepally, Vijay and Samsi, Siddharth and Kepner, Jeremy},
   booktitle={2019 IEEE High Performance Extreme Computing Conference (HPEC)},
   title={Survey and benchmarking of machine learning accelerators},
   year={2019},
-  volume={},
-  number={},
-  pages={1-9},
   doi={10.1109/HPEC.2019.8916327}}
 
-@article{alexnet,
+@article{krizhevsky2017imagenet,
 author = {Krizhevsky, Alex and Sutskever, Ilya and Hinton, Geoffrey E.},
-title = {ImageNet classification with deep convolutional neural networks},
+title = {{ImageNet} classification with deep convolutional neural networks},
 year = {2017},
-publisher = {Association for Computing Machinery},
-issn = {0001-0782},
 doi = {10.1145/3065386},
 journal = {Commun. ACM},
 }
@@ -1354,29 +1059,16 @@ journal = {Commun. ACM},
   title={The transformational role of {GPU} computing and deep learning in drug discovery},
   author={Pandey, Mohit and Fernandez, Michael and Gentile, Francesco and Isayev, Olexandr and Tropsha, Alexander and Stern, Abraham C and Cherkasov, Artem},
   journal={Nature Machine Intelligence},
-  volume={4},
-  number={3},
-  pages={211--221},
   year={2022},
-  publisher={Nature Publishing Group UK London}
+  doi={10.1038/s42256-022-00463-x},
 }
 
 @article{ozerk2022encrypt,
 author = {\"{O}zerk, \"{O}zg\"{u}n and Elgezen, Can and Mert, Ahmet Can and \"{O}zt\"{u}rk, Erdin\c{c} and Sava\c{s}, Erkay},
-title = {Efficient number theoretic transform implementation on GPU for homomorphic encryption},
+title = {Efficient number theoretic transform implementation on {GPU} for homomorphic encryption},
 year = {2022},
-issue_date = {Feb 2022},
-publisher = {Kluwer Academic Publishers},
-volume = {78},
-number = {2},
-issn = {0920-8542},
 doi = {10.1007/s11227-021-03980-5},
-abstract = {Lattice-based cryptography forms the mathematical basis for current homomorphic encryption schemes, which allows computation directly on encrypted data. Homomorphic encryption enables privacy-preserving applications such as secure cloud computing; yet, its practical applications suffer from the high computational complexity of homomorphic operations. Fast implementations of the homomorphic encryption schemes heavily depend on efficient polynomial arithmetic, multiplication of very large degree polynomials over polynomial rings, in particular. Number theoretic transform (NTT) accelerates large polynomial multiplication significantly, and therefore, it is the core arithmetic operation in the majority of homomorphic encryption scheme implementations. Therefore, practical homomorphic applications require efficient and fast implementations of NTT in different computing platforms. In this work, we present an efficient and fast implementation of NTT, inverse NTT and NTT-based polynomial multiplication operations for GPU platforms. To demonstrate that our GPU implementation can be utilized as an actual accelerator, we experimented with the key generation, the encryption and the decryption operations of the Brakerski/Fan–Vercauteren (BFV) homomorphic encryption scheme implemented in Microsoft’s SEAL homomorphic encryption library on GPU, all of which heavily depend on the NTT-based polynomial multiplication. Our GPU implementations improve the performance of these three BFV operations by up to 141.95\texttimes{}, 105.17\texttimes{} and 90.13\texttimes{}, respectively, on Tesla v100 GPU compared to the highly optimized SEAL library running on an Intel i9-7900X CPU.},
 journal = {J. Supercomput.},
-month = {feb},
-pages = {2840–2872},
-numpages = {33},
-keywords = {SEAL, CUDA, Lattice-based cryptography, GPU, Number theoretic transform, Polynomial multiplication, Homomorphic encryption}
 }
 
 @misc{bojarski2016endendlearningselfdriving,
@@ -1384,49 +1076,31 @@ keywords = {SEAL, CUDA, Lattice-based cryptography, GPU, Number theoretic transf
       author={Mariusz Bojarski and Davide Del Testa and Daniel Dworakowski and Bernhard Firner and Beat Flepp and Prasoon Goyal and Lawrence D. Jackel and Mathew Monfort and Urs Muller and Jiakai Zhang and Xin Zhang and Jake Zhao and Karol Zieba},
       year={2016},
       eprint={1604.07316},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/1604.07316},
+      eprinttype={arxiv},
 }
 
 @book{nagarajan2020primer,
 author = {Nagarajan, Vijay and Sorin, Daniel J. and Hill, Mark D. and Wood, David A. and Jerger, Natalie Enright},
 title = {A primer on memory consistency and cache coherence},
 year = {2020},
-isbn = {1681737094},
 publisher = {Morgan \& Claypool Publishers},
 edition = {2nd},
-abstract = {Many modern computer systems, including homogeneous and heterogeneous architectures, support shared memory in hardware. In a shared memory system, each of the processor cores may read and write to a single shared address space. For a shared memory machine, the memory consistency model defines the architecturally visible behavior of its memory system. Consistency definitions provide rules about loads and stores (or memory reads and writes) and how they act upon memory. As part of supporting a memory consistency model, many machines also provide cache coherence protocols that ensure that multiple cached copies of data are kept up-to-date. The goal of this primer is to provide readers with a basic understanding of consistency and coherence. This understanding includes both the issues that must be solved as well as a variety of solutions. We present both high-level concepts as well as specific, concrete examples from real-world systems. This second edition reflects a decade of advancements since the first edition and includes, among other more modest changes, two new chapters: one on consistency and coherence for non-CPU accelerators (with a focus on GPUs) and one that points to formal work and tools on consistency and coherence.}
 }
 
-@inproceedings{10.1145/2414729.2414737,
+@inproceedings{renganarayana2012programming,
 author = {Renganarayana, Lakshminarayanan and Srinivasan, Vijayalakshmi and Nair, Ravi and Prener, Daniel},
 title = {Programming with relaxed synchronization},
 year = {2012},
-isbn = {9781450316323},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/2414729.2414737},
-abstract = {Synchronization overhead is a major bottleneck in scaling parallel applications to a large number of cores. This continues to be true in spite of various synchronization-reduction techniques that have been proposed. Previously studied synchronization-reduction techniques tacitly assume that all synchronizations specified in a source program are essential to guarantee quality of the results produced by the program. Recently there have been proposals to relax the synchronizations in a parallel program and compute approximate results. A fundamental challenge in using relaxed synchronization is guaranteeing that the relaxed program always produces results with a specified quality. We propose a methodology that addresses this challenge in programming with relaxed synchronization. Using our methodology programmers can systematically relax synchronization while always producing results that are of same quality as the original (un-relaxed) program. We demonstrate significant speedups using our methodology on a variety of benchmarks (e.g., up to 15x on KMeans benchmark, and up to 3x on a already highly tuned kernel from Graph500 benchmark).},
 booktitle = {Proceedings of the 2012 ACM Workshop on Relaxing Synchronization for Multicore and Manycore Scalability},
-pages = {41–50},
-numpages = {10},
-keywords = {relaxed synchronization, relax and check, parallelism, approximate computing},
-series = {RACES '12}
 }
 
-@inproceedings{10.1145/2540708.2540711,
+@inproceedings{samadi2013sage,
 author = {Samadi, Mehrzad and Lee, Janghaeng and Jamshidi, D. Anoushe and Hormati, Amir and Mahlke, Scott},
-title = {SAGE: Self-tuning approximation for graphics engines},
+title = {{SAGE}: Self-tuning approximation for graphics engines},
 year = {2013},
-isbn = {9781450326384},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/2540708.2540711},
-abstract = {Approximate computing, where computation accuracy is traded off for better performance or higher data throughput, is one solution that can help data processing keep pace with the current and growing overabundance of information. For particular domains such as multimedia and learning algorithms, approximation is commonly used today. We consider automation to be essential to provide transparent approximation and we show that larger benefits can be achieved by constructing the approximation techniques to fit the underlying hardware. Our target platform is the GPU because of its high performance capabilities and difficult programming challenges that can be alleviated with proper automation. Our approach, SAGE, combines a static compiler that automatically generates a set of CUDA kernels with varying levels of approximation with a run-time system that iteratively selects among the available kernels to achieve speedup while adhering to a target output quality set by the user. The SAGE compiler employs three optimization techniques to generate approximate kernels that exploit the GPU microarchitecture: selective discarding of atomic operations, data packing, and thread fusion. Across a set of machine learning and image processing kernels, SAGE's approximation yields an average of 2.5x speedup with less than 10\% quality loss compared to the accurate execution on a NVIDIA GTX 560 GPU.},
 booktitle = {Proceedings of the 46th Annual IEEE/ACM International Symposium on Microarchitecture},
-pages = {13–24},
-numpages = {12},
-keywords = {approximation, optimization, GPU, compiler},
-series = {MICRO-46}
 }
 
 @dataset{gpuharbor-artifact,
@@ -1435,168 +1109,139 @@ series = {MICRO-46}
                   McKee, Devon and
                   Quinn, Andrew and
                   Sorensen, Tyler},
-  title        = {{GPUHarbor: Testing GPU Memory Consistency At Large
+  title        = {{{GPUHarbor}: Testing {GPU} Memory Consistency at Large
                    (Experience Paper): Artifact}},
-  month        = may,
   year         = 2023,
   publisher    = {Zenodo},
   version      = {1.0},
   doi          = {10.5281/zenodo.7922486},
-  url          = {https://doi.org/10.5281/zenodo.7922486}
 }
 
 @article{owens2007gpgpu,
 author = {Owens, John D. and Luebke, David and Govindaraju, Naga and Harris, Mark and Krüger, Jens and Lefohn, Aaron E. and Purcell, Timothy J.},
 title = {A Survey of General-Purpose Computation on Graphics Hardware},
 journal = {Computer Graphics Forum},
-doi = {https://doi.org/10.1111/j.1467-8659.2007.01012.x},
+doi = {10.1111/j.1467-8659.2007.01012.x},
 year = {2007}
 }
 
 @misc{levine2026llamaweb,
-      title={Llamas on the Web: Memory-Efficient, Performance-Portable, and Multi-Precision LLM Inference with WebGPU},
+      title={Llamas on the Web: Memory-Efficient, Performance-Portable, and Multi-Precision {LLM} Inference with {WebGPU}},
       author={Reese Levine and Rithik Sharma and Nikhil Jain and Abhijit Ramesh and Zheyuan Chen and Neha Abbas and James Contini and Tyler Sorensen},
       year={2026},
       eprint={2605.20706},
-      archivePrefix={arXiv},
-      primaryClass={cs.DC},
-      url={https://arxiv.org/abs/2605.20706},
+      eprinttype={arxiv},
 }
 
-@INPROCEEDINGS{xiao2010interblock,
+@inproceedings{xiao2010interblock,
   author={Xiao, Shucai and Feng, Wu-chun},
   booktitle={2010 IEEE International Symposium on Parallel \& Distributed Processing (IPDPS)},
-  title={Inter-block GPU communication via fast barrier synchronization},
+  title={Inter-block {GPU} communication via fast barrier synchronization},
   year={2010},
-  volume={},
-  number={},
-  pages={1-12},
-  keywords={Synchronization;Central Processing Unit;Kernel;Dynamic programming;Fast Fourier transforms;Computer architecture;Computer science;Graphics processing unit;Clocks},
   doi={10.1109/IPDPS.2010.5470477}}
 
 @inproceedings{giner2024cacheattack,
 author = {Giner, Lukas and Czerny, Roland and Gruber, Christoph and Rauscher, Fabian and Kogler, Andreas and Braga, Daniel De Almeida and Gruss, Daniel},
-title = {Generic and Automated Drive-by GPU Cache Attacks from the Browser},
+title = {Generic and Automated Drive-by {GPU} Cache Attacks from the Browser},
 year = {2024},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/3634737.3656283},
 booktitle = {Proceedings of the 19th ACM Asia Conference on Computer and Communications Security},
 }
 
-@ARTICLE{adve1996relaxed,
+@article{adve1996relaxed,
   author={Adve, S.V. and Gharachorloo, K.},
   journal={Computer},
   title={Shared memory consistency models: a tutorial},
   year={1996},
-  volume={29},
-  number={12},
-  pages={66-76},
-  keywords={Tutorial;Magnetic heads;Programming profession;Hardware;High level languages;Read-write memory;Message passing;Optimizing compilers;Computer architecture;Software design},
   doi={10.1109/2.546611}}
 
 @inproceedings{dubois1986weak,
 author = {Dubois, M. and Scheurich, C. and Briggs, F.},
 title = {Memory access buffering in multiprocessors},
 year = {1986},
-isbn = {081860719X},
-publisher = {IEEE Computer Society Press},
 booktitle = {Proceedings of the 13th Annual International Symposium on Computer Architecture},
 }
 
 @inproceedings{lahav2017repairingc11,
 author = {Lahav, Ori and Vafeiadis, Viktor and Kang, Jeehoon and Hur, Chung-Kil and Dreyer, Derek},
-title = {Repairing sequential consistency in C/C++11},
+title = {Repairing sequential consistency in {C/C++11}},
 year = {2017},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/3062341.3062352},
 booktitle = {Proceedings of the 38th ACM SIGPLAN Conference on Programming Language Design and Implementation},
 }
 
 @inproceedings{lustig2019ptx,
 author = {Lustig, Daniel and Sahasrabuddhe, Sameer and Giroux, Olivier},
-title = {A Formal Analysis of the NVIDIA PTX Memory Consistency Model},
+title = {A Formal Analysis of the {NVIDIA PTX} Memory Consistency Model},
 year = {2019},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/3297858.3304043},
 booktitle = {Proceedings of the Twenty-Fourth International Conference on Architectural Support for Programming Languages and Operating Systems},
 }
 
 @misc{nvidia_blackwell_tuning_guide,
-  title        = {NVIDIA Blackwell Tuning Guide},
+  title        = {{NVIDIA} Blackwell Tuning Guide},
   author       = {{NVIDIA Corporation}},
-  year         = {2025},
-  howpublished = {\url{https://docs.nvidia.com/cuda/blackwell-tuning-guide/index.html}},
-  note         = {Accessed: 2026-06-07}
+  url          = {https://docs.nvidia.com/cuda/blackwell-tuning-guide/index.html},
 }
 
 @misc{apple_m5_announcement,
   author       = {{Apple Inc.}},
-  title        = {Apple Unleashes M5, the Next Big Leap in AI Performance for Apple Silicon},
+  title        = {Apple Unleashes {M5}, the Next Big Leap in {AI} Performance for Apple Silicon},
   year         = {2025},
-  month        = oct,
   url          = {https://www.apple.com/newsroom/2025/10/apple-unleashes-m5-the-next-big-leap-in-ai-performance-for-apple-silicon/},
-  note         = {Apple Newsroom, October 15, 2025. Accessed: 2026-06-07}
 }
 
 @inproceedings{jiang2024sync,
 author = {Jiang, Qisheng and Wang, Chundong},
-title = {Sync+Sync: a covert channel built on fsync with storage},
+title = {{Sync+Sync}: a covert channel built on fsync with storage},
 year = {2024},
-publisher = {USENIX Association},
+url = {https://www.usenix.org/conference/usenixsecurity24/presentation/jiang-qisheng},
 booktitle = {Proceedings of the 33rd USENIX Conference on Security Symposium},
 }
 
-@INPROCEEDINGS{wang2024gpuzip,
+@inproceedings{wang2024gpuzip,
   author={Wang, Yingchen and Paccagnella, Riccardo and Gang, Zhao and Vasquez, Willy R. and Kohlbrenner, David and Shacham, Hovav and Fletcher, Christopher W.},
   booktitle={2024 IEEE Symposium on Security and Privacy (SP)},
-  title={GPU.zip: On the Side-Channel Implications of Hardware-Based Graphical Data Compression},
+  title={{GPU.zip}: On the Side-Channel Implications of Hardware-Based Graphical Data Compression},
   year={2024},
-  volume={},
-  number={},
-  pages={3716-3734},
-  keywords={Privacy;Prevention and mitigation;Software algorithms;Random access memory;Side-channel attacks;Market research;Software},
   doi={10.1109/SP54263.2024.00084}}
 
 @techreport{nvidia2020ampere,
-  title       = {NVIDIA A100 Tensor Core GPU Architecture},
+  title       = {{NVIDIA A100} Tensor Core {GPU} Architecture},
   author      = {{NVIDIA Corporation}},
   year        = {2020},
+  institution = {NVIDIA Corporation},
   url         = {https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf},
 }
 
-@INPROCEEDINGS{arvind2006memmodel,
+@inproceedings{arvind2006memmodel,
   author={Arvind, A. and Maessen, J.-W.},
   booktitle={33rd International Symposium on Computer Architecture (ISCA'06)},
   title={Memory Model = Instruction Reordering + Store Atomicity},
   year={2006},
-  volume={},
-  number={},
-  pages={29-40},
-  keywords={Yarn;Power system modeling;Computer architecture;Interleaved codes;Sun;Laboratories;Coherence;Protocols;History;Gold},
   doi={10.1109/ISCA.2006.26}}
 
-@inproceedings{naghi2017covert,
+@inproceedings{naghibijouybari2017constructing,
 author = {Naghibijouybari, Hoda and Khasawneh, Khaled N. and Abu-Ghazaleh, Nael},
-title = {Constructing and characterizing covert channels on GPGPUs},
+title = {Constructing and characterizing covert channels on {GPGPU}s},
 year = {2017},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/3123939.3124538},
 booktitle = {Proceedings of the 50th Annual IEEE/ACM International Symposium on Microarchitecture},
 }
 
 @inproceedings{nazaraliyev2025refresh,
 author = {Nazaraliyev, Ravan and Zhang, Yicheng and Dutta, Sankha Baran and Marquez, Andres and Barker, Kevin and Abu-Ghazaleh, Nael},
-title = {Not so refreshing: attacking GPUs using RFM rowhammer mitigation},
+title = {Not so refreshing: attacking {GPU}s using {RFM} rowhammer mitigation},
 year = {2025},
-publisher = {USENIX Association},
+url = {https://www.usenix.org/conference/usenixsecurity25/presentation/nazaraliyev},
 booktitle = {Proceedings of the 34th USENIX Conference on Security Symposium},
 }
 
 @inproceedings{zhang2024invalidate,
 author = {Zhang, Zhenkai and Cai, Kunbei and Guo, Yanan and Yao, Fan and Gao, Xing},
-title = {INVALIDATE+COMPARE: a timer-free GPU cache attack primitive},
+title = {{INVALIDATE+COMPARE}: a timer-free {GPU} cache attack primitive},
 year = {2024},
-publisher = {USENIX Association},
+url = {https://www.usenix.org/conference/usenixsecurity24/presentation/zhang-zhenkai},
 booktitle = {Proceedings of the 33rd USENIX Conference on Security Symposium},
 }
 
@@ -1604,7 +1249,6 @@ booktitle = {Proceedings of the 33rd USENIX Conference on Security Symposium},
 author = {Goens, Andr\'{e}s and Chakraborty, Soham and Sarkar, Susmit and Agarwal, Sukarn and Oswald, Nicolai and Nagarajan, Vijay},
 title = {Compound Memory Models},
 year = {2023},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/3591267},
 journal = {Proc. ACM Program. Lang.},
 }
@@ -1614,7 +1258,6 @@ author = {Gu, Cheng and Levine, Reese and Zhang, Zhenkai and Sorensen, Tyler and
 title = {Behind Bars: A Side-Channel Attack on {NVIDIA MIG} Cache Partitioning Using Memory Barriers},
 booktitle = {Proceedings of the 35th USENIX Security Symposium},
 year = {2026},
-publisher = {USENIX Association},
 note = {To appear},
 }
 
@@ -1628,16 +1271,14 @@ url = {https://reeselevine.github.io/assets/yarch_pmcs-CJhM-NDn.pdf},
 
 @misc{basu2025gpu-mcs-blog,
 author = {Basu, Arkaprava and Gavrilenko, Natalia and Heljanko, Keijo and Levine, Reese and Nayak, Ajay Ashok and Ponce de Leon, Hernan Luis and Sorensen, Tyler and Tong, Haining},
-title = {GPU Memory Consistency: Specifications, Testing, and Opportunities for Performance Tooling},
+title = {{GPU} Memory Consistency: Specifications, Testing, and Opportunities for Performance Tooling},
 year = {2025},
-month = jun,
-howpublished = {SIGARCH Computer Architecture Today},
 url = {https://www.sigarch.org/gpu-memory-consistency-specifications-testing-and-opportunities-for-performance-tooling/},
 }
 
 @mastersthesis{srivastava2024testing,
   author = {Srivastava, Sanya},
-  title = {Testing Memory Models of Heterogeneous CPU-GPU Systems},
+  title = {Testing Memory Models of Heterogeneous {CPU-GPU} Systems},
   school = {University of California, Santa Cruz},
   year = {2024},
   url = {https://escholarship.org/uc/item/5hm7q1jv}
@@ -1645,80 +1286,60 @@ url = {https://www.sigarch.org/gpu-memory-consistency-specifications-testing-and
 
 @inproceedings{panneke2026jmt,
 author = {Panneke, Lukas and Wehrheim, Heike},
-title = {jMT: Testing Correctness of Java Memory Models},
+title = {{jMT}: Testing Correctness of {Java} Memory Models},
 year = {2026},
-isbn = {978-3-032-22748-5},
-publisher = {Springer-Verlag},
-address = {Berlin, Heidelberg},
-url = {https://doi.org/10.1007/978-3-032-22749-2_13},
 doi = {10.1007/978-3-032-22749-2_13},
-abstract = {According to common belief, the Java memory model is broken. In the past, several approaches have proposed repairs, often only to find new programs exhibiting unexpected, unintuitive behavior or the model forbidding standard compiler optimizations. The complexity of defining a memory model for concurrent Java lies in the fact that it requires a multi-execution model. Multi-execution models need to inspect many potential executions of a program in order to find the valid ones. Tools automatically validating novel proposals of Java memory models are, however, largely lacking.To alleviate this problem, we introduce jMT, a novel tool for constructing multi-execution semantics for concurrent Java programs. jMT relies on single-execution models defining well-formed execution graphs, based on which it builds valid multi-execution semantics via causality checking. Thereby, jMT supports evaluating new proposals of Java memory models (JMMs) on a per-program basis. jMT can furthermore be employed for testing the conformance of JMMs to existing compilation schemes and compilers. Our evaluation of jMT on 169 litmus tests reveals a number of interesting insights into existing JMMs.},
 booktitle = {Tools and Algorithms for the Construction and Analysis of Systems: 32nd International Conference, TACAS 2026, Held as Part of the International Joint Conferences on Theory and Practice of Software, ETAPS 2026, Turin, Italy, April 11–16, 2026, Proceedings, Part II},
-pages = {257–276},
-numpages = {20},
-keywords = {Java memory model, multi-execution models, compilation},
-location = {Turin, Italy}
 }
 
 @misc{olah_research_taste,
   author = {Christopher Olah},
   title = {Research Taste Exercises},
-  howpublished = {\url{https://colah.github.io/notes/taste/}},
+  url = {https://colah.github.io/notes/taste/},
 }
 
 @misc{cheng2025barbariansgateaiupending,
-      title={Barbarians at the Gate: How AI is Upending Systems Research},
+      title={Barbarians at the Gate: How {AI} is Upending Systems Research},
       author={Audrey Cheng and Shu Liu and Melissa Pan and Zhifei Li and Bowen Wang and Alex Krentsel and Tian Xia and Mert Cemri and Jongseok Park and Shuo Yang and Jeff Chen and Lakshya Agrawal and Aditya Desai and Jiarong Xing and Koushik Sen and Matei Zaharia and Ion Stoica},
       year={2025},
       eprint={2510.06189},
-      archivePrefix={arXiv},
-      primaryClass={cs.AI},
-      url={https://arxiv.org/abs/2510.06189},
+      eprinttype={arxiv},
 }
 
-@online{neurips2026_ai_generated_papers,
+@misc{neurips2026_ai_generated_papers,
   author = {{NeurIPS 2026 Communication Chairs}},
-  title = {AI-Generated Papers in the NeurIPS 2026 Position Paper Track},
+  title = {{AI}-Generated Papers in the {NeurIPS} 2026 Position Paper Track},
   year = {2026},
-  month = jun,
-  day = {2},
   url = {https://blog.neurips.cc/2026/06/02/ai-generated-papers-in-the-neurips-2026-position-paper-track/},
-  note = {Accessed: 2026-06-12}
 }
 
-@online{pangram2025_iclr_reviews_ai,
-  title = {Pangram Predicts 21\% of ICLR Reviews are AI-Generated},
-  organization = {Pangram Labs},
+@misc{pangram2025_iclr_reviews_ai,
+  author = {{Pangram Labs}},
+  title = {{Pangram} Predicts 21\% of {ICLR} Reviews are {AI}-Generated},
   year = {2025},
-  month = nov,
-  day = {18},
   url = {https://www.pangram.com/blog/pangram-predicts-21-of-iclr-reviews-are-ai-generated},
-  note = {Accessed: 2026-06-12}
 }
 
 @article{levine2025saferace,
 author = {Levine, Reese and Lee, Ashley and Abbas, Neha and Little, Kyle and Sorensen, Tyler},
-title = {SafeRace: Assessing and Addressing WebGPU Memory Safety in the Presence of Data Races},
+title = {{SafeRace}: Assessing and Addressing {WebGPU} Memory Safety in the Presence of Data Races},
 year = {2025},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/3763075},
 journal = {Proc. ACM Program. Lang.},
 }
 
 @misc{siddens2026disorder,
-      title={Memory DisOrder: Memory Re-orderings as a Timerless Side-channel},
+      title={{Memory DisOrder}: Memory Re-orderings as a Timerless Side-channel},
       author={Sean Siddens and Sanya Srivastava and Reese Levine and Josiah Dykstra and Tyler Sorensen},
       year={2026},
       eprint={2601.08770},
-      archivePrefix={arXiv},
-      url={https://arxiv.org/abs/2601.08770},
+      eprinttype={arxiv},
 }
 
 @inproceedings{bagchi2026gh,
 author = {Bagchi, Soham and Srivastava, Sanya and Levine, Reese and Sorensen, Tyler and Stutsman, Ryan and Nagarajan, Vijay},
-title = {Consistency and Coherence of the NVIDIA Grace-Hopper Superchip},
+title = {Consistency and Coherence of the {NVIDIA Grace-Hopper} Superchip},
 year = {2026},
-publisher = {Association for Computing Machinery},
 doi = {10.1145/3814942.3816134},
 booktitle = {Proceedings of the 2026 ACM SIGPLAN International Symposium on Memory Management},
 }

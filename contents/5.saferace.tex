@@ -55,13 +55,13 @@ This chapter presents \saferace, a thorough investigation into how data races ca
 
 \subsection{WGSL Data Race Specification Vulnerability \label{sec:saferace-spec-vuln}}
 
-In many languages, e.g., C and C++, data races cause undefined behavior, as they can lead to extremely counterintuitive outcomes. However, because these behaviors are not desirable in security-sensitive contexts (e.g., browsers), languages such as JavaScript and Wasm have defined data races, albeit with very permissive semantics~\cite{weak-wasm, sharedarraybuffer}. Similarly, WGSL uses compiler passes and safe libraries to avoid many types of undefined behavior. However, the languages that WGSL targets are \textit{not} free of undefined behavior, and in particular follow C/C++ in giving data races undefined behavior.
+In many languages, e.g., C and C++, data races cause undefined behavior, as they can lead to extremely counterintuitive outcomes. However, because these behaviors are not desirable in security-sensitive contexts (e.g., browsers), languages such as JavaScript and Wasm have defined data races, albeit with very permissive semantics~\cite{watt2019weakening,watt2020repairing}. Similarly, WGSL uses compiler passes and safe libraries to avoid many types of undefined behavior. However, the languages that WGSL targets are \textit{not} free of undefined behavior, and in particular follow C/C++ in giving data races undefined behavior.
 
 \myfiglong{\ref{fig:saferace-oob-example-a}} shows a WGSL program with two arrays of unsigned integers, \texttt{i} and \texttt{m}, and two threads performing non-atomic accesses to these arrays. This program contains behaviors that, in isolation, are undefined in some languages: (1)~because memory locations are non-atomic and there is no synchronization, there are data races between ($a$, $c$) and ($b$, $c$), and (2)~while the race technically makes the program undefined, a possible natural compilation could allow for an out-of-bounds read if $b$ reads the value $c$ wrote to \texttt{i[0]}. The potential out-of-bounds read is a memory safety violation which, in turn, could lead to a vulnerability. The highlighted code in operation $b$, i.e., \textcolor{red}{\texttt{min(..., 3)}}, shows a check that WGSL compilers include to enforce memory safety. However, WGSL compilers currently contain no special protections against data races.
 
 \paragraph{The Problem: Optimizing Away Bounds-Checks} Even with the bounds-check inserted, a compiler for an unsafe lower-level language can optimize the code in a way that creates a ``time-of-check to time-of-use'' (TOCTOU)~\cite{abbott1976toctou} memory safety violation. Specifically, a compiler for an unsafe language is free to assume programs do not contain data races. Therefore, when only looking at the operations in thread 0, the compiler may notice that \texttt{i[0]} is set to 2 and remains unchanged until it is loaded in $b$. Based on a range analysis, it can determine that the call to \texttt{min} is unnecessary and remove it, leading to an out-of-bounds access if \texttt{i[0]} reads 4 in $b$. While it is unlikely that a real implementation would perform the problematic optimization on this particular program, \mysec\ref{sec:saferace-extended-example} describes a more realistic program that could trigger this optimization.
 
-The program in \myfig\ref{fig:saferace-oob-example-a} straightforwardly demonstrates how data races can lead to vulnerabilities, but memory safety issues can occur due to other surprising behaviors allowed by data races. In particular, \myfig\ref{fig:saferace-oob-example-b} shows a WGSL program that contains the same data race between $a$ and $c$, but now the access to \texttt{m} in $b$ depends on a separate variable \texttt{x}. Prior work shows how reasonable implementations might set \texttt{x} to 4---for example, if the compiler notices that both \texttt{x} and \texttt{i[0]} contain the same value (2) and decides not to allocate a register for \texttt{x}, reloading \texttt{i[0]} instead and causing a potential out-of-bounds access~\cite{bounding-races}.
+The program in \myfig\ref{fig:saferace-oob-example-a} straightforwardly demonstrates how data races can lead to vulnerabilities, but memory safety issues can occur due to other surprising behaviors allowed by data races. In particular, \myfig\ref{fig:saferace-oob-example-b} shows a WGSL program that contains the same data race between $a$ and $c$, but now the access to \texttt{m} in $b$ depends on a separate variable \texttt{x}. Prior work shows how reasonable implementations might set \texttt{x} to 4---for example, if the compiler notices that both \texttt{x} and \texttt{i[0]} contain the same value (2) and decides not to allocate a register for \texttt{x}, reloading \texttt{i[0]} instead and causing a potential out-of-bounds access~\cite{dolan2018bounding}.
 
 To recap, WGSL code, i.e., \myfig\ref{fig:saferace-oob-example} without the \textcolor{red}{\texttt{min}}, is written by application developers and may contain out-of-bounds accesses and data races. To avoid out-of-bounds accesses, WGSL compilers insert bounds-checks when generating lower-level native GPU code. The WGSL specification also mandates that if a data race occurs, memory accesses should be restricted to in-bounds memory in order to maintain memory safety~\cite[\mysec 2.2]{wgslspec}, but WGSL compilers do not include any special protections against data races. However, native GPU languages currently give undefined semantics to data races, allowing the optimizations described above when compiling to vendor-specific machine code. This mismatch between the WGSL specification and the native language guarantees means that the bounds-checks can be removed despite the fact that they should not be to maintain memory safety, creating the WGSL DRSV.
 
@@ -111,10 +111,10 @@ In summary, the contributions of this chapter are:
 The artifact for this work is publicly available~\cite{levine2025saferaceartifact}. As part of responsible disclosure, this work was presented to the W3C WebGPU working group, and the vulnerabilities were reported to the affected vendors.
 
 \begin{table}
-\fontsize{7.7}{7.7}\selectfont
+\fontsize{7.4}{7.4}\selectfont
 \centering
 \caption{Results from the bottom-up threat assessment. Two new vulnerabilities, highlighted in red, affect memory isolation when applications are run in different processes.}
-\begin{tabularx}{\linewidth}{ l l l l l l l l l l }
+\begin{tabular}{ l l l l l l l l l l }
 \toprule
 & & & \textbf{Memory Region:} & \multicolumn{2}{c}{\textbf{Device}} & \multicolumn{2}{c}{\textbf{Phys. Storage}} & \multicolumn{2}{c}{\textbf{Workgroup}} \\
 \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10}
@@ -134,9 +134,10 @@ The artifact for this work is publicly available~\cite{levine2025saferaceartifac
                         &                          & Apple M2                 & & \oob   & \textcolor{red}{\oob}      & \NA     & \NA    & \uninit      & \uninit \\
                         &                          & Apple M3                 & & \oob   & \cmark                     & \NA     & \NA    & \cmark       & \cmark  \\
 \bottomrule
-\multicolumn{10}{l}
-{\cmark = No Vulnerability \oob = Out-of-bounds Access Vulnerability \uninit = Uninitialized Memory Vulnerability} \\
-\end{tabularx}
+\end{tabular}
+
+\smallskip
+\cmark = No Vulnerability; \oob = Out-of-bounds Access Vulnerability; \uninit = Uninitialized Memory Vulnerability
 \label{tab:saferace-study-results}
 \end{table}
 
@@ -161,11 +162,11 @@ Generally, GPU memory references cannot be manipulated using integer arithmetic 
 
 This mode follows the setup in many browsers, e.g., Chrome, where GPU programs are run in the same process. Failures observed in this mode are not considered vulnerabilities by vendors, as memory isolation is not guaranteed between applications in the same process. However, in the browser these failures would allow an attacker to read data from another tab if bounds-checks were optimized away, highlighting the danger posed by WGSL's specification vulnerability.
 
-Both the AMD Ryzen 7 5700G, an integrated GPU, and the Arm Mali-G710, a mobile GPU, exhibit uninitialized device-memory isolation failures, while the Apple M2 and M3 GPUs exhibit out-of-bounds access isolation failures. Every tested device that supports physical storage buffers also exhibits failures. While WebGPU does not support physical storage buffers, these results underscore the need for caution when adopting new GPU features. In workgroup memory, the AMD Radeon RX 7900 XT, NVIDIA GeForce RTX 4070, Qualcomm Adreno 610, and Apple M2 exhibit failures. Memory isolation failures due to uninitialized workgroup memory were reported by prior work~\cite{leftover-locals}, which ran tests in a different-process mode. The results show that some GPUs susceptible to this attack in the different-process mode are also susceptible in the same-process mode. The NVIDIA GPU is the only device that exhibits failures due to out-of-bounds accesses in workgroup memory.
+Both the AMD Ryzen 7 5700G, an integrated GPU, and the Arm Mali-G710, a mobile GPU, exhibit uninitialized device-memory isolation failures, while the Apple M2 and M3 GPUs exhibit out-of-bounds access isolation failures. Every tested device that supports physical storage buffers also exhibits failures. While WebGPU does not support physical storage buffers, these results underscore the need for caution when adopting new GPU features. In workgroup memory, the AMD Radeon RX 7900 XT, NVIDIA GeForce RTX 4070, Qualcomm Adreno 610, and Apple M2 exhibit failures. Memory isolation failures due to uninitialized workgroup memory were reported by prior work~\cite{sorensen2024leftoverlocals}, which ran tests in a different-process mode. The results show that some GPUs susceptible to this attack in the different-process mode are also susceptible in the same-process mode. The NVIDIA GPU is the only device that exhibits failures due to out-of-bounds accesses in workgroup memory.
 
 \subsubsection{Different-Process Mode\label{sec:saferace-df-config}}
 
-The assessment also tests the memory isolation of GPU frameworks in a different-process mode, as an attacker running code from the browser might attempt to steal data from other applications running on the same machine. In device memory, failures are observed on two GPUs: the AMD Ryzen 7 5700G and the Apple M2. These failures can be exploited by a malicious process on the same machine to leak data from victim applications or construct covert channels. Each vulnerability is described below. Additionally, uninitialized workgroup-memory isolation failures are observed on the AMD Radeon RX 7900 XT, Qualcomm Adreno 740, and Apple M2, replicating results from previous work~\cite{leftover-locals}.
+The assessment also tests the memory isolation of GPU frameworks in a different-process mode, as an attacker running code from the browser might attempt to steal data from other applications running on the same machine. In device memory, failures are observed on two GPUs: the AMD Ryzen 7 5700G and the Apple M2. These failures can be exploited by a malicious process on the same machine to leak data from victim applications or construct covert channels. Each vulnerability is described below. Additionally, uninitialized workgroup-memory isolation failures are observed on the AMD Radeon RX 7900 XT, Qualcomm Adreno 740, and Apple M2, replicating results from previous work~\cite{sorensen2024leftoverlocals}.
 
 \paragraph{AMD Uninitialized Memory Vulnerability}
 
@@ -195,7 +196,7 @@ This vulnerability allows an attacker to access data from another process by per
 
 \begin{figure}[t]
     \centering
-    \begin{lstlisting}[caption={Extension of \myfig\ref{fig:saferace-oob-example} showing a C program which exemplifies WGSL's data race specification vulnerability. Pointers are restricted to avoid aliasing, as in WGSL.}, label={list:saferace-c-code}, basicstyle=\ttfamily\fontsize{9.6}{13}\selectfont, xleftmargin=10pt, xrightmargin=10pt]
+    \begin{lstlisting}[caption={Extension of \myfig\ref{fig:saferace-oob-example} showing a C program which exemplifies WGSL's data race specification vulnerability. Pointers are restricted to avoid aliasing, as in WGSL.}, label={list:saferace-c-code}, basicstyle=\ttfamily\fontsize{9.2}{13}\selectfont, xleftmargin=10pt, xrightmargin=10pt]
 @int min(int a,int b) {return (b<a)?b:a;}@
 
 void f(int *restrict idx, int *restrict data, int *restrict output) {
@@ -255,42 +256,45 @@ In this example, assume that the length of the \texttt{data} array is 100. The c
 
 The LLVM code in \mylisting{\ref{list:saferace-llvm-code}} shows the results of emitting LLVM from the C code using \texttt{clang} and running the following LLVM optimization passes using \texttt{opt}: \texttt{inline}, \texttt{mem2reg}, \texttt{early-cse}, \texttt{instcombine}, and \texttt{simplifycfg}. In the resulting code, a register \textcolor{orange}{\texttt{\%idx\_0}} is allocated that holds the results of the conditional check on the value of \texttt{ptr \%data} (\mylisting\ref{list:saferace-llvm-code} lines 1-3), which corresponds to the conditional on \texttt{data} in \mylisting\ref{list:saferace-c-code} lines 4-7. The value of \textcolor{orange}{\texttt{\%idx\_0}} is stored to \texttt{ptr \%idx} (\mylisting\ref{list:saferace-llvm-code} line 4), which corresponds to the two stores to \texttt{idx} in \mylisting\ref{list:saferace-c-code} lines 5 and 7. Instead of reloading the value of \texttt{ptr \%idx}, the value of \textcolor{orange}{\texttt{\%idx\_0}} is used (extended to an \texttt{i64}) to index into \texttt{ptr \%data} since the compiler assumes the value of \texttt{ptr \%idx} has not changed (\mylisting\ref{list:saferace-llvm-code} lines 5-6). This also allows the compiler to provably remove the \textcolor{red}{\texttt{min}} check in \mylisting\ref{list:saferace-c-code} line 9 when loading from \texttt{ptr \%data\_ptr} (\mylisting\ref{list:saferace-llvm-code} line 7). Note that the conditional in \mylisting\ref{list:saferace-c-code} line 8 is also optimized away in \mylisting\ref{list:saferace-llvm-code}.
 
-In this example, the compiled code is still safe, as the compiler uses \textcolor{orange}{\texttt{\%idx\_0}} instead of loading from \texttt{ptr \%idx}. However, in a more complex program, extra computation could cause register pressure, leading to \textcolor{orange}{\texttt{\%idx\_0}} being spilled to memory before being used to index into \texttt{ptr \%data}. A valid optimization could then rematerialize \textcolor{orange}{\texttt{\%idx\_0}} from \texttt{ptr \%idx}, saving a stack slot\footnote{This same optimization was shown to be problematic when bounding certain data race behaviors in prior work~\cite{bounding-races}.}. Given a data race on \texttt{ptr \%idx}, this value might be larger than the size of \texttt{data}, causing an out-of-bounds access. To the best of current knowledge, this optimization is not implemented in LLVM, although it has been proposed~\cite{llvm_memory_use_markers}. This exploration shows that if the \drsv in WGSL is exploitable, it is likely due to programs that are susceptible to these types of optimizations. The following sections describe the base shaders generated by \wgslmemsmith and show how patterns that might trigger these optimizations are incorporated into the shaders.
+In this example, the compiled code is still safe, as the compiler uses \textcolor{orange}{\texttt{\%idx\_0}} instead of loading from \texttt{ptr \%idx}. However, in a more complex program, extra computation could cause register pressure, leading to \textcolor{orange}{\texttt{\%idx\_0}} being spilled to memory before being used to index into \texttt{ptr \%data}. A valid optimization could then rematerialize \textcolor{orange}{\texttt{\%idx\_0}} from \texttt{ptr \%idx}, saving a stack slot\footnote{This same optimization was shown to be problematic when bounding certain data race behaviors in prior work~\cite{dolan2018bounding}.}. Given a data race on \texttt{ptr \%idx}, this value might be larger than the size of \texttt{data}, causing an out-of-bounds access. To the best of current knowledge, this optimization is not implemented in LLVM, although it has been proposed~\cite{llvm_memory_use_markers}. This exploration shows that if the \drsv in WGSL is exploitable, it is likely due to programs that are susceptible to these types of optimizations. The following sections describe the base shaders generated by \wgslmemsmith and show how patterns that might trigger these optimizations are incorporated into the shaders.
 
 \begin{figure}
     \small
     \centering
-    \captionsetup[subfigure]{width=.32\textwidth}
-    \subfloat[Basic Pattern. Thread 1 races on \texttt{i[0]}, writing an out-of-bounds value, e.g., 4.\label{fig:saferace-basic-pattern}]{
-        \parbox{0.32\textwidth}{
+    \captionsetup[subfigure]{width=.30\textwidth}
+    \subfloat[Basic Pattern.\label{fig:saferace-basic-pattern}]{
+        \parbox{0.30\textwidth}{
             \centering
-            \begin{tabularx}{.8\linewidth}{ l }
+            \resizebox{\linewidth}{!}{%
+            \begin{tabular}{ l }
                 \midrule
                 \underline{Thread 0} \\
                 \texttt{a: i[0] = 2} \\
                 \texttt{b: }\textcolor{blue}{\texttt{let}}\texttt{ r0 = m[i[0]]} \\
                 \midrule
-            \end{tabularx}
+            \end{tabular}}
         }
     }
     \hfill
-    \subfloat[Undefined Arithmetic Pattern. Thread 1 writes a value that causes overflow, e.g., 2 billion.\label{fig:saferace-arith-pattern}]{
-        \parbox{0.32\textwidth}{
+    \subfloat[Undefined Arithmetic Pattern.\label{fig:saferace-arith-pattern}]{
+        \parbox{0.30\textwidth}{
             \centering
-            \begin{tabularx}{.8\linewidth}{ l }
+            \resizebox{\linewidth}{!}{%
+            \begin{tabular}{ l }
                 \midrule
                 \underline{Thread 0} \\
                 \texttt{i[0] = 500000} \\
                 \textcolor{blue}{\texttt{let}}\texttt{ r0 = m[1 + i[0]]} \\
                 \midrule
-            \end{tabularx}
+            \end{tabular}}
         }
     }
     \hfill
-    \subfloat[Control-Flow Pattern. Thread 1 writes a value that causes the conditional to execute, e.g., 1.\label{fig:saferace-control-pattern}]{
-        \parbox{0.32\textwidth}{
+    \subfloat[Control-Flow Pattern.\label{fig:saferace-control-pattern}]{
+        \parbox{0.30\textwidth}{
             \centering
-            \begin{tabularx}{.8\linewidth}{ l }
+            \resizebox{\linewidth}{!}{%
+            \begin{tabular}{ l }
                 \midrule
                 \underline{Thread 0} \\
                 \texttt{i[0] = 0} \\
@@ -298,10 +302,10 @@ In this example, the compiled code is still safe, as the compiler uses \textcolo
                 \textcolor{blue}{\texttt{if}}\texttt{ (i[0] > 0) x = 4 } \\
                 \textcolor{blue}{\texttt{let}}\texttt{ r0 = m[x]} \\
                 \midrule
-            \end{tabularx}
+            \end{tabular}}
         }
     }
-    \caption{The three types of patterns that \wgslmemsmith generates. Here, \texttt{i} is a signed 32-bit integer array of size 1 and \texttt{m} is an unsigned 32-bit integer array of size 4 in either device, workgroup, or private memory.}
+    \caption{The three types of patterns that \wgslmemsmith generates. Here, \texttt{i} is a signed 32-bit integer array of size 1 and \texttt{m} is an unsigned 32-bit integer array of size 4 in either device, workgroup, or private memory. Thread 1 races on \texttt{i[0]}, writing an out-of-bounds value for the basic pattern, an overflow-inducing value for the undefined arithmetic pattern, and a control-flow-changing value for the control-flow pattern.}
     \Description[Pattern code]{Each of the three tables shows the different types of patterns.}
     \label{fig:saferace-patterns}
 \end{figure}
@@ -335,7 +339,7 @@ Along with the base shader, \wgslmemsmith generates racy \textit{patterns} that 
 
 \subsection{Evaluation \label{sec:saferace-assess-td-eval}}
 
-A website that runs shaders generated by \wgslmemsmith through WebGPU's JavaScript API was developed and used to test 21 unique compilation stacks. Overall, \wgslmemsmith ran for over 81 hours and executed tens of millions of shader invocations, with \myfig\ref{fig:saferace-fuzzing-time} breaking down the testing time across different compilation stacks. Fuzzing was performed on both the Chrome and Edge web browsers, but their results are combined because both are built on the open-source Chromium browser and rely on the same underlying WebGPU implementation.
+We developed a website that runs shaders generated by \wgslmemsmith through WebGPU's JavaScript API and used it to test 21 unique compilation stacks. Overall, \wgslmemsmith ran for over 81 hours and executed tens of millions of shader invocations, with \myfig\ref{fig:saferace-fuzzing-time} breaking down the testing time across different compilation stacks. Fuzzing was performed on both the Chrome and Edge web browsers, but their results are combined because both are built on the open-source Chromium browser and rely on the same underlying WebGPU implementation.
 
 \subsubsection{Testing for Vulnerabilities\label{sec:saferace-assess-td-eval-vuln}}
 The fuzzing campaign produced a negative result; data races did not cause memory isolation vulnerabilities due to bounds-checks being optimized away. While this is not a formal proof of the absence of such optimizations, it provides evidence that current compilers might not implement the types of optimizations that could cause the WGSL specification vulnerability. Despite the lack of observable security concerns, the specification vulnerability remains a latent risk to WGSL's memory safety, as future compilers may implement these optimizations.
@@ -362,7 +366,7 @@ While testing a pre-release version of Firefox on a Windows laptop with a Qualco
 \label{tab:saferace-mut-testing}
 \end{table}
 
-\subsubsection{Mutation Testing} To provide more confidence in the testing approach, mutation testing~\cite{mutation-testing} is used to analyze the ability of \wgslmemsmith to observe memory isolation failures in the absence of bounds-checks. Bounds-checks could be missing due to compiler bugs, e.g., the Firefox vulnerability described in \mysec\ref{sec:saferace-assess-td-eval-vuln}, or unsound optimizations in the presence of data races, e.g., the examples in \myfig\ref{fig:saferace-oob-example} and \mylisting\ref{list:saferace-c-code}. A flag in the Chromium browser is used to disable bounds-checks on two GPUs, an Apple M2 and M3. As shown in \mysec\ref{sec:saferace-assess-bu-eval}, programs written in Apple's native Metal shading language with memory safety violations revealed memory isolation failures on these GPUs. Therefore, the fuzzing campaign is expected to detect these failures when bounds-checks are disabled. For each mutation-testing trial, \wgslmemsmith is configured to produce one of the three types of patterns from \myfig\ref{fig:saferace-patterns}, i.e., \textbf{Basic}, \textbf{UndefArith}, and \textbf{ControlFlow}.
+\subsubsection{Mutation Testing} To provide more confidence in the testing approach, mutation testing~\cite{demillo1978hints} is used to analyze the ability of \wgslmemsmith to observe memory isolation failures in the absence of bounds-checks. Bounds-checks could be missing due to compiler bugs, e.g., the Firefox vulnerability described in \mysec\ref{sec:saferace-assess-td-eval-vuln}, or unsound optimizations in the presence of data races, e.g., the examples in \myfig\ref{fig:saferace-oob-example} and \mylisting\ref{list:saferace-c-code}. A flag in the Chromium browser is used to disable bounds-checks on two GPUs, an Apple M2 and M3. As shown in \mysec\ref{sec:saferace-assess-bu-eval}, programs written in Apple's native Metal shading language with memory safety violations revealed memory isolation failures on these GPUs. Therefore, the fuzzing campaign is expected to detect these failures when bounds-checks are disabled. For each mutation-testing trial, \wgslmemsmith is configured to produce one of the three types of patterns from \myfig\ref{fig:saferace-patterns}, i.e., \textbf{Basic}, \textbf{UndefArith}, and \textbf{ControlFlow}.
 
 Each pattern type is then combined with each memory region---private, workgroup, or device---and shaders are generated and run for five minutes on each GPU. The results in \mytab\ref{tab:saferace-mut-testing} show the percentage of generated shaders that led to memory isolation failures on each GPU. Every combination except control-flow dependence with workgroup memory on the M2 showed isolation failures, validating that \wgslmemsmith can observe failures in most tested configurations when bounds-checks are removed.
 
@@ -377,7 +381,7 @@ The final evaluation analyzes whether shaders generated by \wgslmemsmith cause r
 
 \section{The \saferace Memory Safety Guarantee \label{sec:saferace-smsg}}
 
-The threat assessments presented in this chapter, along with vulnerabilities found in prior work~\cite{cuda-leaks, stealing-webpages, leftover-locals, guo2024usenix}, show that GPU memory isolation vulnerabilities continue to be a serious concern. Although the specification vulnerability in WGSL does not currently seem exploitable, the optimizations that would make it so are valid and could legitimately be implemented at any time by GPU compilers. Therefore, this chapter introduces the \saferace Memory Safety Guarantee (\smsg), which addresses the WGSL \drsv by ensuring that bounds-checks are robust in the presence of data races.
+The threat assessments presented in this chapter, along with vulnerabilities found in prior work~\cite{dipietro2016cudaleaks,lee2014stealing,sorensen2024leftoverlocals,guo2024usenix}, show that GPU memory isolation vulnerabilities continue to be a serious concern. Although the specification vulnerability in WGSL does not currently seem exploitable, the optimizations that would make it so are valid and could legitimately be implemented at any time by GPU compilers. Therefore, this chapter introduces the \saferace Memory Safety Guarantee (\smsg), which addresses the WGSL \drsv by ensuring that bounds-checks are robust in the presence of data races.
 
 Consider a WGSL program $P_u$, which may contain unsafe behaviors. When $P_u$ is compiled to lower-level languages, it is transformed into $P_s$ by inserting checks to guard against unsafe behavior, e.g., \textcolor{red}{\texttt{min}} in \myfig\ref{fig:saferace-oob-example}. However, as described in \mysec\ref{sec:saferace-spec-vuln} and \mysec\ref{sec:saferace-assess-td-eval-vuln}, WGSL compilers include no special protections against data races and may in fact introduce data races. Compiler transformations in the lower-level language can transform $P_s$ into a new program $P_s'$. Under current specifications, if either $P_u$ or $P_s$ contain data races, $P_s'$ may contain memory safety violations, e.g., \myfig\ref{fig:saferace-oob-example} with the \textcolor{red}{\texttt{min}} check removed. To address this, \smsg consists of two properties that, when combined, ensure that $P_u$ is safe from the \drsv. This in turn ensures that in the absence of other undefined behavior (or compiler bugs), valid transformations from $P_s$ to $P_s'$ are also safe.
 
@@ -392,7 +396,7 @@ The remainder of this section formally describes a logic for constructing progra
 \small
 \caption{\saferace Memory Logic}
 \centering
-\begin{tabularx}{.74\columnwidth}{ l l l }
+\begin{tabular}{ l l l }
 \toprule
 \textbf{Program} & $P$ & The program under analysis \\
 \midrule
@@ -419,7 +423,7 @@ The remainder of this section formally describes a logic for constructing progra
 \textbf{Property 2} & \multicolumn{2}{l}{\footnotesize $\forall A_x, A_y \in P.A: A_x \neq A_y \wedge A_y \notin A_x.S \implies $} \\
 (\footnotesize \textsc{RaceInterference}) & \multicolumn{2}{l}{\footnotesize \texttt{bhvrs}$(A_x) \mid P.A$ $\equiv$ \texttt{bhvrs}$(A_x) \mid P.A\setminus A_y$} \\
 \bottomrule
-\end{tabularx}
+\end{tabular}
 
 \label{tab:saferace-sig-reasoning}
 \end{table}
@@ -512,7 +516,7 @@ If Property 1 is applied correctly, there are no data races in $B$, the set of m
 
 Enforcing \smsg ensures that data races no longer lead to globally undefined behavior or memory safety violations due to out-of-bounds accesses. However, to provide complete memory safety, WebGPU needs to guarantee that no possible WGSL program can lead to undefined behavior in its lower-level language targets. The current WGSL specification avoids undefined behavior by classifying its common sources, including data races, as dynamic errors, but the preceding analysis shows that this is not necessarily sufficient. Therefore, the analysis considers the other sources of dynamic errors mentioned in the specification, which are: aliased writable memory bound to a shader~\cite[\mysec 7.3]{wgslspec}, mismatched memory layouts~\cite[\mysec 13.4]{wgslspec}, unbounded loops~\cite[\mysec 9.4.3]{wgslspec}, and an erroneous graphics-specific vertex value~\cite[\mysec 12.3]{wgslspec}.
 
-Non-aliasing of memory is enforced by the WebGPU host API~\cite[\mysec 14.1]{webgpu}, and while mismatched memory layouts between the host and shaders can affect program correctness, the values in memory do not change the analysis used to apply \smsg. Graphics pipelines are not considered, leaving unbounded loops as the last source of dynamic errors. Unlike in languages like C++, where unbounded loops with side effects are useful for many tasks, GPU languages are generally not designed for long-running programs. In fact, most GPU languages currently lack a well-specified forward progress model~\cite{gpu-forward-progress}, so even unbounded loops with side effects often lead to crashes or other issues. The lack of support for unbounded loops has implications for memory safety, and open-source WGSL compilers insert code in response to the fact that the Metal compiler might optimize away bounds-checks because it considers infinite loops without side effects undefined behavior~\cite{wgpuIssue4972}. While this approach appears successful so far, the lack of specificity around the behavior of unbounded loops means that the \smsg guarantees currently apply only to source programs that are free of behaviors like unbounded loops.
+Non-aliasing of memory is enforced by the WebGPU host API~\cite[\mysec 14.1]{webgpu}, and while mismatched memory layouts between the host and shaders can affect program correctness, the values in memory do not change the analysis used to apply \smsg. Graphics pipelines are not considered, leaving unbounded loops as the last source of dynamic errors. Unlike in languages like C++, where unbounded loops with side effects are useful for many tasks, GPU languages are generally not designed for long-running programs. In fact, most GPU languages currently lack a well-specified forward progress model~\cite{sorensen2021progress}, so even unbounded loops with side effects often lead to crashes or other issues. The lack of support for unbounded loops has implications for memory safety, and open-source WGSL compilers insert code in response to the fact that the Metal compiler might optimize away bounds-checks because it considers infinite loops without side effects undefined behavior~\cite{wgpuIssue4972}. While this approach appears successful so far, the lack of specificity around the behavior of unbounded loops means that the \smsg guarantees currently apply only to source programs that are free of behaviors like unbounded loops.
 
 \subsection{Other Memory Safety Approaches}
 
@@ -585,7 +589,7 @@ Compared against only the time taken to run the existing passes in the \texttt{t
 
 \subsubsection{GPU Performance Cost}
 
-Atomic operations constrain compiler optimizations and thus can negatively impact performance~\cite{schweizer2015atomiccost, burtchell2024characterizing}. Therefore, it is likely that any atomic operations added to satisfy \smsg Property 1 could lead to reduced application performance. However, as shown in the \textbf{Runtime Overhead} column of \mytab\ref{tab:saferace-webgpu-benchmarks}, \smsg Property 1 did not apply to any shaders in the majority of the tested benchmarks. The four benchmarks where it did apply are discussed below.
+Atomic operations constrain compiler optimizations and thus can negatively impact performance~\cite{schweizer2015atomiccost,burtchell2024characterizing}. Therefore, it is likely that any atomic operations added to satisfy \smsg Property 1 could lead to reduced application performance. However, as shown in the \textbf{Runtime Overhead} column of \mytab\ref{tab:saferace-webgpu-benchmarks}, \smsg Property 1 did not apply to any shaders in the majority of the tested benchmarks. The four benchmarks where it did apply are discussed below.
 
 While the two WebLLM model benchmarks differed in the number of shaders used by the program, they both compile a shader called \texttt{apply\_penalty\_inplace\_kernel} that requires making four memory regions atomic, affecting 24 accesses in the program. The developers of WebLLM confirmed that these shaders are not yet used during LLM inference. Additionally, the accesses that must be made atomic in this shader are floating-point accesses, and as mentioned in \mysec\ref{sec:saferace-smsg-prop-1}, WGSL does not yet allow atomic access to floating-point data types. Therefore, if WebLLM starts using this shader, the current implementation of Property 1 cannot provide its memory safety guarantee for the shader, at least until WGSL begins to support atomic accesses to more data types.
 
@@ -595,9 +599,9 @@ To conclude, these results show that only \textasciitilde 2\% of the shaders in 
 
 \section{Testing \smsg Property 2 \label{sec:saferace-smsg-prop-2}}
 
-While \smsg Property 1 can be implemented by WGSL compilers, Property 2 must be adopted by the languages targeted by WGSL. This may seem like a thorny problem; many languages, including C++ and GPU languages, leave the behavior of data races undefined to avoid having to reason about constraints like the one required by Property 2. However, previous work on data races has shown how to bound the behavior of data races to provide a local data-race-free (Local DRF) property and has proven the soundness of many existing compiler optimizations given this property~\cite{bounding-races}.
+While \smsg Property 1 can be implemented by WGSL compilers, Property 2 must be adopted by the languages targeted by WGSL. This may seem like a thorny problem; many languages, including C++ and GPU languages, leave the behavior of data races undefined to avoid having to reason about constraints like the one required by Property 2. However, previous work on data races has shown how to bound the behavior of data races to provide a local data-race-free (Local DRF) property and has proven the soundness of many existing compiler optimizations given this property~\cite{dolan2018bounding}.
 
-The Local DRF property is stronger than \smsg Property 2. It prevents a data race on one memory location $x$ from causing an unrelated memory location $y$ to read a value written to $x$, a guarantee called \textit{bounding data races in space}. It also prevents the effects of data races from leaking across synchronization points, e.g., barriers, a guarantee called \textit{bounding data races in time}. In particular, bounding data races in time requires preserving load-store ordering, which has been shown to have relatively low cost on CPUs. However, the cost of preserving load-store ordering has not been studied on GPUs, where load-store reordering is very commonly observed, as shown in \mychap\ref{chap:gpuharbor}. Still, prior work showed that preserving load-store ordering is not necessary to bound data races in space and proved that many existing compiler transformations are compatible with this property~\cite{bounding-races}, and therefore with \smsg Property 2.
+The Local DRF property is stronger than \smsg Property 2. It prevents a data race on one memory location $x$ from causing an unrelated memory location $y$ to read a value written to $x$, a guarantee called \textit{bounding data races in space}. It also prevents the effects of data races from leaking across synchronization points, e.g., barriers, a guarantee called \textit{bounding data races in time}. In particular, bounding data races in time requires preserving load-store ordering, which has been shown to have relatively low cost on CPUs. However, the cost of preserving load-store ordering has not been studied on GPUs, where load-store reordering is very commonly observed, as shown in \mychap\ref{chap:gpuharbor}. Still, prior work showed that preserving load-store ordering is not necessary to bound data races in space and proved that many existing compiler transformations are compatible with this property~\cite{dolan2018bounding}, and therefore with \smsg Property 2.
 
 To test whether \smsg Property 2 is maintained by current GPU compilers, the \wgslmemsmith fuzzer was augmented using metamorphic fuzzing. When generating shaders, variables and memory locations are split into \textit{safe} and \textit{unsafe} sets. Safe memory locations are read-only or read/written by only one thread, while unsafe memory locations may be read or written to by any thread. Safe local variables are only used in combination with safe memory locations, while unsafe variables can be combined in expressions with unsafe memory locations. Intuitively, this process creates race-free slices of programs, as well as slices that may contain races. During fuzzing, two shaders are run: one with only race-free slices and the other with both race-free and racy slices.
 
@@ -607,7 +611,7 @@ The race-free shader is run first, and the values in memory at the end of execut
 
 Because the same shaders and testing infrastructure are used for both the metamorphic fuzzing and the top-down threat assessment, the evaluation covers the same set of compilation stacks and testing time shown in \myfig\ref{fig:saferace-fuzzing-time}. On most tested compilation stacks, data races did not affect race-free slices of programs. This was true for all compilation stacks using Vulkan and DirectX as the WebGPU backend, as well as Metal backends targeting Apple M-series GPUs. On DirectX backends, data races caused unexpected values in unsafe memory locations, i.e., values that could not be explained by any writes to those memory locations, but this behavior did not affect race-free slices of the programs.
 
-On one machine, an older MacBook with an Intel SoC, running the racy shader caused memory in race-free slices of the shader to change. A browser-based reducer built using fuzzing reduction techniques~\cite{zeller2002deltadebugging, regehr2012creduce} determined that the mismatches between the reduced shader outputs were due to an unrelated issue. This issue manifests in the presence of certain specific loop constructs and occurs when running a single-threaded shader containing no data races on the GPU. The issue appears to be a compiler or driver bug and was reported to Apple.
+On one machine, an older MacBook with an Intel SoC, running the racy shader caused memory in race-free slices of the shader to change. A browser-based reducer built using fuzzing reduction techniques~\cite{zeller2002deltadebugging,regehr2012creduce} determined that the mismatches between the reduced shader outputs were due to an unrelated issue. This issue manifests in the presence of certain specific loop constructs and occurs when running a single-threaded shader containing no data races on the GPU. The issue appears to be a compiler or driver bug and was reported to Apple.
 
 These observations provide evidence that \smsg Property 2 holds in the tested WebGPU implementations, which should ease its adoption by GPU languages. Besides memory safety, \smsg Property 2 also allows more compositional reasoning about program behaviors, enabling other future optimizations and safety properties.
 
@@ -616,8 +620,8 @@ These observations provide evidence that \smsg Property 2 holds in the tested We
 The proposals in this chapter are designed to address WGSL's specification vulnerability, but the results can also inform the general development of safe languages that target parallel processors and seek to provide memory safety and reasonable semantics for data races. The work has potential lessons and impacts for three different areas: existing browser-based languages, existing native languages, and the future development of languages that require compositional safety reasoning.
 
 \subsection{Browser-Based Languages}
-The other two main languages used in the browser, JavaScript and Wasm, both require bounds-checks for memory safety and constrain the effects of data races, including specifying that data races must be bound in space. %While Local DRF simplifies program reasoning, it also forbids behaviors that have been observed on GPUs, like load buffering~\cite{gpuharbor}. In fact, our pilot experiments showed that the effects of data races \textit{can} cross synchronization boundaries on GPUs, further hampering the full adoption of Local DRF by GPU languages.
-Unlike WGSL, the semantics of these languages can also be fully controlled by an implementation. For example, the V8 JavaScript and Wasm engine controls the optimization phases of compilation and directly generates machine code, avoiding intermediate languages with undefined behavior. In some cases, these engines implement bounds-checks by relying on operating systems or processors to fault when memory is accessed out-of-bounds~\cite{weak-wasm}, a guarantee that GPU runtimes do not necessarily provide.
+The other two main languages used in the browser, JavaScript and Wasm, both require bounds-checks for memory safety and constrain the effects of data races, including specifying that data races must be bound in space. %While Local DRF simplifies program reasoning, it also forbids behaviors that have been observed on GPUs, like load buffering~\cite{levine2023gpuharbor}. In fact, our pilot experiments showed that the effects of data races \textit{can} cross synchronization boundaries on GPUs, further hampering the full adoption of Local DRF by GPU languages.
+Unlike WGSL, the semantics of these languages can also be fully controlled by an implementation. For example, the V8 JavaScript and Wasm engine controls the optimization phases of compilation and directly generates machine code, avoiding intermediate languages with undefined behavior. In some cases, these engines implement bounds-checks by relying on operating systems or processors to fault when memory is accessed out-of-bounds~\cite{watt2019weakening}, a guarantee that GPU runtimes do not necessarily provide.
 
 Even so, the problems associated with optimizations on bounds-checks and data races must be considered by these languages. JavaScript and Wasm engines may target architectures without built-in memory protections, so they must not implement optimizations that both remove bounds-checks and rematerialize loads. Additionally, as described in \mysec\ref{sec:saferace-base-gen}, dead code may execute due to data races in control dependencies, so optimizations on those blocks must be carefully checked. %Handling the effects of dependencies is in general a complex problem, and has been shown to be the root of out-of-thin-air executions in general-purpose programming languages~\cite{batty2015probconcurrency}.
 

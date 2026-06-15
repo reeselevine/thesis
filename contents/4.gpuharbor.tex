@@ -60,7 +60,7 @@ In summary, the contributions of this chapter are:
 
     \item \textbf{Conformance Testing and Analysis}:
         \begin{enumerate}
-            \item The discovery of two unreported bugs in Arm and NVIDIA devices (\mysec\ref{sec:gpuharbor-vulkan-bugs}).
+            \item The discovery of two unreported bugs in Arm and NVIDIA devices (see \mysec\ref{sec:gpuharbor-vulkan-bugs}).
             \item An analysis of statistical similarities across GPUs and a description of the impact on testing strategies and device fingerprinting (\mysec\ref{sec:gpuharbor-webgpu-sim}).
             \item A discussion of how weak behavior profiles impact the development and testing of synchronization algorithms on GPUs (\mysec\ref{sec:gpuharbor-vulkan-locks}).
         \end{enumerate}
@@ -83,7 +83,7 @@ All of the data collected as part of the large-scale study, and the tools used t
         \texttt{S(x, 0);} & \texttt{fence(acquire);} \\
         & \texttt{...critical section} \\
         \midrule
-    \end{tabular} \hspace{1cm}
+    \end{tabular}
 }
 
 \newcommand{\mplitmustest}{
@@ -96,7 +96,7 @@ All of the data collected as part of the large-scale study, and the tools used t
         \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{r1 = L(x);}  \\
         \midrule
         \multicolumn{2}{c}{Weak Behavior: \texttt{r0 == 1 \&\& r1 == 0}}
-    \end{tabular} \hspace{.2cm}
+    \end{tabular}
 }
 
 \newcommand{\lblitmustest}{
@@ -110,7 +110,7 @@ All of the data collected as part of the large-scale study, and the tools used t
         \midrule
         \multicolumn{2}{c}{Weak Behavior: \texttt{r0 == 1 \&\& r1 == 1}}
 
-    \end{tabular} \hspace{.5cm}
+    \end{tabular}
 }
 
 \newcommand{\sblitmustest}{
@@ -123,7 +123,7 @@ All of the data collected as part of the large-scale study, and the tools used t
         \circledWhite{\vphantom{A}d}\hspace{.1cm} \texttt{r1 = L(x);}  \\
         \midrule
         \multicolumn{2}{c}{Weak Behavior: \texttt{r0 == 0 \&\& r1 == 0}}
-    \end{tabular} \hspace{.5cm}
+    \end{tabular}
 }
 
 \newcommand{\storelitmustest}{
@@ -151,7 +151,7 @@ All of the data collected as part of the large-scale study, and the tools used t
         \midrule
         \multicolumn{2}{c}{Weak Behavior: \texttt{r0 == 0 \&\& y == 2}}
 
-    \end{tabular} \hspace{.5cm}
+    \end{tabular}
 }
 
 \newcommand{\twowritelitmustest}{
@@ -174,12 +174,12 @@ All of the data collected as part of the large-scale study, and the tools used t
 \centering
 \small
 \captionsetup[subfigure]{width=.48\textwidth}
-\subfloat[Message Passing (MP)]{\mplitmustest \label{fig:gpuharbor-mp-litmustest}}
-\subfloat[Load Buffer (LB)]{\lblitmustest \label{fig:gpuharbor-lb-litmustest}} \\
-\subfloat[Store Buffer (SB)]{\sblitmustest \label{fig:gpuharbor-sb-litmustest}}
-\subfloat[Store (S)]{\storelitmustest \label{fig:gpuharbor-store-litmustest}} \\
-\subfloat[Read (R)]{\readlitmustest \label{fig:gpuharbor-read-litmustest}}
-\subfloat[2+2 Write (2+2W)]{\twowritelitmustest \label{fig:gpuharbor-22w-litmustest}}
+\subfloat[Message Passing (MP)]{\resizebox{.48\textwidth}{!}{\mplitmustest} \label{fig:gpuharbor-mp-litmustest}}
+\subfloat[Load Buffer (LB)]{\resizebox{.48\textwidth}{!}{\lblitmustest} \label{fig:gpuharbor-lb-litmustest}} \\
+\subfloat[Store Buffer (SB)]{\resizebox{.48\textwidth}{!}{\sblitmustest} \label{fig:gpuharbor-sb-litmustest}}
+\subfloat[Store (S)]{\resizebox{.48\textwidth}{!}{\storelitmustest} \label{fig:gpuharbor-store-litmustest}} \\
+\subfloat[Read (R)]{\resizebox{.48\textwidth}{!}{\readlitmustest} \label{fig:gpuharbor-read-litmustest}}
+\subfloat[2+2 Write (2+2W)]{\resizebox{.48\textwidth}{!}{\twowritelitmustest} \label{fig:gpuharbor-22w-litmustest}}
 \caption{Six classic weak behaviors allowed by relaxed MCSs. \texttt{S} and \texttt{L} signify a \texttt{relaxed} atomic store and load, respectively.}
 \label{fig:gpuharbor-mcs-litmustests}
 \end{figure*}
@@ -190,7 +190,7 @@ Building on the approaches in \mychap\ref{chap:mc-mutants}, this section discuss
 
 \subsection{Litmus Test Selection \label{sec:gpuharbor-litmus-selection}}
 
-The tests used in the study build on the MCS mutation testing strategy used in \mychap\ref{chap:mc-mutants}. The study uses 32 \textit{mutants}, of which 24 are litmus tests with weak behaviors allowed by the WebGPU MCS. The mutants are used to find effective system stress under which to run the conformance tests. The results analysis focuses on characterizing the rates of weak behaviors of the six mutants shown in \myfig\ref{fig:gpuharbor-mcs-litmustests}. Up to symmetry, these tests enumerate the combinations of four loads and stores, with two operations on each of two threads, that form cyclic weak behaviors over two memory locations. Thus, they capture all pairwise memory-reordering patterns in this class. For example, the \textbf{SB} test checks for store-load reorderings, while the \textbf{LB} test checks for load-store reorderings. Additionally, these tests capture synchronization patterns used in common concurrency algorithms like a compare-and-swap spinlock. Because of this, prior work has also focused on these tests and has shown their utility in finding bugs in both applications and MCS implementations~\cite{gpu-exposing, gpu-foundations}.
+The tests used in the study build on the MCS mutation testing strategy used in \mychap\ref{chap:mc-mutants}. The study uses 32 \textit{mutants}, of which 24 are litmus tests with weak behaviors allowed by the WebGPU MCS. The mutants are used to find effective system stress under which to run the conformance tests. The results analysis focuses on characterizing the rates of weak behaviors of the six mutants shown in \myfig\ref{fig:gpuharbor-mcs-litmustests}. Up to symmetry, these tests enumerate the combinations of four loads and stores, with two operations on each of two threads, that form cyclic weak behaviors over two memory locations. Thus, they capture all pairwise memory-reordering patterns in this class. For example, the \textbf{SB} test checks for store-load reorderings, while the \textbf{LB} test checks for load-store reorderings. Additionally, these tests capture synchronization patterns used in common concurrency algorithms like a compare-and-swap spinlock. Because of this, prior work has also focused on these tests and has shown their utility in finding bugs in both applications and MCS implementations~\cite{sorensen2016exposing,kirkham2020foundations}.
 
 Once the mutants are run, the weak behavior profile of a device is used to determine an effective system stress configuration under which to run conformance tests. The study utilizes the 20 conformance tests from \mychap\ref{chap:mc-mutants}. As a concrete illustration using one mutant and conformance test, the \textbf{MP} test is run under many different system stress configurations to build a weak behavior profile. The configuration most effective at revealing \textbf{MP} weak behaviors is then used to run the closely related \textbf{MP-CO} conformance test. \textbf{MP-CO} is a version of \textbf{MP} in which \texttt{x} and \texttt{y} are the same memory location, following Mutator 2 from \mysec\ref{sec:mc-mutants-mutator-2}. Its weak behavior violates SC-per-location and is disallowed by most major MCSs. This approach was shown to be effective at finding bugs in \mychap\ref{chap:mc-mutants}, and its effectiveness is further demonstrated by the discovery of two new bugs: a violation of \textbf{MP-CO} on Arm devices and a violation of \textbf{MP-CO} on an NVIDIA device (see \mysec\ref{sec:gpuharbor-vulkan-bugs}).
 
@@ -205,7 +205,7 @@ Once the mutants are run, the weak behavior profile of a device is used to deter
 
 This subsection discusses the tooling that generates and runs the testing and characterization campaign. Litmus test behaviors are non-deterministic and sensitive to system stress. Due to this, the shaders that run the litmus tests contain not only the actual litmus test instructions, like those in \myfig\ref{fig:gpuharbor-mcs-litmustests}, but take in a number of parameters and provide functions that are used to construct system stress.
 
-To provide a standardized interface for defining litmus tests in different GPU languages, a tool called Litmus Generator (\textsc{LitGen}, \circledWhite{1} in \myfig\ref{fig:gpuharbor-sys-overview}) was built. It is similar to previous litmus testing tools~\cite{litmus} but is specifically targeted to create GPU programs with system stress, which has been shown to be necessary for testing GPU MCSs~\cite{gpu-concurrency, gpu-foundations}. \textsc{LitGen} takes litmus tests that are written in an abstract format, currently JSON, that specify the actions of the test (e.g.\ loads and stores) and the possible behaviors of the test, with a special designation being given to weak behaviors. The tests used in this work were all manually specified, as they are relatively small, but \textsc{LitGen} could be integrated with other tools that use formal models to generate litmus tests, e.g.,~\cite{fences, memalloy}, which would provide more automation and account for more complicated tests and MCSs. \textsc{LitGen} outputs a \textit{test shader}, which runs the test alongside system stress developed in prior work~\cite{mc-mutants, gpu-foundations}, and a \textit{result shader}, which aggregates the observed behaviors of the test.
+To provide a standardized interface for defining litmus tests in different GPU languages, a tool called Litmus Generator (\textsc{LitGen}, \circledWhite{1} in \myfig\ref{fig:gpuharbor-sys-overview}) was built. It is similar to previous litmus testing tools~\cite{alglave2011litmus} but is specifically targeted to create GPU programs with system stress, which has been shown to be necessary for testing GPU MCSs~\cite{alglave2015gpu,kirkham2020foundations}. \textsc{LitGen} takes litmus tests that are written in an abstract format, currently JSON, that specify the actions of the test (e.g.\ loads and stores) and the possible behaviors of the test, with a special designation being given to weak behaviors. The tests used in this work were all manually specified, as they are relatively small, but \textsc{LitGen} could be integrated with other tools that use formal models to generate litmus tests, e.g.,~\cite{alglave2010fences,wickerson2017automatically}, which would provide more automation and account for more complicated tests and MCSs. \textsc{LitGen} outputs a \textit{test shader}, which runs the test alongside system stress developed in prior work~\cite{levine2023mcmutants,kirkham2020foundations}, and a \textit{result shader}, which aggregates the observed behaviors of the test.
 
 The result shader is generated separately from the test shader for several reasons:
 \begin{enumerate}
@@ -228,7 +228,7 @@ Vulkan's native C/C++ API is more complex, so to simplify this process, a Vulkan
 \label{fig:gpuharbor-interface}
 \end{figure}
 
-Previous GPU MCS studies have been limited in reach due to the difficulty in deploying cross-platform GPU applications~\cite{opencl-hitchhiker}. One of the reasons for this is the fractured landscape of GPU development. NVIDIA's popular CUDA framework~\cite{cuda} is used for many data science applications but is only supported on NVIDIA GPUs. OpenCL~\cite{opencl} was introduced in 2009 by Apple as a cross-platform standard; however, today Apple no longer supports OpenCL and instead requires developers to use their proprietary Metal API~\cite{apple_metal}. %and the future of OpenCL remains unclear.
+Previous GPU MCS studies have been limited in reach due to the difficulty in deploying cross-platform GPU applications~\cite{sorensen2016hitchhiker}. One of the reasons for this is the fractured landscape of GPU development. NVIDIA's popular CUDA framework~\cite{cuda} is used for many data science applications but is only supported on NVIDIA GPUs. OpenCL~\cite{opencl} was introduced in 2009 by Apple as a cross-platform standard; however, today Apple no longer supports OpenCL and instead requires developers to use their proprietary Metal API~\cite{apple_metal}. %and the future of OpenCL remains unclear.
 
 Another issue with previous GPU MCS testing approaches has been a reliance on expert users to run testing campaigns. For example, using OpenCL would require users to install the required drivers, build the application under a specific environment, etc. To collect data from the diversity of devices necessary to gain confidence in cross-platform GPU frameworks, tools must minimize the friction in setting up and running tests. The tools introduced here are easily distributed applications with a user-friendly interface on top of new GPU frameworks so that even non-technical users can collect data on their devices and submit results for analysis. To this end, \gpuharbor is introduced as a GPU MCS testing tool with two widely supported and accessible front ends, a web interface and an Android app (\circledWhite{3} and \circledWhite{5} in \myfig\ref{fig:gpuharbor-sys-overview}).
 
@@ -254,7 +254,7 @@ To submit test data, the web interface communicates with a backend service that 
 
 The Android app is not yet available on the app store, nor is it integrated with the SQLite backend, so results are manually copied from the device for analysis. Future work could reduce the friction for submitting mobile app results and thus increase the reach of future studies. Nevertheless, the study of eight devices is the largest known testing campaign of mobile GPU MCS behaviors.
 
-While system stress configurations are generated randomly, the configurations run on different devices must be the same for data analysis purposes. That is, if different GPUs are tested with the same stress configurations, their behavior under the same stress can be compared. This is ensured by integrating a seedable Park-Miller random number generator~\cite{prng} into both the web interface and the Android app and using the same seed when running all tuning experiments.
+While system stress configurations are generated randomly, the configurations run on different devices must be the same for data analysis purposes. That is, if different GPUs are tested with the same stress configurations, their behavior under the same stress can be compared. This is ensured by integrating a seedable Park-Miller random number generator~\cite{park1988random} into both the web interface and the Android app and using the same seed when running all tuning experiments.
 
 By default, browsers only expose limited information about the user's GPU without turning on vendor-specific development flags due to privacy and security concerns around fingerprinting~\cite{webgpu-security}. In order to collect as much information as possible, users were given instructions asking them to temporarily enable flags so detailed GPU information could be collected. Of the 98 results collected, 67 included the exact GPU tested. The other 31 results did not specify the exact GPU, but included only the vendor and a string describing the GPU architecture, such as ``intel gen-9'' or ``nvidia ampere''. All Apple devices reported an architecture of ``common-3'', making it impossible to immediately distinguish M1s from M2s. However, \mysec\ref{sec:gpuharbor-webgpu-sim} shows that the data can be used to infer device information, hindering the ability of browsers to hide the specifics of a user's GPU.
 
@@ -271,7 +271,7 @@ To collect data from as many sources as possible, the link to \gpuharbor's web i
 
 To ensure data integrity, a checksum algorithm verified that the expected number of overall behaviors was observed based on the system stress configuration. The testing duration was also recorded; however, some computers went to sleep in the middle of the tests, suspending the browser's process and leading to extremely long recorded test times. To account for this issue, testing time was recorded on a per-test/configuration basis, and the results were then filtered to exclude any test/configuration durations over one minute. Each individual test runs quickly (e.g., in less than 5 seconds); thus, runs that took over one minute most likely occurred when the computer went to sleep. To approximate the duration of a suspended test, a neighboring test's time was used.
 
-One consideration when collecting data from the wider public is that tests cannot run for hours at a time. Previous work targeted only a few devices, running tests on one device for a minimum of 36 hours~\cite{gpu-foundations} or 2 hours (\mychap\ref{chap:mc-mutants}). However, asking volunteer users to leave their browsers and computers open for that long is impractical and would certainly decrease the number of submissions. Therefore, the number of test environments and iterations per environment was chosen heuristically, aiming for the tests to finish in 10--20 minutes.
+One consideration when collecting data from the wider public is that tests cannot run for hours at a time. Previous work targeted only a few devices, running tests on one device for a minimum of 36 hours~\cite{kirkham2020foundations} or 2 hours (\mychap\ref{chap:mc-mutants}). However, asking volunteer users to leave their browsers and computers open for that long is impractical and would certainly decrease the number of submissions. Therefore, the number of test environments and iterations per environment was chosen heuristically, aiming for the tests to finish in 10--20 minutes.
 
 \myfiglong\ref{fig:gpuharbor-webgpu-timing} shows the distribution of testing time on the web interface, broken down by vendor. The results show that NVIDIA devices were the fastest on average, mostly running all tests in under 15 minutes. On the other hand, Intel devices ran slower, with two older Intel GPUs taking over an hour and a half to complete.
 
@@ -310,7 +310,7 @@ AMD devices were also very weak, with 100\% of devices showing weak behaviors on
 \footnotesize
 \centering
 \caption{Data showing the rate of weak behaviors on each device when running litmus tests using Vulkan.}
-\begin{tabularx}{.9\columnwidth}{ l l r r r r r r }
+\begin{tabular}{ l l r r r r r r }
  \toprule
  & & \multicolumn{6}{c}{\textbf{Litmus Test}} \\
 \cmidrule(lr){3-8}
@@ -329,7 +329,7 @@ Imagination & PowerVR  & 0\% & 0\% & 0\% & 0\% & 0\% & 0\% \\
 \midrule
 NVIDIA & Tegra X1 & 0.01\% & 0.05\% & 0.02\% & 0.01\% & 0.01\% & 0.05\% \\
  \bottomrule
-\end{tabularx}
+\end{tabular}
 \label{tab:gpuharbor-vulkan-rates}
 \end{table}
 
@@ -452,7 +452,7 @@ On the Arm Mali-G78, a larger GPU which exhibits a relatively high rate of \text
 Therefore, when writing applications that require synchronization, care must be taken to ensure the application is tested on devices where incorrect implementations will lead to failures, highlighting the importance of collecting and characterizing MCS behavior data.
 
 %\subsection{\gpuharbor as a Pedagogical Tool \label{sec:gpuharbor-eval-ped}}
-%- explore mode on gpuharbor
+%- explore mode on levine2023gpuharbor
 %- impact in education/dissemination
 
 \section{Lessons Learned \label{sec:gpuharbor-lessons-learned}}
@@ -461,7 +461,7 @@ This section discusses important lessons learned while developing and running th
 
 \paragraph{Ease of Use.}
 
-Technical studies of low-level details like memory consistency specifications~\cite{litmus, gpu-exposing, gpu-foundations} have been run by expert practitioners and involve installing special software (e.g., OpenCL/CUDA drivers) and running experiments from command-line interfaces. However, experiments that solicit non-technical users require accessible and frictionless interfaces in order to collect many results. Initially, users were asked to download their results and submit them directly by email, but many users would not take this seemingly small step. Thus, a way to submit results by simply clicking a button was implemented. This required substantial engineering effort, both to set up a client/server infrastructure and to distribute the tools in a non-technical way (e.g., through web browsers and app stores). Once implemented, this workflow also had the benefit of standardizing the experiments; instead of relying on users to configure their systems and choose the right options, all of this was built in so that users only had to click a few buttons to run and submit results.
+Technical studies of low-level details like memory consistency specifications~\cite{alglave2011litmus,sorensen2016exposing,kirkham2020foundations} have been run by expert practitioners and involve installing special software (e.g., OpenCL/CUDA drivers) and running experiments from command-line interfaces. However, experiments that solicit non-technical users require accessible and frictionless interfaces in order to collect many results. Initially, users were asked to download their results and submit them directly by email, but many users would not take this seemingly small step. Thus, a way to submit results by simply clicking a button was implemented. This required substantial engineering effort, both to set up a client/server infrastructure and to distribute the tools in a non-technical way (e.g., through web browsers and app stores). Once implemented, this workflow also had the benefit of standardizing the experiments; instead of relying on users to configure their systems and choose the right options, all of this was built in so that users only had to click a few buttons to run and submit results.
 
 \paragraph{Testing Time.}
 
@@ -469,7 +469,7 @@ Previous studies ran tests for hours or days, but it is unrealistic for voluntee
 
 \paragraph{Enabling New Research Questions.}
 
-Important research questions on memory consistency, including the three from \mysec\ref{sec:gpuharbor-wb-char}, require performing a large-scale study. For example, previous studies~\cite{gpu-foundations} have attempted to create portable testing strategies, but could only provide limited guidance on choosing representative sets of devices to test on due to the small number of devices in their evaluation. On the other hand, the collected data shows that GPUs from different vendors can behave similarly under stress, and thus portability may not be vendor-specific. Therefore, increasing the scale of evaluation through faster and more accessible testing should be an important factor when developing new testing strategies for a diverse and ever-growing set of devices.
+Important research questions on memory consistency, including the three from \mysec\ref{sec:gpuharbor-wb-char}, require performing a large-scale study. For example, previous studies~\cite{kirkham2020foundations} have attempted to create portable testing strategies, but could only provide limited guidance on choosing representative sets of devices to test on due to the small number of devices in their evaluation. On the other hand, the collected data shows that GPUs from different vendors can behave similarly under stress, and thus portability may not be vendor-specific. Therefore, increasing the scale of evaluation through faster and more accessible testing should be an important factor when developing new testing strategies for a diverse and ever-growing set of devices.
 
 \paragraph{Extensibility.}
 
