@@ -6,7 +6,7 @@
 
 \section{Personal Context}
 
-After a successful first half of 2023, which included my PhD advancement, presentations at ASPLOS and ISSTA, being awarded the NDSEG fellowship, and returning for my second internship at Apple, I returned to UC Santa Cruz looking for my next major project. Kyle Little, an undergraduate at UC Santa Cruz, and I had already started investigating some of the security properties of WebGPU, especially around data races. We weren't sure exactly where this would go, but after nearly a year of work, the SafeRace paper came together. Another undergraduate, Ashley Lee, helped pick up the project once Kyle graduated. Unfortunately, it was rejected the first time it was submitted (to ASPLOS), but the reviewers gave valuable feedback on a more focused implementation of some of its ideas and a better evaluation. In the winter of 2025, yet another undergraduate, Neha Abbas, got involved in the project, writing a WGSL program reducer that helped with the evaluation, and SafeRace was eventually accepted to OOPSLA 2025. The SafeRace project was a bit of a marathon, but it was satisfying to see it accepted, and it represents the final major contribution of this thesis.
+After a successful first half of 2023, which included my PhD advancement, presentations at ASPLOS and ISSTA, being awarded the NDSEG fellowship, and returning for my second internship at Apple, I returned to UC Santa Cruz looking for my next major project. Kyle Little, an undergraduate at UC Santa Cruz, and I had already started investigating some of the security properties of WebGPU, especially around data races. We weren't sure exactly where this would go, but after nearly a year of work, the SafeRace paper came together. Another undergraduate, Ashley Lee, helped pick up the project once Kyle graduated. Unfortunately, it was rejected the first time it was submitted (to ASPLOS), but the reviewers gave valuable feedback on a more focused implementation of some of its ideas and a better evaluation. In the winter of 2024, another undergraduate, Neha Abbas, got involved in the project, writing a WGSL program reducer that helped with the evaluation, and SafeRace was eventually accepted to OOPSLA 2025. The SafeRace project was a bit of a marathon, but it was satisfying to see it accepted, and it represents the final major contribution of this thesis.
 
 I view SafeRace not as a finished solution, but rather as a step in the direction of more refined semantics for data races based on how underlying compilers actually work. The rest of my time at UC Santa Cruz ended up going in a different direction, toward using WebGPU for machine-learning workloads, but I encourage others to make further progress in this area and would happily give them my thoughts. Perhaps there are exceptions to data races being evil after all.
 
@@ -59,13 +59,13 @@ In many languages, e.g., C and C++, data races cause undefined behavior, as they
 
 \myfiglong{\ref{fig:saferace-oob-example-a}} shows a WGSL program with two arrays of unsigned integers, \texttt{i} and \texttt{m}, and two threads performing non-atomic accesses to these arrays. This program contains behaviors that, in isolation, are undefined in some languages: (1)~because memory locations are non-atomic and there is no synchronization, there are data races between ($a$, $c$) and ($b$, $c$), and (2)~while the race technically makes the program undefined, a possible natural compilation could allow for an out-of-bounds read if $b$ reads the value $c$ wrote to \texttt{i[0]}. The potential out-of-bounds read is a memory safety violation which, in turn, could lead to a vulnerability. The highlighted code in operation $b$, i.e., \textcolor{red}{\texttt{min(..., 3)}}, shows a check that WGSL compilers include to enforce memory safety. However, WGSL compilers currently contain no special protections against data races.
 
-\paragraph{The Problem: Optimizing Away Bounds-Checks} Even with the bounds-check inserted, a compiler for an unsafe lower-level language can optimize the code in a way that creates a ``time-of-check to time-of-use'' (TOCTOU)~\cite{abbott1976toctou} memory safety violation. Specifically, a compiler for an unsafe language is free to assume programs do not contain data races. Therefore, when only looking at the operations in thread 0, the compiler may notice that \texttt{i[0]} is set to 2 and remains unchanged until it is loaded in $b$. Based on a range analysis, it can determine that the call to \texttt{min} is unnecessary and remove it, leading to an out-of-bounds access if \texttt{i[0]} reads 4 in $b$. While it is unlikely that a real implementation would perform the problematic optimization on this particular program, \mysec\ref{sec:saferace-extended-example} describes a more realistic program that could trigger this optimization.
+\paragraph{The Problem: Optimizing Away Bounds-Checks.} Even with the bounds-check inserted, a compiler for an unsafe lower-level language can optimize the code in a way that creates a ``time-of-check to time-of-use'' (TOCTOU)~\cite{abbott1976toctou} memory safety violation. Specifically, a compiler for an unsafe language is free to assume programs do not contain data races. Therefore, when only looking at the operations in thread 0, the compiler may notice that \texttt{i[0]} is set to 2 and remains unchanged until it is loaded in $b$. Based on a range analysis, it can determine that the call to \texttt{min} is unnecessary and remove it, leading to an out-of-bounds access if \texttt{i[0]} reads 4 in $b$. While it is unlikely that a real implementation would perform the problematic optimization on this particular program, \mysec\ref{sec:saferace-extended-example} describes a more realistic program that could trigger this optimization.
 
 The program in \myfig\ref{fig:saferace-oob-example-a} straightforwardly demonstrates how data races can lead to vulnerabilities, but memory safety issues can occur due to other surprising behaviors allowed by data races. In particular, \myfig\ref{fig:saferace-oob-example-b} shows a WGSL program that contains the same data race between $a$ and $c$, but now the access to \texttt{m} in $b$ depends on a separate variable \texttt{x}. Prior work shows how reasonable implementations might set \texttt{x} to 4---for example, if the compiler notices that both \texttt{x} and \texttt{i[0]} contain the same value (2) and decides not to allocate a register for \texttt{x}, reloading \texttt{i[0]} instead and causing a potential out-of-bounds access~\cite{dolan2018bounding}.
 
 To recap, WGSL code, i.e., \myfig\ref{fig:saferace-oob-example} without the \textcolor{red}{\texttt{min}}, is written by application developers and may contain out-of-bounds accesses and data races. To avoid out-of-bounds accesses, WGSL compilers insert bounds-checks when generating lower-level native GPU code. The WGSL specification also mandates that if a data race occurs, memory accesses should be restricted to in-bounds memory in order to maintain memory safety~\cite[\mysec 2.2]{wgslspec}, but WGSL compilers do not include any special protections against data races. However, native GPU languages currently give undefined semantics to data races, allowing the optimizations described above when compiling to vendor-specific machine code. This mismatch between the WGSL specification and the native language guarantees means that the bounds-checks can be removed despite the fact that they should not be to maintain memory safety, creating the WGSL DRSV.
 
-\paragraph{The Solution: Constraining Optimizations}
+\paragraph{Solution: Constraining Optimizations.}
 
 The optimizations described above must be disallowed so that the bounds-checks remain, i.e., to maintain memory safety. In \myfig\ref{fig:saferace-oob-example-a}, this can be achieved by specifying that all accesses to \texttt{i[0]} be \textit{atomic}. Atomic accesses signal to the compiler that multiple threads might modify \texttt{i[0]}, preventing it from making the assumption that \texttt{i[0]} remains unchanged between $a$ and $b$. In \myfig\ref{fig:saferace-oob-example-b}, the compiler must be prevented from using the value in \texttt{i[0]} to refer to \texttt{x}. While this could be accomplished by again making accesses to \texttt{i[0]} atomic, extending this principle to full programs would require making \textit{every} memory access atomic, causing unacceptable performance decreases for many applications. Instead, this chapter proposes two properties that ensure memory safety violations do not occur due to data races while making fewer accesses atomic. These properties comprise the \saferace Memory Safety Guarantee (\smsg).
 
@@ -78,7 +78,7 @@ The second property of \smsg specifies that data races cannot affect the behavio
 The threat assessments and specification proposals that comprise \saferace are described below.
 
 \paragraph{Threat Assessment: Bottom-Up (\mysec\ref{sec:saferace-assess-bu})}
-First, the bottom-up threat assessment evaluates the potential for programs with simple memory safety violations, e.g., out-of-bounds accesses without bounds-checks, to cause vulnerabilities. The assessment covers two native GPU frameworks: Vulkan, which runs on Linux and Android operating systems, and Metal, which runs on macOS and iOS. Testing across 11 GPUs from 6 vendors reveals two new memory isolation vulnerabilities, one due to uninitialized memory on AMD GPUs and the other due to out-of-bounds accesses on Apple GPUs.
+First, the bottom-up threat assessment evaluates the potential for programs with simple memory safety violations, e.g., out-of-bounds accesses without bounds-checks, to cause vulnerabilities. The assessment covers two native GPU frameworks: Vulkan, which runs on Linux and Android operating systems, and Metal, which runs on macOS and iOS. Testing across 11 GPUs from 6 vendors reveals two new memory isolation vulnerabilities, one due to uninitialized memory on AMD GPUs and the other due to out-of-bounds accesses on Apple GPUs. The AMD vulnerability was assigned CVE-2024-36353~\cite{CVE-2024-36353}.
 
 \paragraph{Threat Assessment: Top-Down (\mysec\ref{sec:saferace-assess-td})}
 \wgslmemsmith, a fuzzer based on WGSLSmith~\cite{lecoeur2023reconditioning}, is developed to test WGSL implementations for the \drsv, i.e., the data race specification vulnerability described above. \wgslmemsmith generates random programs that contain potential memory safety violations due to combinations of data races and out-of-bounds accesses in order to determine whether WGSL's \drsv can be triggered by existing compilers. Testing \wgslmemsmith on 21 unique compilation stacks, i.e., combinations of browser, operating system, and GPU vendor, did not trigger the specification vulnerability.
@@ -145,14 +145,13 @@ The artifact for this work is publicly available~\cite{levine2025saferaceartifac
 
 The bottom-up threat assessment motivates memory safety in WGSL by exploring whether memory safety violations lead to memory isolation vulnerabilities in WGSL target languages. As GPUs can be used by multiple concurrent processes on the same machine, any memory isolation failure that leaks data between processes is cause for concern.
 
-The assessment covers two frameworks and three operating systems---Vulkan on Linux and Android and Metal on macOS---as well as three address spaces exposed by WebGPU: device, workgroup, and private (i.e., register) memory. Since many browsers run WGSL programs from different tabs in the same process, memory isolation is tested both when GPU programs run in different processes and in the same process. The assessment runs two programs concurrently---a victim and an attacker---and tests for memory isolation failures due to uninitialized memory and out-of-bounds accesses.
+The assessment covers two frameworks and three operating systems---Vulkan on Linux and Android and Metal on macOS---as well as three address spaces exposed by WebGPU: device, workgroup, and private (i.e., register) memory. Since some browsers run WGSL programs from different tabs in the same process~\cite{chromium_webgpu_technical_report}, memory isolation is tested both when GPU programs run in different processes and in the same process. The assessment runs two programs concurrently---a victim and an attacker---and tests for memory isolation failures due to uninitialized memory and out-of-bounds accesses.
 
 The victim allocates a block of memory whose size depends on the type of memory being tested. The victim then launches many GPU threads, with each thread assigned a set of memory locations within the block. Each thread alternately writes a canary value and a secret value to even and odd memory locations, respectively. Writing a canary avoids false positives in which the attacker spuriously reads the secret value and tests whether the attacker can read consecutive out-of-bounds memory values. The victim's memory is continually reallocated, either automatically in the case of private and workgroup memory or manually in the case of device memory. The victim runs indefinitely until manually stopped.
 
 Like the victim, the attacker allocates a block of memory and assigns each thread a set of memory locations. However, the locations assigned to each attacker thread may be either inside or outside the bounds of the allocated block. The attacker threads iterate over their assigned memory locations and search for the canary. Finding the canary in-bounds indicates that the allocated memory was previously used by the victim and was not properly cleared, while finding it out-of-bounds indicates that the attacker can read data outside its allocated block. If the canary is found, the attacker records the value of the next memory location, and the results are analyzed to determine whether the secret value was found.
 
-Generally, GPU memory references cannot be manipulated using integer arithmetic like pointers in C-like languages, which restricts the ability to write certain algorithms, e.g., arbitrary tree structures. However, Vulkan has introduced a new type of memory, \textit{physical storage buffers}, which allows applications to pass a virtual 64-bit address directly to a shader that can dereference and manipulate it similarly to a pointer. The memory safety implications of physical storage buffers are not well understood, so the assessment covers both device memory using traditional buffer bindings and physical storage buffers in Vulkan.
-
+In shader languages targeted by WebGPU, memory references generally cannot be manipulated using integer arithmetic like pointers in C-like languages. For example, a shader cannot take a pointer, add an offset to it to create a new pointer, and then dereference that new address. This restricts the ability to write certain algorithms, e.g., arbitrary tree structures. However, Vulkan has introduced a new type of memory, \textit{physical storage buffers}, which allows applications to pass a virtual 64-bit address directly to a shader that can dereference and manipulate it similarly to a pointer. The memory safety implications of physical storage buffers are not well understood, so the assessment covers both device memory using traditional buffer bindings and physical storage buffers in Vulkan.
 
 \subsection{Evaluation \label{sec:saferace-assess-bu-eval}}
 
@@ -442,31 +441,6 @@ The definition of an access enables precise reasoning about programs with \smsg.
 
 Property 2, which must be adopted by the memory-safe language \textit{and} the languages in its compilation stack, specifies that if a memory access $A_y$ is not in $A_x.S$, it cannot affect the result of $A_x$ even if it participates in a data race. Therefore, when running a program $P$, the possible behaviors of $A_x$, i.e., \texttt{bhvrs}($A_x$), with $A_y$ included in $P$ must be equivalent to the possible behaviors of $A_x$ when running $P$ with $A_y$ removed.
 
-\lstdefinelanguage{wgsl}{
-    mathescape,
-    literate={->}{$\rightarrow$}{2},
-    keywords=[1]{@group, @binding, var, fn, @compute, @workgroup_size, @builtin}, % WGSL-specific keywords
-    keywords=[2]{device, workgroup, array, vec3, i32}, % WGSL types and storage classes
-    sensitive=true, % WGSL is case-sensitive
-    morecomment=[l]{//}, % line comments
-    morecomment=[s]{/*}{*/}, % block comments
-    morestring=[b]", % strings
-    keywordstyle=[1]\color{blue}\bfseries, % styling for keywords
-    keywordstyle=[2]\color{teal}, % styling for types and storage classes
-    commentstyle=\color{gray}\itshape, % styling for comments
-    stringstyle=\color{orange}, % styling for strings
-    numbers=left, % line numbers on the left
-    numberstyle=\tiny\color{gray}, % line number style
-    stepnumber=1, % show every line number
-    numbersep=5pt, % distance between line numbers and code
-    showstringspaces=false, % do not show spaces in strings
-    basicstyle=\ttfamily\small,
-    breaklines=true, % allow line breaks
-    tabsize=4, % tab width
-    captionpos=b, % positioning of captions
-    escapebegin=\color{gray},
-}
-
 \begin{figure}[t]
     \centering
     \begin{lstlisting}[language=wgsl, caption={WGSL pseudocode illustrating how to apply the \saferace memory logic.}, label={list:saferace-smsg-reasoning}, basicstyle=\small, xleftmargin=10pt, xrightmargin=10pt]
@@ -516,7 +490,7 @@ If Property 1 is applied correctly, there are no data races in $B$, the set of m
 
 Enforcing \smsg ensures that data races no longer lead to globally undefined behavior or memory safety violations due to out-of-bounds accesses. However, to provide complete memory safety, WebGPU needs to guarantee that no possible WGSL program can lead to undefined behavior in its lower-level language targets. The current WGSL specification avoids undefined behavior by classifying its common sources, including data races, as dynamic errors, but the preceding analysis shows that this is not necessarily sufficient. Therefore, the analysis considers the other sources of dynamic errors mentioned in the specification, which are: aliased writable memory bound to a shader~\cite[\mysec 7.3]{wgslspec}, mismatched memory layouts~\cite[\mysec 13.4]{wgslspec}, unbounded loops~\cite[\mysec 9.4.3]{wgslspec}, and an erroneous graphics-specific vertex value~\cite[\mysec 12.3]{wgslspec}.
 
-Non-aliasing of memory is enforced by the WebGPU host API~\cite[\mysec 14.1]{webgpu}, and while mismatched memory layouts between the host and shaders can affect program correctness, the values in memory do not change the analysis used to apply \smsg. Graphics pipelines are not considered, leaving unbounded loops as the last source of dynamic errors. Unlike in languages like C++, where unbounded loops with side effects are useful for many tasks, GPU languages are generally not designed for long-running programs. In fact, most GPU languages currently lack a well-specified forward progress model~\cite{sorensen2021progress}, so even unbounded loops with side effects often lead to crashes or other issues. The lack of support for unbounded loops has implications for memory safety, and open-source WGSL compilers insert code in response to the fact that the Metal compiler might optimize away bounds-checks because it considers infinite loops without side effects undefined behavior~\cite{wgpuIssue4972}. While this approach appears successful so far, the lack of specificity around the behavior of unbounded loops means that the \smsg guarantees currently apply only to source programs that are free of behaviors like unbounded loops.
+Non-aliasing of memory is enforced by the WebGPU host API~\cite[\mysec 14.1]{webgpu}, and while mismatched memory layouts between the host and shaders can affect program correctness, the values in memory do not change the analysis used to apply \smsg. Graphics pipelines are not considered as they are commonly structured around per-vertex and per-fragment inputs and outputs~\cite[\mysec 13.1, 13.3.1--13.3.2]{wgslspec}. However, \smsg techniques could apply to graphics shaders that use shared writable resources, which would be a natural extension to this work. This leaves unbounded loops as the last source of dynamic errors. Unlike in languages like C++, where unbounded loops with side effects are useful for many tasks, GPU languages are generally not designed for long-running programs. In fact, most GPU languages currently lack a well-specified forward progress model~\cite{sorensen2021progress}, so even unbounded loops with side effects often lead to crashes or other issues. The lack of support for unbounded loops has implications for memory safety, and open-source WGSL compilers insert code in response to the fact that the Metal compiler might optimize away bounds-checks because it considers infinite loops without side effects undefined behavior~\cite{wgpuIssue4972}. While this approach appears successful so far, the lack of specificity around the behavior of unbounded loops means that the \smsg guarantees currently apply only to source programs that are free of behaviors like unbounded loops.
 
 \subsection{Other Memory Safety Approaches}
 
@@ -546,22 +520,22 @@ As described in \mysec\ref{sec:bg-mem}, both DirectX and Vulkan provide guarante
 \begin{table}
 \fontsize{9.5}{11}\selectfont
 \centering
-\caption{Impact of applying \smsg Property 1 to WebGPU benchmarks running on an Apple M3.}
+\caption{Impact of applying \smsg Property 1 to WebGPU benchmarks running on an Apple M3. Green runtime-overhead cells indicate no measurable slowdown, while yellow cells mark the two benchmarks with measurable runtime overhead.}
 \begin{tabular}{l r r r r r}
 \toprule
 \textbf{Benchmark} & \textbf{Shaders} & \textbf{Impacted} & \textbf{Impacted} & \textbf{Pass Timing} & \textbf{Runtime}\\
 & & \textbf{Shaders} & \textbf{Accesses} & \textbf{(ms)} & \textbf{Overhead} \\
 \midrule
-\textbf{WebLLM DeepSeek Qwen 7B~\cite{ruan2024webllmhighperformanceinbrowserllm}} & 73 & 4 & 24 & 62.47 & 0.0\% \\
-\textbf{WebLLM Llama 3.2 1B~\cite{ruan2024webllmhighperformanceinbrowserllm}} & 63 & 1 & 24 & 53.78 & 0.0\% \\
-\textbf{ONNX Runtime (Whisper)~\cite{whisperLargeV3TurboWebGPU}} & 60 & 0 & 0 & 8.67 & 0.0\% \\
-\textbf{ONNX Runtime (Phi-3)~\cite{XenovaPhi3WebGPU}} & 19 & 0 & 0 & 3.77 & 0.0\% \\
-\textbf{MediaPipe Gemma2 2B~\cite{mediapipeStudioLLM}} & 72 & 0 & 0 & 5.17 & 0.0\% \\
-\textbf{FFT Ocean Demo~\cite{FFTOceanDemo}} & 9 & 0 & 0 & 0.11 & 0.0\% \\
-\textbf{Game Of Life~\cite{WebGPUSamples}} & 1 & 0 & 0 & 0.08 & 0.0\% \\
-\textbf{Compute Boids~\cite{WebGPUSamples}} & 1 & 0 & 0 & 0.03 & 0.0\% \\
-\textbf{Bitonic Sort~\cite{WebGPUSamples}} & 3 & 1 & 10 & 0.34 & 9.8\% \\
-\textbf{MSM~\cite{DereiKohWebGPU_MSM_BLS12_2023}} & 4 & 3 & 7 & 23.43 & 3.0\% \\
+\textbf{WebLLM DeepSeek Qwen 7B~\cite{ruan2024webllmhighperformanceinbrowserllm}} & 73 & 4 & 24 & 62.47 & \cellcolor{green!15}0.0\% \\
+\textbf{WebLLM Llama 3.2 1B~\cite{ruan2024webllmhighperformanceinbrowserllm}} & 63 & 1 & 24 & 53.78 & \cellcolor{green!15}0.0\% \\
+\textbf{ONNX Runtime (Whisper)~\cite{whisperLargeV3TurboWebGPU}} & 60 & 0 & 0 & 8.67 & \cellcolor{green!15}0.0\% \\
+\textbf{ONNX Runtime (Phi-3)~\cite{XenovaPhi3WebGPU}} & 19 & 0 & 0 & 3.77 & \cellcolor{green!15}0.0\% \\
+\textbf{MediaPipe Gemma2 2B~\cite{mediapipeStudioLLM}} & 72 & 0 & 0 & 5.17 & \cellcolor{green!15}0.0\% \\
+\textbf{FFT Ocean Demo~\cite{FFTOceanDemo}} & 9 & 0 & 0 & 0.11 & \cellcolor{green!15}0.0\% \\
+\textbf{Game Of Life~\cite{WebGPUSamples}} & 1 & 0 & 0 & 0.08 & \cellcolor{green!15}0.0\% \\
+\textbf{Compute Boids~\cite{WebGPUSamples}} & 1 & 0 & 0 & 0.03 & \cellcolor{green!15}0.0\% \\
+\textbf{Bitonic Sort~\cite{WebGPUSamples}} & 3 & 1 & 10 & 0.34 & \cellcolor{yellow!30}9.8\% \\
+\textbf{MSM~\cite{DereiKohWebGPU_MSM_BLS12_2023}} & 4 & 3 & 7 & 23.43 & \cellcolor{yellow!30}3.0\% \\
 \bottomrule
 \end{tabular}
 
@@ -595,7 +569,7 @@ While the two WebLLM model benchmarks differed in the number of shaders used by 
 
 The \textbf{Bitonic Sort} benchmark does require making one workgroup-buffer memory region atomic, affecting 10 accesses in one shader. To complete one full sort using default parameters, this shader runs 91 times. To obtain precise GPU timing information, Dawn's WebGPU implementation was extended to automatically record GPU timestamps for every compute shader. The full sort was run three times each with the pass enabled and disabled on an Apple M3 GPU, and the average time across the 91 runs of the shader was calculated. On average, each shader run took between 0.04--0.09 ms, for a total of 3.6--8.2 ms. With the pass enabled, the average runtime of the shaders increased by 9.8\%, from 0.064 ms per shader to 0.071 ms. The same analysis was performed on the \textbf{MSM} benchmark; applying \smsg Property 1 to these shaders required making seven accesses atomic. The average shader runtime of this benchmark increased from 0.99 seconds to 1.02 seconds, or 3\%.
 
-To conclude, these results show that only \textasciitilde 2\% of the shaders in the benchmarks are affected by \smsg Property 1. The benchmarks consist of important WebGPU applications in several domains, including LLM inference and general compute algorithms, and are either generated by state-of-the-art tensor compilers, e.g., TVM~\cite{apache_tvm}, or handwritten by expert GPU developers. Many of the shaders used by these applications do not include the complex indirect memory accesses that require transformations to satisfy \smsg Property 1. For example, matrix multiplication is generally written using simple index calculations taken from combinations of thread identifiers and constants, and none of the matrix multiplications in the LLM benchmarks require any transformation. On the other hand, some applications, e.g., bitonic sort, may experience reduced performance due to the safety requirements of \smsg Property 1. The results also show that in this set of benchmarks, data types that cannot be accessed atomically in WGSL are generally not used in index-dependence calculations, with the only exception being the WebLLM shader that may be used in the future. All browser-based languages must make tradeoffs between performance and safety, and these results provide evidence that the performance overhead of adopting \smsg Property 1 may be acceptable for some applications.
+To conclude, these results show that only \textasciitilde 2\% of the shaders in the benchmarks are affected by \smsg Property 1. The benchmarks consist of important WebGPU applications in several domains, including LLM inference and general compute algorithms, and are either generated by state-of-the-art tensor compilers, e.g., TVM~\cite{apache_tvm}, or handwritten by expert GPU developers. Many of the shaders used by these applications do not include the complex indirect memory accesses that require transformations to satisfy \smsg Property 1. For example, matrix multiplication is generally written using simple index calculations taken from combinations of thread identifiers and constants, and none of the matrix multiplications in the LLM benchmarks require any transformation. This suggests a promising direction for future work, as safety analyses for GPU programs may be able to take advantage of the regular indexing structure common in tensor compiler outputs to provide stronger guarantees for important machine-learning workloads at relatively low cost. On the other hand, some applications, e.g., bitonic sort, may experience reduced performance due to the safety requirements of \smsg Property 1. The results also show that in this set of benchmarks, data types that cannot be accessed atomically in WGSL are generally not used in index-dependence calculations, with the only exception being the WebLLM shader that may be used in the future. All browser-based languages must make tradeoffs between performance and safety, and these results provide evidence that the performance overhead of adopting \smsg Property 1 may be acceptable for some applications.
 
 \section{Testing \smsg Property 2 \label{sec:saferace-smsg-prop-2}}
 
@@ -615,7 +589,7 @@ On one machine, an older MacBook with an Intel SoC, running the racy shader caus
 
 These observations provide evidence that \smsg Property 2 holds in the tested WebGPU implementations, which should ease its adoption by GPU languages. Besides memory safety, \smsg Property 2 also allows more compositional reasoning about program behaviors, enabling other future optimizations and safety properties.
 
-\section{Applications Beyond WebGPU \label{sec:saferace-broader-impacts}}
+\section{Summary and Broader Impact \label{sec:saferace-broader-impacts}}
 
 The proposals in this chapter are designed to address WGSL's specification vulnerability, but the results can also inform the general development of safe languages that target parallel processors and seek to provide memory safety and reasonable semantics for data races. The work has potential lessons and impacts for three different areas: existing browser-based languages, existing native languages, and the future development of languages that require compositional safety reasoning.
 
@@ -637,7 +611,7 @@ WGSL is somewhat unique in that it both needs to enforce memory safety and relie
 
 As shown in this chapter, understanding the interactions between languages and their safety guarantees is complex. The approach blends formal language proposals with extensive empirical evaluation. These results motivate future research that seeks to clearly specify behaviors that have classically been left undefined, such as data races, making it easier to compose language semantics and enable performant and safe applications.
 
-
+Overall, this chapter shows that GPU programming systems need safety guarantees that survive the full path from high-level source languages to lower-level compiler targets and hardware. The threat assessments demonstrate that memory safety violations in GPU programs can turn into memory isolation vulnerabilities, while the \smsg proposal shows how language and compiler rules can prevent data races from undermining bounds-checks. Together, these results show that GPU specifications are most useful when formal reasoning is combined with empirical validation, the central theme of this thesis.
 
 %Javscript, WebAssembly -> JIT direct to assembly
 %Java -> JIT, controlled by JVM

@@ -15,7 +15,7 @@ url = {https://developer.apple.com/metal/Metal-Shading-Language-Specification.pd
 
 
 @misc{vulkan-parallel-tests,
-author = {{Khronos Groups}},
+author = {{Khronos Group}},
 title = {{Test message passing using permuted indices}},
 year = {2022},
 url = {https://github.com/KhronosGroup/VK-GL-CTS/commit/0f0473342f80ab4ddcdd3588c034fc41b285e6ca}
@@ -32,7 +32,7 @@ year = {1994},
 author = {{Microsoft}},
 title = {Programming guide for {Direct3D} 11},
 url = {https://docs.microsoft.com/en-us/windows/win32/direct3d11/dx-graphics-overviews},
-year = "2020"
+year = {2020}
 }
 
 @misc{webgpu-spec-change,
@@ -492,7 +492,7 @@ journal = {ACM Trans. Program. Lang. Syst.},
 
 @inproceedings{betts2012gpuverify,
 author = {Betts, Adam and Chong, Nathan and Donaldson, Alastair and Qadeer, Shaz and Thomson, Paul},
-title = {{GPUVerify}: a verifier for GPU kernels},
+title = {{GPUVerify}: a verifier for {GPU} kernels},
 year = {2012},
 doi = {10.1145/2384616.2384625},
 booktitle = {Proceedings of the ACM International Conference on Object Oriented Programming Systems Languages and Applications},
@@ -614,12 +614,6 @@ doi = {10.1145/2254064.2254104},
 booktitle = {Proceedings of the 33rd ACM SIGPLAN Conference on Programming Language Design and Implementation},
 }
 
-@misc{chromium_webgpu_report,
-  title = {{WebGPU} technical report},
-  author = {Chromium Project},
-  url = {https://chromium.googlesource.com/chromium/src/+/main/docs/security/research/graphics/webgpu_technical_report.md},
-}
-
 @article{kopcke2024descend,
 author = {K\"{o}pcke, Bastian and Gorlatch, Sergei and Steuwer, Michel},
 title = {Descend: a safe {GPU} systems programming language},
@@ -636,7 +630,7 @@ journal = {Proc. ACM Program. Lang.},
 }
 
 @misc{nvidia2024cudaada,
-  title        = {{CUDA} Ada {GPU} architecture tuning guide},
+  title        = {{CUDA} {Ada} {GPU} architecture tuning guide},
   author       = {NVIDIA Corporation},
   url          = {https://docs.nvidia.com/cuda/ada-tuning-guide/index.html},
 }
@@ -701,7 +695,7 @@ and Lampropoulos, Leonidas
 and Sweet, Ian
 and Tarditi, David
 and Hicks, Michael",
-title="Achieving Safety Incrementally with Checked C",
+title="Achieving Safety Incrementally with Checked {C}",
 booktitle="Principles of security and trust",
 year="2019",
 doi = {10.1007/978-3-030-17138-4_4}
@@ -727,12 +721,12 @@ doi = {10.1007/978-3-030-17138-4_4}
 
 @misc{wgpuIssue4972,
   author = "{gfx-rs Developers}",
-  title = "{wgpu Issue \#4972: support for buffer mapping in chrome WebGPU}",
+  title = "{wgpu Issue \#4972: support for buffer mapping in Chrome WebGPU}",
   url = {https://github.com/gfx-rs/wgpu/issues/4972},
 }
 @misc{cppreferenceAtomic,
   author = "{cppreference.com}",
-  title = "{std::atomic - C++ Reference}",
+  title = {{std::atomic - C++ Reference}},
   url = {https://en.cppreference.com/w/cpp/atomic/atomic},
 }
 
@@ -758,7 +752,7 @@ doi = {10.1007/978-3-030-17138-4_4}
 
 @misc{misracpp,
   author       = {{MISRA Consortium}},
-  title        = {{MISRA C++}: guidelines for the use of C++ in critical systems},
+  title        = {{MISRA C++}: guidelines for the use of {C++} in critical systems},
   url          = {https://www.misra.org.uk/misra-c-plus-plus/},
   year         = {2023}
 }
@@ -774,6 +768,13 @@ doi = {10.1007/978-3-030-17138-4_4}
   title        = {{CVE-2024-36353 (AMD Leftover Global Memory)}},
   year         = {2024},
   url          = {https://nvd.nist.gov/vuln/detail/CVE-2024-36353},
+}
+
+@misc{chromium_webgpu_technical_report,
+  author       = {{Chrome Offensive Security Team}},
+  title        = {{WebGPU Technical Report}},
+  year         = {2023},
+  url          = {https://chromium.googlesource.com/chromium/src/+/main/docs/security/research/graphics/webgpu_technical_report.md},
 }
 
 @misc{levine2025saferaceartifact,
@@ -865,7 +866,7 @@ booktitle = {Proceedings of the 44th ACM SIGPLAN Symposium on Principles of Prog
 
 @inproceedings{batty2011mathematizing,
 author = {Batty, Mark and Owens, Scott and Sarkar, Susmit and Sewell, Peter and Weber, Tjark},
-title = {Mathematizing C++ concurrency},
+title = {Mathematizing {C++} concurrency},
 year = {2011},
 doi = {10.1145/1926385.1926394},
 booktitle = {Symposium on Principles of Programming Languages (POPL)},
@@ -1109,8 +1110,8 @@ booktitle = {Proceedings of the 46th Annual IEEE/ACM International Symposium on 
                   McKee, Devon and
                   Quinn, Andrew and
                   Sorensen, Tyler},
-  title        = {{{GPUHarbor}: Testing {GPU} Memory Consistency at Large
-                   (Experience Paper): Artifact}},
+  title        = {{{GPUHarbor}: testing {GPU} memory consistency at large
+                   (experience paper): artifact}},
   year         = 2023,
   publisher    = {Zenodo},
   version      = {1.0},
@@ -1212,6 +1213,14 @@ booktitle = {Proceedings of the 33rd USENIX Conference on Security Symposium},
   year        = {2020},
   institution = {NVIDIA Corporation},
   url         = {https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf},
+}
+
+@techreport{nvidia2022hopper,
+  title       = {{NVIDIA H100} Tensor Core {GPU} Architecture},
+  author      = {{NVIDIA Corporation}},
+  year        = {2022},
+  institution = {NVIDIA Corporation},
+  url         = {https://resources.nvidia.com/en-us-hopper-architecture/nvidia-h100-tensor-c},
 }
 
 @inproceedings{arvind2006memmodel,
@@ -1342,4 +1351,95 @@ title = {Consistency and Coherence of the {NVIDIA Grace-Hopper} Superchip},
 year = {2026},
 doi = {10.1145/3814942.3816134},
 booktitle = {Proceedings of the 2026 ACM SIGPLAN International Symposium on Memory Management},
+}
+
+@misc{noaa_serengeti_sea,
+  author       = {{National Oceanic and Atmospheric Administration}},
+  title        = {Serengeti of the Sea},
+  url          = {https://sanctuaries.noaa.gov/vr/monterey-bay/serengeti/},
+  institution  = {Office of National Marine Sanctuaries},
+}
+
+@misc{khronos_vk_gl_cts,
+  author       = {{Khronos Group}},
+  title        = {{VK-GL-CTS}: {Khronos} {Vulkan}, {OpenGL}, and {OpenGL ES} Conformance Tests},
+  url          = {https://github.com/KhronosGroup/VK-GL-CTS},
+  year         = {2026},
+}
+
+@misc{gpuweb_cts,
+  author       = {{GPU for the Web Community Group}},
+  title        = {{WebGPU Conformance Test Suite (CTS)}},
+  url          = {https://github.com/gpuweb/cts},
+  year         = {2026},
+}
+
+@misc{zhang2023migperf,
+      title={{MIGPerf}: A Comprehensive Benchmark for Deep Learning Training and Inference Workloads on Multi-Instance {GPUs}},
+      author={Huaizheng Zhang and Yuanming Li and Wencong Xiao and Yizheng Huang and Xing Di and Jianxiong Yin and Simon See and Yong Luo and Chiew Tong Lau and Yang You},
+      year={2023},
+      eprint={2301.00407},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2301.00407},
+}
+
+@misc{yeo2024preba,
+      title={{PREBA}: A Hardware/Software Co-Design for Multi-Instance {GPU} based {AI} Inference Servers},
+      author={Gwangoo Yeo and Jiin Kim and Yujeong Choi and Minsoo Rhu},
+      year={2024},
+      eprint={2411.19114},
+      archivePrefix={arXiv},
+      primaryClass={cs.DC},
+      url={https://arxiv.org/abs/2411.19114},
+}
+
+@misc{colvin2018highleveloperationalsemanticshardware,
+  author     = {Robert J. Colvin and Graeme Smith},
+  title      = {A High-Level Operational Semantics for Hardware Weak Memory Models},
+  year       = {2018},
+  eprinttype = {arxiv},
+  eprint     = {1812.00996},
+}
+
+@inproceedings{nienhuis2016operational,
+  author    = {Kyndylan Nienhuis and Kayvan Memarian and Peter Sewell},
+  title     = {An Operational Semantics for {C/C++11} Concurrency},
+  booktitle = {Object-Oriented Programming, Systems, Languages, and Applications ({OOPSLA})},
+  year      = {2016},
+  pages     = {111--128},
+  doi       = {10.1145/2983990.2983997},
+}
+
+@misc{kavanagh2018denotationalaccountc11stylememory,
+  author     = {Ryan Kavanagh and Stephen Brookes},
+  title      = {A Denotational Account of {C11}-Style Memory},
+  year       = {2018},
+  eprinttype = {arxiv},
+  eprint     = {1804.04214},
+}
+
+@techreport{aczel2026environmental,
+  author      = {Aczel, Miriam and Chamanara, Sheida and Matin, Mohammad and Farsi, Ali and Marwala, Tshilidzi and Madani, Kaveh},
+  title       = {Environmental Cost of {AI}'s Energy Use: Carbon, Water and Land Footprints},
+  institution = {{United Nations University Institute for Water, Environment and Health (UNU-INWEH)}},
+  location    = {Richmond Hill, Ontario, Canada},
+  year        = {2026},
+  doi         = {10.53328/INR26RMA002},
+}
+
+@techreport{fesler2026evidence,
+  author      = {Fesler, Lily and Martinez Claeys, JP and Agnew, Chris and Loeb, Susanna},
+  title       = {The Evidence Base on {AI} in {K-12}: A 2026 Review},
+  institution = {{AI Hub for Education of the SCALE Initiative, Stanford University}},
+  year        = {2026},
+  url         = {https://scale.stanford.edu/sites/default/files/The%20Evidence%20Base%20on%20AI%20in%20K-12%20Report.pdf},
+}
+
+@inproceedings{zhou2023misinfo,
+author = {Zhou, Jiawei and Zhang, Yixuan and Luo, Qianni and Parker, Andrea G and De Choudhury, Munmun},
+title = {Synthetic Lies: Understanding {AI}-Generated Misinformation and Evaluating Algorithmic and Human Solutions},
+year = {2023},
+doi = {10.1145/3544548.3581318},
+booktitle = {Proceedings of the 2023 CHI Conference on Human Factors in Computing Systems},
 }

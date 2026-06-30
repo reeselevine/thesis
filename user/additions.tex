@@ -1,1 +1,45 @@
 %Put additions preambles here.
+
+\newcommand{\graybottomrule}{%
+    \arrayrulecolor{Gray}\specialrule{\aboverulesep}{0pt}{0pt}%
+    \arrayrulecolor{black}\specialrule{\heavyrulewidth}{0pt}{\belowrulesep}%
+}
+
+\lstdefinelanguage{wgsl}{
+    mathescape,
+    alsoletter={@,_},
+    literate={->}{$\rightarrow$}{2},
+    keywords=[1]{@group,@binding,@compute,@workgroup_size,@builtin,var,fn,let,if},
+    keywords=[2]{storage,read,read_write,uniform,workgroup,array,atomic,u32,i32,vec2,vec3,vec4},
+    keywords=[3]{global_invocation_id,atomicLoad,atomicStore,workgroupBarrier,storageBarrier},
+    sensitive=true,
+    morecomment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+    keywordstyle=[1]\color{myblue}\bfseries,
+    keywordstyle=[2]\color{teal},
+    keywordstyle=[3]\color{mygreen},
+    commentstyle=\color{mygray}\itshape,
+    stringstyle=\color{orange},
+    numbers=left,
+    numberstyle=\tiny\color{mygray},
+    stepnumber=1,
+    numbersep=6pt,
+    showstringspaces=false,
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    tabsize=2,
+    captionpos=b,
+    escapebegin=\color{mygray},
+}
+
+\lstdefinestyle{wgslfigure}{
+    language=wgsl,
+    basicstyle=\ttfamily\footnotesize,
+    xleftmargin=18pt,
+    xrightmargin=8pt,
+    frame=single,
+    framerule=0.3pt,
+    framesep=5pt,
+    rulecolor=\color{mygray},
+}

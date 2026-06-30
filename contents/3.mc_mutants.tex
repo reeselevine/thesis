@@ -389,3 +389,7 @@ The results indicate high correlation between killing mutants and identifying MC
 \subsection{Impact\label{sec:mc-mutants-impact}}
 
 This work led to the discovery and reporting of two MCS bugs to platform maintainers. Additionally, the work on improving test environments has led to the official WebGPU CTS adopting PTE for MCS testing~\cite{webgpu-cts}. The WebGPU CTS is part of Chromium's continuous integration process as development on WebGPU compilers continues, and runs on a variety of GPUs (e.g.\ NVIDIA, Intel) and platform implementations (e.g.\ Vulkan, Metal, Direct3D). The diversity of devices is expected to grow as more browsers and platforms, especially mobile ones, implement the WebGPU standard. At least one parallel test has also been included in the Vulkan CTS as a result of the bug found on AMD drivers~\cite{vulkan-parallel-tests}.
+
+\section{Summary}
+
+Overall, this chapter shows that MCS testing can be made both more principled and dramatically more efficient. \sys provides a way to evaluate whether a testing environment is likely to expose meaningful MCS bugs, while PTE turns the massive parallelism of GPUs into a practical advantage for litmus testing. These results make it possible to move beyond small, manually curated experiments on a handful of machines. The next chapter builds on this foundation by asking what happens when these techniques are deployed at scale, across many more devices, vendors, APIs, and testing contexts.
