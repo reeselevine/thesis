@@ -13,13 +13,12 @@
 	% includefoot,  % includes the foot of the page, \footskip, into total body.
 %%% Margin
 	% UCSC: Every page of the dissertation or thesis must be kept within margins set as follows: a minimum margin of 1.5 inches (for binding purposes) on the left side of the page; 1.25 inches at the right side; 1.25 inches at the top and the bottom of the page. Page numbers must print at least 0.75 inches from the edge of the page. 
-	inner=1.5in, % inner margin
-	outer=1.25in, % outer margin
+	left=1.55in, % left margin, with small compliance buffer
+	right=1.3in, % right margin, with small compliance buffer
 	top=1.25in, % top margin
 	bottom=1.25in, % bottom margin
 	footskip=0.45in, % space between bottom of text and foot, do not excess 1.25in - 0.75in = 0.5in
-%%% Miscs
-	twoside,       % switches on twoside mode with left and right margins swapped on verso pages.
+	asymmetric, % keep left/right margins fixed instead of mirrored on even pages
 }
 %
 %%-----------------------------------------
