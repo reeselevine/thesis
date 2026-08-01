@@ -12,7 +12,7 @@ This chapter introduces concepts around GPU programming and memory consistency s
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.75]{images/gpu_arch.pdf}
+\includegraphics[scale=0.75, alt={Diagram of a GPU memory hierarchy. Multiple compute units contain subgroups of cores, each compute unit has shared access to an L1 cache and software-managed shared memory, and all compute units communicate through a shared L2 cache connected to main memory.}]{images/gpu_arch.pdf}
 \end{center}
 \caption{Simplified GPU architecture. Cores (outlined blue squares) are organized hierarchically into subgroups (SG), with a compute unit (CU) consisting of several subgroups that share access to a common L1 cache. A shared-memory region ($S$) is managed by software to communicate between threads on the same CU without going through main memory. All CUs share access to a global L2 cache.}
 \label{fig:bg-gpu-arch}
@@ -38,6 +38,8 @@ The GPU execution model is hierarchical, with several execution scopes and memor
    \centering
    \caption{GPU execution hierarchy and terminology.}
    \label{tab:bg-gpu-hierarchy}
+   \begingroup
+   \tagpdfsetup{table/header-rows={1}}
    \begin{tabularx}{\columnwidth}{L{2.7cm} L{2.7cm} L{3.0cm} Z}
    \toprule
    \textbf{WebGPU term} & \textbf{CUDA term} & \textbf{Typical size} & \textbf{Hardware and memory mapping} \\
@@ -48,13 +50,14 @@ The GPU execution model is hierarchical, with several execution scopes and memor
    \rowcolor{Gray} Dispatch & Kernel launch / grid & Many workgroups; limited by dispatch dimensions and resource sizes & Scheduled across compute units; workgroups communicate through storage/global memory, L2 cache, and main memory \\
    \graybottomrule
    \end{tabularx}
+   \endgroup
 \end{table}
 
 The base unit of execution is an \textit{invocation}, i.e., a \textit{thread}. As \textit{thread} is a more common term in many other programming frameworks, the term thread is used instead of invocation in this thesis. Threads execute a single stream of instructions and are scheduled onto GPU processing elements by the implementation. A set of threads is called a \textit{subgroup}, i.e., a \textit{warp} in CUDA. While subgroups are important for increasing the performance of modern GPU programs, especially in machine learning, this thesis does not investigate the specific behavior of subgroup operations, instead focusing on memory consistency independent of whether threads belong to the same subgroup. Threads are further organized into \textit{workgroups}, i.e., \textit{thread blocks} in CUDA; the programmer specifies the number of threads in a workgroup subject to implementation-defined limits. All threads in a workgroup have access to a software-managed shared-memory region, which is often a partition of the L1 cache and is called the \textit{workgroup} address space in WebGPU or \textit{shared memory} in CUDA.
 
 A group of workgroups launched at the same time is called a \textit{dispatch}, i.e., a \textit{kernel launch} in CUDA. The total dispatch size can be larger than the number of threads hardware can execute in parallel, and the GPU is responsible for scheduling and running workgroups on the hardware as resources become available. All threads in a dispatch can read and write to global memory, which WebGPU calls the \textit{storage} address space. Global memory buffers are allocated by the host and bound to the shader, and additional memory cannot be dynamically allocated during shader execution. WebGPU also exposes a special \textit{uniform} address space of read-only memory, but as read-only memory does not require special consideration when it comes to memory consistency, this thesis does not investigate it.
 
-\begin{lstlisting}[style=wgslfigure, float, caption={WGSL shader implementing the message passing program from \myfig\ref{fig:intro-mprlx}.}, label={list:bg-wgsl-example}]
+\begin{lstlisting}[style=wgslfigure, float, caption={[WGSL shader implementing message passing]WGSL shader implementing the message passing program from \myfig\ref{fig:intro-mprlx}.}, label={list:bg-wgsl-example}]
 @group(0) @binding(0)
 var<storage, read_write> buf: array<atomic<u32>>;
 
@@ -88,6 +91,8 @@ A memory consistency specification (MCS), also known as a memory model, defines 
    \centering
    \caption{Events, annotations, and relations used in this thesis.}
    \label{tab:bg-mcs}
+   \begingroup
+   \tagpdfsetup{table/header-rows={1,6,9}}
    \begin{tabularx}{\columnwidth}{L{2.7cm} Y}
    \toprule
    \textbf{Events} & \textbf{Description} \\
@@ -114,6 +119,7 @@ A memory consistency specification (MCS), also known as a memory model, defines 
    \rowcolor{Gray} happens-before ($hb$) & The transitive closure of $po \cup sw$ \\
    \graybottomrule
    \end{tabularx}
+   \endgroup
 \end{table}
 
 
@@ -142,6 +148,8 @@ Coherence constrains the behavior of accesses to each atomic memory location. Th
 A data race occurs when two threads perform conflicting non-atomic accesses to the same memory location, at least one access is a write, and neither access happens before the other. Unlike atomic operations, these accesses do not receive coherence guarantees, and without a synchronizes-with edge between the threads there may be no cross-thread $hb$ ordering. In languages such as C++, a data race causes undefined behavior~\cite{batty2011mathematizing}, while languages such as Java provide very weak semantics for data races~\cite{manson2005java}. Some GPU frameworks like Vulkan also treat data races as undefined, while WebGPU classifies data races as \textit{dynamic errors}; their effects are indeterminate, but they should not lead to security vulnerabilities. This thesis coins the term \textit{trivially data-race-free} (TDRF) to describe programs in which all shared-memory accesses are atomic. The memory consistency chapters in this thesis exclusively focus on TDRF programs to allow reasoning about well-defined reordering and synchronization semantics without having to determine whether data races exist. In contrast, the memory safety analysis in \mychap\ref{chap:saferace} assumes that programs with any non-atomic accesses may include data races.
 
 \newcommand{\iriwlitmustest}{
+    \begingroup
+    \tagpdfsetup{table/header-rows={1}}
     \begin{tabular}{l l l l}
     \midrule
     \multicolumn{1}{c}{\underline{thread 0}} &
@@ -161,6 +169,7 @@ A data race occurs when two threads perform conflicting non-atomic accesses to t
     \midrule
     \multicolumn{4}{c}{Weak outcome: \texttt{r0 == 1 \&\& r1 == 0 \&\& r2 == 1 \&\& r3 == 0}}
     \end{tabular}
+    \endgroup
 }
 
 \begin{figure}
@@ -199,11 +208,11 @@ NVIDIA's CUDA framework also includes a formal MCS for its intermediate represen
 \begin{figure}
 \centering
     \subfloat[Weak, allowed candidate execution without fences.]{
-        {\includegraphics[width=0.8\columnwidth]{images/mp-rlx.pdf}}
+        {\includegraphics[width=0.8\columnwidth, alt={Candidate execution graph for the message passing litmus test without fences, showing the weak outcome where the flag read observes the new flag value but the data read observes the initial data value.}]{images/mp-rlx.pdf}}
         \label{fig:bg-mp-weak-execution}
     } \\
     \subfloat[Disallowed candidate execution with release/acquire fences.]{
-        \includegraphics[width=0.8\columnwidth]{images/mp-relacq.pdf}
+        \includegraphics[width=0.8\columnwidth, alt={Candidate execution graph for the message passing litmus test with release and acquire fences, showing a synchronization path that makes the weak outcome disallowed.}]{images/mp-relacq.pdf}
         \label{fig:bg-mp-fenced-execution}
     }
     \caption{Candidate executions of the message-passing programs from \myfiglong\ref{fig:intro-mp}, without and with release/acquire fences.}

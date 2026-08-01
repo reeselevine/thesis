@@ -17,7 +17,31 @@
 	linkcolor=blue,
 	citecolor=magenta,
 	urlcolor=magenta,
+	pdflang={en-US},
 }
+\makeatletter
+\newcommand{\thesis@toclink}[1]{%
+	\ifx\@contentsline@destination\@empty
+		#1%
+	\else
+		\ifdefined\SuspendTagging\SuspendTagging{toc-link}\fi
+		\hyper@linkstart{link}{\@contentsline@destination}#1\hyper@linkend
+		\ifdefined\ResumeTagging\ResumeTagging{toc-link}\fi
+	\fi
+}
+\patchcmd{\scr@dte@tocline}
+	{#2%
+          \nobreak}
+	{\thesis@toclink{#2}%
+          \nobreak}
+	{}{}
+\patchcmd{\scr@dte@tocline}
+	{\@nameuse{scr@tso@#1@pagenumberformat}{#3}%
+            }%
+	{\@nameuse{scr@tso@#1@pagenumberformat}{\thesis@toclink{#3}}%
+            }%
+	{}{}
+\makeatother
 %%% cleveref setting
 \newcommand{\creflastconjunction}{, and\nobreakspace}%Oxford comma
 \crefname{section}{\S}{\S} % Prefix for cited section

@@ -9,6 +9,7 @@
 \NewDocumentEnvironment{abstract}{}{
 	\clearpage
 	\pagestyle{plain}
+	\phantomsection
 	\addchaptertocentry{}{Abstract}
 	\begin{center}
 		{\textbf{\Large Abstract}\par\bigskip
@@ -30,6 +31,7 @@
 \RenewDocumentEnvironment{dedication}{}{
 	\clearpage
 	\pagestyle{plain}
+	\phantomsection
 	\addchaptertocentry{}{Dedication}
 	\begin{center}
 		\ \ \ \
@@ -46,6 +48,7 @@
 \NewDocumentEnvironment{acknowledgement}{}{
 	\clearpage
 	\pagestyle{plain}
+	\phantomsection
 	\addchaptertocentry{}{Acknowledgments}
 	\begin{center}
 		\textbf{\Large Acknowledgments}
@@ -59,12 +62,21 @@
 %% PDF metadata
 %%-----------------------------------------
 \makeatletter
-\hypersetup{%
-	pdftitle={@title}, % title of PDF
-	pdfauthor={@author}, % author of PDF
-}
+\NewDocumentCommand{\setpdfmetadata}{}{%
+	\hypersetup{%
+	pdftitle={\@title}, % title of PDF
+	pdfauthor={\@author}, % author of PDF
+	pdfsubject={Doctoral dissertation on validating GPU memory consistency and safety at scale}, % PDF description
+	linktoc=all,
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=magenta,
+	urlcolor=magenta,
+	pdflang={en-US},
+	}
 
-\ifdefined\@keywords
-\hypersetup{pdfkeywords={@keywords}} % keywords
-\fi
+	\ifdefined\@keywords
+	\hypersetup{pdfkeywords={\@keywords}} % keywords
+	\fi
+}
 \makeatother

@@ -2,7 +2,11 @@
 % LTeX: enabled=false
 % !TeX encoding=utf8
 % !TeX program = pdflatex
-\pdfminorversion=7
+\DocumentMetadata{
+	lang=en-US,
+	pdfversion=1.7,
+	tagging=on,
+}
 \pdfsuppresswarningpagegroup=1
 %% This is the main excute file (smaple)
 %
@@ -101,8 +105,6 @@
 \newcommand{\uninit}{\ding{55}} % Cross symbol for uninitialized data
 \newcommand{\oob}{\ding{67}} % out-of-bounds reads
 \newcommand{\NA}{---}
-\providecommand{\Description}[2][]{}
-
 %
 %%-----------------------------------------
 %% User-defined preambles
@@ -124,10 +126,11 @@
 %% Front
 \frontmatter
 \input{metadata} % Metadata of the thesis
+\setpdfmetadata
 \maketitle
 \begin{singlespace}
 	\tableofcontents
-\addchap{Figures, Tables, Listings, and Algorithms}
+	\addchap{Figures, Tables, Listings, and Algorithms}
 	\listoffigures
 	\listoftables
 	\begingroup

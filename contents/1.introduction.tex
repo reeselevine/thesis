@@ -21,6 +21,8 @@ An MCS is also responsible for defining which memory patterns are meaningful and
 To understand existing techniques and insufficiencies in testing and validating an MCS, we now turn to a quick primer on memory consistency.
 
 \newcommand{\mprlxintrolitmustest}{
+    \begingroup
+    \tagpdfsetup{table/header-rows={1}}
     \begin{tabular}{l l}
     \midrule
     \multicolumn{1}{c}{\underline{thread 0}} & \multicolumn{1}{c}{\underline{thread 1}} \\
@@ -30,6 +32,7 @@ To understand existing techniques and insufficiencies in testing and validating 
         \midrule
         %\multicolumn{2}{c}{Condition: \texttt{r0 == 1 \&\& r1 == 0}}
     \end{tabular}
+    \endgroup
 }
 
 \newcommand{\introMpEventA}{\circledBlack{\vphantom{A}a}\xspace}
@@ -40,6 +43,8 @@ To understand existing techniques and insufficiencies in testing and validating 
 \newcommand{\introMpFenceY}{\circledWhite{\vphantom{A}y}\xspace}
 
 \newcommand{\mprelacqintrolitmustest}{
+    \begingroup
+    \tagpdfsetup{table/header-rows={1}}
     \begin{tabular}{l l}
     \midrule
     \multicolumn{1}{c}{\underline{thread 0}} & \multicolumn{1}{c}{\underline{thread 1}} \\
@@ -50,8 +55,8 @@ To understand existing techniques and insufficiencies in testing and validating 
         \midrule
         %\multicolumn{2}{c}{Condition: \texttt{r0 == 1 \&\& r1 == 0}}
     \end{tabular}
+    \endgroup
 }
-
 
 \begin{figure}
 \centering
@@ -75,6 +80,8 @@ The most intuitive way to analyze this program is to consider the possible order
 
 \begin{table}[t]
 \centering
+\begingroup
+\tagpdfsetup{table/header-rows={1}}
 \begin{tabular}{l l l}
 \toprule
 \multicolumn{1}{c}{\textbf{Event Ordering}} & \multicolumn{1}{c}{\textbf{Outcome}} & \multicolumn{1}{c}{\textbf{Behavior}} \\
@@ -91,7 +98,8 @@ The most intuitive way to analyze this program is to consider the possible order
 \introMpEventD $\rightarrow$ \introMpEventA $\rightarrow$ \introMpEventB $\rightarrow$ \introMpEventC & & \\
 \bottomrule
 \end{tabular}
-\caption{Example orderings for the message-passing events in \myfig\ref{fig:intro-mprlx}.}
+\endgroup
+\caption[Example orderings for message-passing events.]{Example orderings for the message-passing events in \myfig\ref{fig:intro-mprlx}.}
 \label{tab:intro-mp-orderings}
 \end{table}
 

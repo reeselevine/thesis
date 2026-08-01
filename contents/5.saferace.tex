@@ -8,7 +8,7 @@
 
 After a successful first half of 2023, which included my PhD advancement, presentations at ASPLOS and ISSTA, being awarded the NDSEG fellowship, and returning for my second internship at Apple, I returned to UC Santa Cruz looking for my next major project. Kyle Little, an undergraduate at UC Santa Cruz, and I had already started investigating some of the security properties of WebGPU, especially around data races. We weren't sure exactly where this would go, but after nearly a year of work, the SafeRace paper came together. Another undergraduate, Ashley Lee, helped pick up the project once Kyle graduated. Unfortunately, it was rejected the first time it was submitted (to ASPLOS), but the reviewers gave valuable feedback on a more focused implementation of some of its ideas and a better evaluation. In the winter of 2024, another undergraduate, Neha Abbas, got involved in the project, writing a WGSL program reducer that helped with the evaluation, and SafeRace was eventually accepted to OOPSLA 2025. The SafeRace project was a bit of a marathon, but it was satisfying to see it accepted, and it represents the final major contribution of this thesis.
 
-I view SafeRace not as a finished solution, but rather as a step in the direction of more refined semantics for data races based on how underlying compilers actually work. The rest of my time at UC Santa Cruz ended up going in a different direction, toward using WebGPU for machine-learning workloads, but I encourage others to make further progress in this area and would happily give them my thoughts. Perhaps there are exceptions to data races being evil after all.
+I view SafeRace not as a finished solution, but rather as a step in the direction of more refined semantics for data races based on how underlying compilers actually work. The rest of my time at UC Santa Cruz ended up going in a different direction, toward using WebGPU for machine-learning workloads, but I encourage others to make further progress in this area and would happily give them my thoughts. Perhaps data races don't have to be so destructive after all.
 
 \section{Introduction}
 
@@ -21,6 +21,8 @@ This chapter presents \saferace, a thorough investigation into how data races ca
         \parbox{.95\columnwidth}{
             \centering
             \small
+            \begingroup
+            \tagpdfsetup{table/header-rows={2}}
             \begin{tabular}{ l | l }
                 \multicolumn{2}{l}{\texttt{i: array<u32, 1>, m: array<u32, 4>}} \\
                 \midrule
@@ -30,12 +32,15 @@ This chapter presents \saferace, a thorough investigation into how data races ca
                     b: \texttt{let r0 = m[}\textcolor{red}{\texttt{min(}}\texttt{i[0]}\textcolor{red}{\texttt{, 3)}}\texttt{]} & \\
                 \midrule
             \end{tabular}
+            \endgroup
         }\label{fig:saferace-oob-example-a}
     }\\
     \subfloat[Program with a data race on \texttt{i[0]}, with \texttt{x} used to index into \texttt{m}.]{
         \parbox{.95\columnwidth}{
             \centering
             \small
+            \begingroup
+            \tagpdfsetup{table/header-rows={2}}
             \begin{tabular}{ l | l }
                 \multicolumn{2}{l}{\texttt{i: array<u32, 1>, m: array<u32, 4>}} \\
                 \midrule
@@ -45,11 +50,11 @@ This chapter presents \saferace, a thorough investigation into how data races ca
                     b: \texttt{let r0 = m[}\textcolor{red}{\texttt{min(}}\texttt{x}\textcolor{red}{\texttt{, 3)}}\texttt{]} & \\
                 \midrule
             \end{tabular}
+            \endgroup
         }\label{fig:saferace-oob-example-b}
     }
     \caption{WGSL compilers insert dynamic bounds-checks (shown in red) to provide memory safety. Under current specifications, the bounds-checks can be optimized away in either program, leading to potential memory safety violations.}
     \label{fig:saferace-oob-example}
-    \Description[Programs with bounds checks and data races.]{The first program shows two threads. In the first thread, the program writes 2 to i[0], then reads from m[i[0]]. The compiler inserts a min check, in red, around i[0], comparing it to 3, the maximum valid index of m. The second thread writes 4 to i[0], causing a data race. The second program is similar except that it uses a private variable x to index into m.}
 \end{figure}
 
 
@@ -114,6 +119,8 @@ The artifact for this work is publicly available~\cite{levine2025saferaceartifac
 \fontsize{7.4}{7.4}\selectfont
 \centering
 \caption{Results from the bottom-up threat assessment. Two new vulnerabilities, highlighted in red, affect memory isolation when applications are run in different processes.}
+\begingroup
+\tagpdfsetup{table/header-rows={1,2}}
 \begin{tabular}{ l l l l l l l l l l }
 \toprule
 & & & \textbf{Memory Region:} & \multicolumn{2}{c}{\textbf{Device}} & \multicolumn{2}{c}{\textbf{Phys. Storage}} & \multicolumn{2}{c}{\textbf{Workgroup}} \\
@@ -135,6 +142,7 @@ The artifact for this work is publicly available~\cite{levine2025saferaceartifac
                         &                          & Apple M3                 & & \oob   & \cmark                     & \NA     & \NA    & \cmark       & \cmark  \\
 \bottomrule
 \end{tabular}
+\endgroup
 
 \smallskip
 \cmark = No Vulnerability; \oob = Out-of-bounds Access Vulnerability; \uninit = Uninitialized Memory Vulnerability
@@ -193,9 +201,7 @@ This vulnerability allows an attacker to access data from another process by per
     moredelim=[is][\textcolor{red}]{@}{@}  % Set delimiter to change color
 }
 
-\begin{figure}[t]
-    \centering
-    \begin{lstlisting}[caption={Extension of \myfig\ref{fig:saferace-oob-example} showing a C program that exemplifies WGSL's data race specification vulnerability. Pointers are restricted to avoid aliasing, as in WGSL.}, label={list:saferace-c-code}, basicstyle=\ttfamily\fontsize{9.2}{13}\selectfont, xleftmargin=10pt, xrightmargin=10pt]
+\begin{lstlisting}[float=t, caption={[C program exemplifying WGSL's data race specification vulnerability]Extension of \myfig\ref{fig:saferace-oob-example} showing a C program that exemplifies WGSL's data race specification vulnerability. Pointers are restricted to avoid aliasing, as in WGSL.}, label={list:saferace-c-code}, basicstyle=\ttfamily\fontsize{9.2}{13}\selectfont, xleftmargin=10pt, xrightmargin=10pt]
 @int min(int a,int b) {return (b<a)?b:a;}@
 
 void f(int *restrict idx, int *restrict data, int *restrict output) {
@@ -206,9 +212,7 @@ void f(int *restrict idx, int *restrict data, int *restrict output) {
     if (*idx < 100)
         *output = data[@min(@*idx, @99)@];
 }
-    \end{lstlisting}
-     \Description[Program showing WGSL's DRSV]{A C++ function with three arguments as restricted int pointers, idx, data, and output. If the value of data is 0, writes 17 to idx, otherwise writes 19. Then, if idx is less than 100, sets output to data[idx]. The compiler inserts a min check comparing idx to 99.}
-\end{figure}
+\end{lstlisting}
 
 \lstset{
     language=LLVM,
@@ -227,9 +231,7 @@ void f(int *restrict idx, int *restrict data, int *restrict output) {
     moredelim=[is][\textcolor{orange}]{@}{@}  % Set delimiter to change color
 }
 
-\begin{figure}[t]
-    \centering
-    \begin{lstlisting}[caption={Compiler optimizations can turn the code in \mylisting\ref{list:saferace-c-code} into this LLVM intermediate representation.}, label={list:saferace-llvm-code}, basicstyle=\ttfamily\fontsize{9.8}{13}\selectfont, xleftmargin=10pt, xrightmargin=10pt]
+\begin{lstlisting}[float=t, caption={[Optimized LLVM intermediate representation]Compiler optimizations can turn the code in \mylisting\ref{list:saferace-c-code} into this LLVM intermediate representation.}, label={list:saferace-llvm-code}, basicstyle=\ttfamily\fontsize{9.8}{13}\selectfont, xleftmargin=10pt, xrightmargin=10pt]
   %data_0 = load i32, ptr %data, align 4
   %data_is_0 = icmp eq i32 %data_0, 0
   @%idx_0@ = select i1 %data_is_0, i32 17, i32 19
@@ -238,9 +240,7 @@ void f(int *restrict idx, int *restrict data, int *restrict output) {
   @%data_ptr@ = getelementptr inbounds i32, ptr %data, i64 @%idx_0_ext@
   %data_val = load i32, ptr @%data_ptr@, align 4
   store i32 %data_val, ptr %output, align 4
-    \end{lstlisting}
-    \Description[LLVM code]{The optimized LLVM intermediate representation corresponding to the preceding C listing.}
-\end{figure}
+\end{lstlisting}
 
 \section{Threat Assessment: Top-Down \label{sec:saferace-assess-td}}
 
@@ -265,13 +265,16 @@ In this example, the compiled code is still safe, as the compiler uses \textcolo
         \parbox{0.30\textwidth}{
             \centering
             \resizebox{\linewidth}{!}{%
+            \begingroup
+            \tagpdfsetup{table/header-rows={1}}
             \begin{tabular}{ l }
                 \midrule
                 \underline{Thread 0} \\
                 \texttt{a: i[0] = 2} \\
                 \texttt{b: }\textcolor{blue}{\texttt{let}}\texttt{ r0 = m[i[0]]} \\
                 \midrule
-            \end{tabular}}
+            \end{tabular}
+            \endgroup}
         }
     }
     \hfill
@@ -279,13 +282,16 @@ In this example, the compiled code is still safe, as the compiler uses \textcolo
         \parbox{0.30\textwidth}{
             \centering
             \resizebox{\linewidth}{!}{%
+            \begingroup
+            \tagpdfsetup{table/header-rows={1}}
             \begin{tabular}{ l }
                 \midrule
                 \underline{Thread 0} \\
                 \texttt{i[0] = 500000} \\
                 \textcolor{blue}{\texttt{let}}\texttt{ r0 = m[1 + i[0]]} \\
                 \midrule
-            \end{tabular}}
+            \end{tabular}
+            \endgroup}
         }
     }
     \hfill
@@ -293,6 +299,8 @@ In this example, the compiled code is still safe, as the compiler uses \textcolo
         \parbox{0.30\textwidth}{
             \centering
             \resizebox{\linewidth}{!}{%
+            \begingroup
+            \tagpdfsetup{table/header-rows={1}}
             \begin{tabular}{ l }
                 \midrule
                 \underline{Thread 0} \\
@@ -301,11 +309,11 @@ In this example, the compiled code is still safe, as the compiler uses \textcolo
                 \textcolor{blue}{\texttt{if}}\texttt{ (i[0] > 0) x = 4 } \\
                 \textcolor{blue}{\texttt{let}}\texttt{ r0 = m[x]} \\
                 \midrule
-            \end{tabular}}
+            \end{tabular}
+            \endgroup}
         }
     }
     \caption{The three types of patterns that \wgslmemsmith generates. Here, \texttt{i} is a signed 32-bit integer array of size 1 and \texttt{m} is an unsigned 32-bit integer array of size 4 in either device, workgroup, or private memory. Thread 1 races on \texttt{i[0]}, writing an out-of-bounds value for the basic pattern, an overflow-inducing value for the undefined arithmetic pattern, and a control-flow-changing value for the control-flow pattern.}
-    \Description[Pattern code]{Each of the three tables shows the different types of patterns.}
     \label{fig:saferace-patterns}
 \end{figure}
 
@@ -330,9 +338,8 @@ Along with the base shader, \wgslmemsmith generates racy \textit{patterns} that 
 
 \begin{figure}
     \centering
-    \includegraphics[width=\columnwidth]{images/tracking.pdf}
+    \includegraphics[width=\columnwidth, alt={Fuzzing time broken down by backend and vendor. Metal testing uses Chromium, Firefox, and Safari, mostly on Apple GPUs but also on Intel, AMD, and NVIDIA GPUs. Vulkan testing uses Chromium and Firefox across AMD, Arm, Intel, Samsung, Qualcomm, and NVIDIA GPUs. DirectX testing also uses Chromium and Firefox on many of the same vendors.}]{images/tracking.pdf}
     \caption{\wgslmemsmith fuzzing time broken down by compilation stack.}
-    \Description[Fuzzing Time]{Fuzzing time broken down by backend and vendor. Metal testing uses Chromium, Firefox, and Safari, mostly on Apple GPUs but also on Intel, AMD, and NVIDIA GPUs. Vulkan testing uses Chromium and Firefox across AMD, Arm, Intel, Samsung, Qualcomm, and NVIDIA GPUs. DirectX testing also uses Chromium and Firefox on many of the same vendors.}
     \label{fig:saferace-fuzzing-time}
 \end{figure}
 
@@ -349,6 +356,8 @@ While testing a pre-release version of Firefox on a Windows laptop with a Qualco
 \centering
 \caption{Percentage of shaders showing memory isolation failures on Apple M3 and M2 GPUs with bounds-checks disabled.}
 
+\begingroup
+\tagpdfsetup{table/header-rows={1,2,3}}
 \begin{tabular}{l r r r r r r r}
 \toprule
 & \multicolumn{6}{c}{\textbf{Memory}} \\
@@ -362,6 +371,7 @@ While testing a pre-release version of Firefox on a Windows laptop with a Qualco
 \textbf{ControlFlow:} & $8.2\%$ & $6.1\%$ & $1.0\%$ & $0.0\%$ & $37.8\%$ & $20.4\%$ \\
 \bottomrule
 \end{tabular}
+\endgroup
 \label{tab:saferace-mut-testing}
 \end{table}
 
@@ -395,6 +405,8 @@ The remainder of this section formally describes a logic for constructing progra
 \small
 \caption{\saferace Memory Logic}
 \centering
+\begingroup
+\tagpdfsetup{table/header-rows={1,12},table/header-columns={1}}
 \begin{tabular}{ l l l }
 \toprule
 \textbf{Program} & $P$ & The program under analysis \\
@@ -423,6 +435,7 @@ The remainder of this section formally describes a logic for constructing progra
 (\footnotesize \textsc{RaceInterference}) & \multicolumn{2}{l}{\footnotesize \texttt{bhvrs}$(A_x) \mid P.A$ $\equiv$ \texttt{bhvrs}$(A_x) \mid P.A\setminus A_y$} \\
 \bottomrule
 \end{tabular}
+\endgroup
 
 \label{tab:saferace-sig-reasoning}
 \end{table}
@@ -441,28 +454,24 @@ The definition of an access enables precise reasoning about programs with \smsg.
 
 Property 2, which must be adopted by the memory-safe language \textit{and} the languages in its compilation stack, specifies that if a memory access $A_y$ is not in $A_x.S$, it cannot affect the result of $A_x$ even if it participates in a data race. Therefore, when running a program $P$, the possible behaviors of $A_x$, i.e., \texttt{bhvrs}($A_x$), with $A_y$ included in $P$ must be equivalent to the possible behaviors of $A_x$ when running $P$ with $A_y$ removed.
 
-\begin{figure}[t]
-    \centering
-    \begin{lstlisting}[language=wgsl, caption={WGSL pseudocode illustrating how to apply the \saferace memory logic.}, label={list:saferace-smsg-reasoning}, basicstyle=\small, xleftmargin=10pt, xrightmargin=10pt]
-var<device>    a: array<i32, 1>; $A^i_0:  \{R^{dna}_a\}$
-var<workgroup> b: array<i32, 1>; $A^i_1: \{R^{wna}_b\}$
-var<workgroup> c: array<i32, 1>; $A^i_2: \{R^{wna}_c\}$
-var<device>    d: array<i32,10>; $A^i_3: \{R^{dna}_d\}$
+\begin{lstlisting}[float=t, language=wgsl, mathescape=false, caption={WGSL pseudocode illustrating how to apply the \saferace memory logic.}, label={list:saferace-smsg-reasoning}, basicstyle=\small, xleftmargin=10pt, xrightmargin=10pt]
+var<device>    a: array<i32, 1>; A^i_0:  {R^dna_a}
+var<workgroup> b: array<i32, 1>; A^i_1: {R^wna_b}
+var<workgroup> c: array<i32, 1>; A^i_2: {R^wna_c}
+var<device>    d: array<i32,10>; A^i_3: {R^dna_d}
 fn shader() {
-  a[0]=5;      $A^w_4: \{R_a\}$
-  b[0]=1;      $A^w_5: \{R_b\}$
-  var x:i32=3; $A^w_6: \{R^{pna}_x\}$
-  if(a[0]>5)   $A^r_7: \{R_a, D=\{A^w_4\}\}$
-    x=100;     $A^w_8: \{R_x, C=\{A^r_7\}\}$
-  c[0]=b[0];   $A^r_9: \{R_b, D=\{A^w_5\}\}$ $A^w_{10}: \{R_c, D=\{A^r_9\}\}$
-                      $A^r_{11}: \{R_x, D=\{A^w_8, A^w_6\}\}$
-                      $A^r_{12}: \{R_c, D=\{A^w_{10}\}\}$
-                      $A^r_{13}: \{R_d, I=\{A^r_{11}, A^r_{12}\}\}$
-  var r=d[x+1+c[0]]; $A^w_{14}: \{R^p_r, D=\{A^r_{13}\}\}$
+  a[0]=5;      A^w_4: {R_a}
+  b[0]=1;      A^w_5: {R_b}
+  var x:i32=3; A^w_6: {R^pna_x}
+  if(a[0]>5)   A^r_7: {R_a, D={A^w_4}}
+    x=100;     A^w_8: {R_x, C={A^r_7}}
+  c[0]=b[0];   A^r_9: {R_b, D={A^w_5}} A^w_10: {R_c, D={A^r_9}}
+                      A^r_11: {R_x, D={A^w_8, A^w_6}}
+                      A^r_12: {R_c, D={A^w_10}}
+                      A^r_13: {R_d, I={A^r_11, A^r_12}}
+  var r=d[x+1+c[0]]; A^w_14: {R^p_r, D={A^r_13}}
 }
-    \end{lstlisting}
-    \Description[Applying SMSG]{Code showing how to apply SMSG reasoning to an example WGSL program. The code is explained below in the larger example paragraph.}
-\end{figure}
+\end{lstlisting}
 
 \subsection{Applying \smsg}
 
@@ -521,6 +530,8 @@ As described in \mysec\ref{sec:bg-mem}, both DirectX and Vulkan provide guarante
 \fontsize{9.5}{11}\selectfont
 \centering
 \caption{Impact of applying \smsg Property 1 to WebGPU benchmarks running on an Apple M3. Green runtime-overhead cells indicate no measurable slowdown, while yellow cells mark the two benchmarks with measurable runtime overhead.}
+\begingroup
+\tagpdfsetup{table/header-rows={1,2}}
 \begin{tabular}{l r r r r r}
 \toprule
 \textbf{Benchmark} & \textbf{Shaders} & \textbf{Impacted} & \textbf{Impacted} & \textbf{Pass Timing} & \textbf{Runtime}\\
@@ -538,6 +549,7 @@ As described in \mysec\ref{sec:bg-mem}, both DirectX and Vulkan provide guarante
 \textbf{MSM~\cite{DereiKohWebGPU_MSM_BLS12_2023}} & 4 & 3 & 7 & 23.43 & \cellcolor{yellow!30}3.0\% \\
 \bottomrule
 \end{tabular}
+\endgroup
 
 \label{tab:saferace-webgpu-benchmarks}
 \end{table}
